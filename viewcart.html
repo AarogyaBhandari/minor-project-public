@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Cart - LocalArtHub</title>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
+    <link rel="stylesheet" href="style.css">
+    <script type="module" src="script.js"></script>
+    <style>
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 20px 25px;
+  border-radius: 8px;
+  width: 300px;
+  text-align: center;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.modal-buttons button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#cancel-logout {
+  background: #ddd;
+}
+
+#confirm-logout {
+  background: #8b4513;
+  color: white;
+}
+</style>
+</head>
+<body>
+    <section id="header">
+        <a href="main.html"><img src="./images/LocalArtHub logo.png" class="logo" alt="" style="width: 30px;height: 30px;"></a>
+        <div>
+            <ul id="navbar">
+             <li><a class="navigation-button " href="main.html">Home</a></li>
+                    <li><a href="shop.html" >Shop</a></li>
+                    <!-- <li><a href="#" >Blog</a></li> -->
+                    <li><a href="admin.html" class="navigation-button">Admin</a></li>
+                    <li><a href="aboutus.html" class="navigation-button" >About</a></li>
+                    <li><a href="user-orders.html" class="navigation-button">My Orders</a></li>
+                    <li><a href="contactus.html" class="navigation-button" >Contact</a></li>
+                <a href="#" id="close"><i class="fas fa-times"></i></a>
+            </ul>
+        </div>
+        <div id="right-nav">
+            <a id="lg-bag" href="viewcart.html"><i class="far fa-shopping-cart"></i></a>
+            <a id="login-btn" href="signin.html">Login</a>
+        </div>
+        <div id="mobile">
+            <a href="viewcart.html"><i class="far fa-shopping-cart"></i></a>
+            <i id="bar" class="fas fa-bars"></i>
+        </div>
+    </section>
+
+   <section id="cart" class="section-p1">
+  <div class="cart-page-wrap">
+    <div class="cart-page-header">
+      <h2>Your Cart</h2>
+      <p id="cart-count-label" style="color:#888; font-size:13px; margin:4px 0 0;">Loading...</p>
+    </div>
+    <div class="cart-page-layout">
+      <div id="cart-list"></div>
+      <div class="cart-summary-panel" id="cart-summary-panel" style="display:none">
+        <h4 class="summary-heading">Order Summary</h4>
+        <div class="summary-line"><span>Subtotal</span><span id="summary-subtotal">Rs. 0</span></div>
+        <div class="summary-line"><span>Shipping</span><span style="color:#088178; font-weight:600">Free</span></div>
+        <div class="summary-line summary-total"><span>Total</span><span id="summary-total">Rs. 0</span></div>
+        <button class="checkout-all-btn" onclick="checkoutAll()">Proceed to Checkout</button>
+        <div class="promo-row">
+          <input id="promo-input" class="promo-input" placeholder="Promo code" />
+          <button class="promo-apply-btn" onclick="applyPromo()">Apply</button>
+        </div>
+        <p id="promo-msg" style="font-size:12px; color:#088178; margin:6px 0 0; display:none"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+    <footer class="section-p1">
+            <div class="col">
+                <img class="logo" src="./images/LocalArtHub logo.png" alt="">
+                <h4>Contact</h4>
+                <p><strong>Address:</strong> Kathmandu, Nepal</p>
+                <p><strong>Phone:</strong> +977 9834567890</p>
+                <p><strong>Hours:</strong> 10:00 - 18:00, Mon - Sat</p>
+                <div class="follow">
+                    <h4>Follow us</h4>
+                    <div class="icon">
+                        <i class="fab fa-facebook-f"></i>
+                        <i class="fab fa-twitter"></i>
+                        <i class="fab fa-instagram"></i>
+                        <i class="fab fa-pinterest-p"></i>
+                        <i class="fab fa-youtube"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <h4>About</h4>
+                <a href="aboutus.html">About us</a>
+                <a href="delivery.html">Delivery Information</a>
+                <a href="privacy.html">Privacy Policy</a>
+                <a href="termsandcondition.html">Terms & Conditions</a>
+                <a href="contactus.html">Contact Us</a>
+            </div>
+            <div class="col">
+                <h4>My Account</h4>
+                  <a href="signin.html">Sign In</a>
+                <a href="viewcart.html">View Cart</a>
+                <a href="wishlist.html" target="_blank">My Wishlist</a>
+                <a href="user-orders.html" target="_blank">Track My Order</a>
+                <a href="contactus.html">Help</a>
+            </div>
+            <!-- <div class="col install">
+                <h4>Install App</h4>
+                <p>From App Store or Google Play</p>
+                <div class="row">
+                    
+                </div>
+                <p>Secured Payment Gateways</p>
+                
+            </div> -->
+             <div class="col install">
+                <h4>Install App</h4>
+                <p>From App Store or Google Play</p>
+                <div class="row">
+                    <img src="images/GooglePlayStore.png" alt="googleplaystore" style="width:80px; height:auto;">
+                    <img src="images/AppleStore.png" alt="applestore" style="width:100px; height:auto;">
+                </div>
+               
+                
+
+   <p>Secured Payment Gateways</p> 
+   <div style="display:flex; align-items:center; gap:8px;">
+    <img src="images/paymentlogo.jpg" alt="Payment Methods"  style="width: 50px; height:auto;"> <p>Payment Options</p><br></div>
+    <div style="display:flex; align-items:center; gap:8px;">
+  <img src="images/ESEWA-ALTERNATE.png" alt="Esewa" style="width:40px; height:auto;"><p>Esewa</p><br></div>
+ <div style="display:flex; align-items:center; gap:8px;">
+    <img src="images/imekhalti.png" alt="Imepay"  style="width: 40px; height:auto;"> <p>ImePay</p><br></div>
+<div style="display:flex; align-items:center; gap:8px;">
+    <img src="images/phonepay.jpeg" alt="PhonePay" style="width: 40px; height:auto;"> <p>Phonepay</p><br></div>
+    </div>
+            <div class="copyright">
+                <p>&copy; 2024, LocalArtHub - All Rights Reserved</p>
+            </div>
+        </footer>
+
+<div id="logout-modal" class="modal">
+  <div class="modal-content">
+    <h3>Account</h3>
+    <p>Do you want to logout?</p>
+
+    <div class="modal-buttons">
+      <button id="cancel-logout">Cancel</button>
+      <button id="confirm-logout">Logout</button>
+    </div>
+  </div>
+</div>
+
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  const token = localStorage.getItem("authToken");
+  const loginBtn = document.getElementById("login-btn");
+
+  const modal = document.getElementById("logout-modal");
+  const cancelBtn = document.getElementById("cancel-logout");
+  const logoutBtn = document.getElementById("confirm-logout");
+
+  if (token && loginBtn) {
+
+    loginBtn.innerHTML = `
+      <img 
+        src="https://cdn-icons-png.flaticon.com/512/9131/9131478.png" 
+        alt="User" 
+        style="width:24px; height:24px; border-radius:50%;"
+      >
+    `;
+    loginBtn.href = "#";
+
+    // open modal when clicking icon
+    loginBtn.addEventListener("click", () => {
+      modal.style.display = "flex";
+    });
+
+    // close modal
+    cancelBtn.addEventListener("click", () => {
+      modal.style.display = "none";
+    });
+
+    // logout confirmed
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("authToken");
+      modal.style.display = "none";
+      window.location.reload();
+    });
+  }
+
+  // close if clicking outside modal box
+  window.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      modal.style.display = "none";
+    }
+  });
+
+});
+</script>
+</body>
+</html>

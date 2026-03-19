@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders - LocalArtHub</title>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
+    <link rel="stylesheet" href="style.css">
+    <script type="module" src="script.js" defer></script>
+
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .admin-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        #sort-btn {
+  background: #088178;
+  color: #fff;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.2s;
+  letter-spacing: 0.03em;
+}
+#sort-btn:hover { background: #066b62; }
+
+        .orders-section {
+            margin-bottom: 40px;
+        }
+
+        .order-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background: #f9f9f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .order-details {
+            flex: 1;
+        }
+
+        .order-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-left: 20px;
+        }
+
+        .order-card h3 {
+            margin: 0 0 10px 0;
+            color: #8b4513;
+        }
+
+        .order-items {
+            margin: 15px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+        }
+
+        .order-item {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .order-actions {
+            margin-top: 10px;
+        }
+
+        .order-actions button {
+            padding: 8px 12px;
+            margin-right: 10px;
+            background: #8b4513;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .order-actions button:hover {
+            background: #704010;
+        }
+
+        .order-status {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: inline-block;
+            margin: 10px 0;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-in-transit {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .no-orders {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        .modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  width: 90%;
+  max-width: 500px;
+  border-radius: 8px;
+  position: relative;
+}
+
+.close {
+padding: 8px 12px;
+background: yellow;
+border: none;
+  top: 10px;
+  right: 15px;
+  font-size: 22px;
+  cursor: pointer;
+  text-align: center;
+  border-radius: 8px;
+}
+/* <---logout modal---> */
+.modal-logout {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-content-logout {
+  background: #fff;
+  padding: 20px 25px;
+  border-radius: 8px;
+  width: 300px;
+  text-align: center;
+}
+
+.modal-buttons-logout {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+  gap: 15px;
+}
+
+.modal-buttons-logout button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#cancel-logout {
+  background: #ddd;
+}
+
+#confirm-logout {
+  background: #8b4513;
+  color: white;
+}
+    </style>
+
+</head>
+
+<body>
+    <section id="header">
+        <a href="main.html"><img src="images/LocalArtHub logo.png" class="logo" alt="" style="width: 30px;height: 30px;"></a>
+
+        <div>
+            <ul id="navbar">
+             <li><a class="navigation-button " href="main.html">Home</a></li>
+                    <li><a href="shop.html" >Shop</a></li>
+                    <!-- <li><a href="#" >Blog</a></li> -->
+                    <li><a href="admin.html" class="navigation-button">Admin</a></li>
+                    <li><a href="aboutus.html" class="navigation-button" >About</a></li>
+                    <li><a href="user-orders.html" class="navigation-button">My Orders</a></li>
+                    <li><a href="contactus.html" class="navigation-button" >Contact</a></li>
+                <a href="#" id="close"><i class="fas fa-times"></i></a>
+            </ul>
+        </div>
+
+        <div id="right-nav">
+            <a id="login-btn" href="signin.html">Login</a>
+        </div>
+        <div id="mobile">
+            <i id="bar" class="fas fa-bars"></i>
+        </div>
+    </section>
+
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>My Orders</h1>
+            <p>View your order history and status</p>
+            <button id="sort-btn">Sort by: Newest First</button>
+        </div>
+
+        <div class="orders-section">
+            <div id="orders-list">
+                <div class="no-orders">
+                    <p>Loading orders...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="section-p1">
+        <div class="col">
+            <img class="logo" src="images/LocalArtHub logo.png" alt="">
+            <h4>Contact</h4>
+            <p><strong>Address:</strong> Kathmandu, Nepal</p>
+            <p><strong>Phone:</strong> +977 9834567890</p>
+            <p><strong>Hours:</strong> 10:00 AM - 6:00 PM, Mon - Sat</p>
+            <div class="follow">
+                <h4>Follow us</h4>
+                <div class="icon">
+                    <a href="https://www.facebook.com" target="_blank" title="Visit our Facebook page"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.twitter.com" target="_blank" title="Visit our Twitter page"><i class="fab fa-twitter"></i></a>
+                    <a href="https://www.instagram.com" target="_blank" title="Visit our Instagram page"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.pinterest.com" target="_blank" title="Visit our Pinterest page"><i class="fab fa-pinterest-p"></i></a>
+                    <a href="https://www.youtube.com" target="_blank" title="Visit our Youtube page"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <h4>About</h4>
+            <a href="aboutus.html">About us</a>
+            <a href="delivery.html">Delivery Information</a>
+            <a href="privacy.html">Privacy Policy</a>
+            <a href="termsandcondition.html">Terms & Conditions</a>
+            <a href="contactus.html">Contact Us</a>
+        </div>
+        <div class="col">
+            <h4>My Account</h4>
+            <a href="signin.html">Sign In</a>
+            <a href="viewcart.html">View Cart</a>
+            <a href="wishlist.html">My Wishlist</a>
+            <a href="track.html">Track My Order</a>
+            <a href="contactus.html">Help</a>
+        </div>
+        <div class="col install">
+            <h4>Install App</h4>
+            <p>From App Store or Google Play</p>
+            <div class="row">
+                <img src="images/GooglePlayStore.png" alt="googleplaystore" style="width:80px; height:auto;">
+                    <img src="images/AppleStore.png" alt="applestore" style="width:100px; height:auto;">
+            </div>
+
+            <p>Secured Payment Gateways</p>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <img src="images/paymentlogo.jpg" alt="Payment Methods" style="width: 40px; height:auto;">
+                <p>Payment</p>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <img src="images/esewa.png" alt="Esewa" style="width:40px; height:auto;">
+                <p>Esewa</p>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <img src="images/imekhalti.png" alt="Imepay" style="width: 40px; height:auto;">
+                <p>ImePay</p>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <img src="images/phonepay.jpeg" alt="PhonePay" style="width: 40px; height:auto;">
+                <p>Phonepay</p>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2024, LocalArtHub - All Rights Reserved</p>
+        </div>
+    </footer>
+
+    <div id="order-details-modal" class="modal">
+        <div class="modal-content" style="max-width:600px;">
+            <h3>Order Details</h3>
+            <div id="order-details-content" style="text-align:left; max-height:60vh; overflow:auto;">
+                <!-- Details inserted here -->
+            </div>
+            <div style="margin-top:12px; text-align:right;">
+                <button id="close-order-details" class="close">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="logout-modal" class="modal-logout">
+        <div class="modal-content-logout">
+            <h3>Account</h3>
+            <p>Do you want to logout?</p>
+            <div class="modal-buttons-logout">
+                <button id="cancel-logout">Cancel</button>
+                <button id="confirm-logout">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBsQNrAnhfzhWSepgMJEr3DbnLIUwHhOP0",
+  authDomain: "localarthub-38ae5.firebaseapp.com",
+  projectId: "localarthub-38ae5",
+  storageBucket: "localarthub-38ae5.firebasestorage.app",
+  messagingSenderId: "741966380978",
+  appId: "1:741966380978:web:d94d5516d308b799c1eeab",
+  measurementId: "G-Y7F4HQQ3ZX"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const token = localStorage.getItem("authToken");
+            const loginBtn = document.getElementById("login-btn");
+            const modal = document.getElementById("logout-modal");
+            const cancelBtn = document.getElementById("cancel-logout");
+            const logoutBtn = document.getElementById("confirm-logout");
+
+            if (token && loginBtn) {
+                loginBtn.innerHTML = `
+                <img 
+                    src="https://cdn-icons-png.flaticon.com/512/9131/9131478.png" 
+                    alt="User" 
+                    style="width:24px; height:24px; border-radius:50%;"
+                >
+                `;
+                loginBtn.href = "#";
+
+                loginBtn.addEventListener("click", () => {
+                    modal.style.display = "flex";
+                });
+
+                cancelBtn.addEventListener("click", () => {
+                    modal.style.display = "none";
+                });
+
+                logoutBtn.addEventListener("click", async () => {
+                    try {
+                        await signOut(auth);
+                        localStorage.removeItem("authToken");
+                        modal.style.display = "none";
+                        window.location.href = "main.html";
+                    } catch (e) {
+                        console.error("Logout error:", e);
+                        localStorage.removeItem("authToken");
+                        window.location.href = "main.html";
+                    }
+                });
+            }
+
+            window.addEventListener("click", (e) => {
+                if (e.target === modal) {
+                    modal.style.display = "none";
+                }
+            });
+        });
+
+        // Load user orders
+        async function loadUserOrders() {
+            const token = localStorage.getItem("authToken");
+            if (!token) {
+                window.location.href = "signin.html";
+                return;
+            }
+
+            try {
+                const res = await fetch("http://localhost:5000/api/orders", {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+
+                if (!res.ok) {
+                    alert("Failed to load orders");
+                    return;
+                }
+
+                const orders = await res.json();
+                window.userOrders = orders;
+
+                // Get unique product IDs
+                const productIds = [...new Set(orders.flatMap(o => o.items.map(i => i.productId)))];
+                const productMap = {};
+                for (const id of productIds) {
+                    try {
+                        const prodRes = await fetch(`http://localhost:5000/api/products/${id}`, {
+                      headers: { Authorization: `Bearer ${token}` } });
+                        if (prodRes.ok) {
+                            const prod = await prodRes.json();
+                            productMap[id] = prod;
+                        }
+                    } catch (e) {
+                        console.error("Error fetching product", id, e);
+                    }
+                }
+                window.productMap = productMap;
+
+                // Get unique seller IDs
+                const sellerIds = [...new Set(orders.flatMap(o => o.items.map(i => {
+                    const prod = productMap[i.productId];
+                    return prod ? prod.sellerId : null;
+                }).filter(id => id)))];
+                const sellerMap = {};
+                for (const id of sellerIds) {
+    try {
+        const sellerRes = await fetch(`http://localhost:5000/api/users/${id}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        if (sellerRes.ok) {
+            const seller = await sellerRes.json();
+            sellerMap[id] = seller;
+        }
+    } catch (e) {
+        console.error("Error fetching seller", id, e);
+    }
+}
+                window.sellerMap = sellerMap;
+
+                renderUserOrders(orders);
+            } catch (e) {
+                console.error("Error loading orders:", e);
+                document.getElementById("orders-list").innerHTML = "<div class='no-orders'><p>Failed to load orders</p></div>";
+            }
+        }
+
+        let sortOrder = 'desc'; // desc: newest first
+
+        function renderUserOrders(orders) {
+    const container = document.getElementById("orders-list");
+
+    if (!orders || orders.length === 0) {
+        container.innerHTML = "<div class='no-orders'><p>No orders found</p></div>";
+        return;
+    }
+
+    const sortedOrders = [...orders].sort((a, b) => {
+        const dateA = new Date(a.createdAt);
+        const dateB = new Date(b.createdAt);
+        return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
+    });
+
+    container.innerHTML = "";
+
+    sortedOrders.forEach(order => {
+        const statusClass = `status-${order.status.replace(' ', '-')}`;
+
+        const firstItem = order.items[0];
+        const product = window.productMap ? window.productMap[firstItem.productId] : null;
+        const imageSrc = product && product.images && product.images[0]
+            ? (product.images[0].startsWith('http') ? product.images[0] : 'http://localhost:5000' + product.images[0])
+            : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2NjYyIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LXNpemU9IjE4IiBmaWxsPSIjMDAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iMC4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg==';
+
+        // Collect all unique sellers for this order
+        const sellerNames = [...new Set(
+            order.items.map(item => {
+                const prod = window.productMap?.[item.productId];
+                const seller = prod && window.sellerMap ? window.sellerMap[prod.sellerId] : null;
+                // return seller ? (seller.displayName || seller.email || 'Unknown') : 'Unknown';
+                const name = seller?.displayName && seller.displayName !== 'N/A' 
+                 ? seller.displayName 
+                       : (seller?.email || 'Unknown');
+                             return name;
+            })
+        )].join(', ');
+
+        const date = new Date(order.createdAt).toLocaleDateString('en-NP', {
+            year: 'numeric', month: 'short', day: 'numeric'
+        });
+
+        const itemsHtml = order.items.map(item => {
+            const prod = window.productMap?.[item.productId];
+            const name = prod ? prod.title : item.productId;
+            return `<div class="order-item"><span>${name}</span><span>Qty: ${item.qty}</span></div>`;
+        }).join('');
+
+        container.innerHTML += `
+            <div class="order-card">
+                <div class="order-details">
+                    <h3>Order ###${order._id.slice(-8).toUpperCase()}</h3>
+                    <p style="margin:4px 0;font-size:13px;color:#555"><strong>Full ID:</strong> ${order._id}</p>
+                    <p style="margin:4px 0;font-size:13px;color:#555"><strong>Date:</strong> ${date}</p>
+                    <p style="margin:4px 0;font-size:13px;color:#555"><strong>Seller:</strong> ${sellerNames}</p>
+                    <p style="margin:4px 0;font-size:13px;color:#555"><strong>Total:</strong> Rs. ${Number(order.total).toLocaleString()}</p>
+                    <div class="order-status ${statusClass}" style="margin:10px 0">${order.status.toUpperCase()}</div>
+                    <div class="order-items"><strong>Items:</strong>${itemsHtml}</div>
+                    <div class="order-actions">
+                        <button onclick="viewOrderDetails('${order._id}')">View Details</button>
+                    </div>
+                </div>
+                <img src="${imageSrc}" alt="Order Image" class="order-image">
+            </div>`;
+    });
+}
+
+        // View order details in modal
+       function viewOrderDetails(orderId) {
+    const orders = window.userOrders || [];
+    const order = orders.find(o => o._id === orderId);
+    if (!order) { alert('Order not found'); return; }
+
+    const content = document.getElementById('order-details-content');
+    const addr = order.shippingAddress || {};
+
+    // Collect seller names for this order
+    const sellerNames = [...new Set(
+        order.items.map(item => {
+            const prod = window.productMap?.[item.productId];
+            const seller = prod && window.sellerMap ? window.sellerMap[prod.sellerId] : null;
+            // return seller ? (seller.displayName || seller.email || 'Unknown') : 'Unknown';
+            const name = seller?.displayName && seller.displayName !== 'N/A' 
+                        ? seller.displayName : (seller?.email || 'Unknown');
+                           return name;     
+        })
+    )].join(', ');
+
+
+    const date = new Date(order.createdAt).toLocaleDateString('en-NP', {
+        year: 'numeric', month: 'short', day: 'numeric'
+    });
+
+    // Build items rows with real product names
+    const itemsHtml = order.items.map(item => {
+        const prod = window.productMap?.[item.productId];
+        const name  = prod ? prod.title : item.productId;
+        const price = prod ? `Rs. ${Number(prod.price).toLocaleString()}` : '—';
+        return `
+            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee;font-size:13px;">
+                <span>${name}</span>
+                <span style="color:#555">Qty: ${item.qty} &nbsp;|&nbsp; ${price}</span>
+            </div>`;
+    }).join('');
+
+    // Helper to render a labelled row — skips empty values
+    const row = (label, value) => value
+        ? `<div style="display:flex;gap:12px;padding:5px 0;font-size:13px;border-bottom:1px solid #f5f5f5;">
+               <span style="min-width:120px;color:#888;font-weight:600">${label}</span>
+               <span style="color:#1a1a1a">${value}</span>
+           </div>`
+        : '';
+
+    const fullName = [addr.firstName, addr.lastName].filter(Boolean).join(' ');
+    const cityZip  = [addr.city, addr.zip].filter(Boolean).join(' ');
+
+    content.innerHTML = `
+        <div style="margin-bottom:18px">
+            <h4 style="color:#088178;margin-bottom:10px;font-size:14px;text-transform:uppercase;letter-spacing:.05em">Order Info</h4>
+            ${row('Order ID',  order._id)}
+            ${row('Date',      date)}
+            ${row('Status',    order.status.toUpperCase())}
+            ${row('Seller',    sellerNames)}
+            ${row('Total',     'Rs. ' + Number(order.total).toLocaleString())}
+        </div>
+
+        <div style="margin-bottom:18px">
+            <h4 style="color:#088178;margin-bottom:10px;font-size:14px;text-transform:uppercase;letter-spacing:.05em">Shipping Address</h4>
+            ${row('Name',    fullName   || '—')}
+            ${row('Address', addr.address || '—')}
+            ${row('City',    cityZip    || '—')}
+            ${row('Email',   addr.email || '—')}
+            ${row('Phone',   addr.phone || '—')}
+        </div>
+
+        ${order.notes ? `
+        <div style="margin-bottom:18px">
+            <h4 style="color:#088178;margin-bottom:10px;font-size:14px;text-transform:uppercase;letter-spacing:.05em">Notes</h4>
+            <p style="font-size:13px;color:#555;margin:0">${order.notes}</p>
+        </div>` : ''}
+
+        <div>
+            <h4 style="color:#088178;margin-bottom:10px;font-size:14px;text-transform:uppercase;letter-spacing:.05em">Items</h4>
+            ${itemsHtml}
+        </div>`;
+
+    document.getElementById('order-details-modal').style.display = 'flex';
+}
+
+        // close order details modal
+        document.addEventListener('click', (e) => {
+            const modal = document.getElementById('order-details-modal');
+            if (!modal) return;
+            if (e.target === modal) modal.style.display = 'none';
+        });
+        document.addEventListener('DOMContentLoaded', () => {
+            const closeBtn = document.getElementById('close-order-details');
+            if (closeBtn) closeBtn.addEventListener('click', () => {
+                const modal = document.getElementById('order-details-modal');
+                if (modal) modal.style.display = 'none';
+            });
+        });
+
+        // Expose to window for onclick handlers
+        window.viewOrderDetails = viewOrderDetails;
+
+        // Load orders on page load
+        loadUserOrders();
+
+        // Sort button
+        document.getElementById('sort-btn').addEventListener('click', () => {
+            sortOrder = sortOrder === 'desc' ? 'asc' : 'desc';
+            const btn = document.getElementById('sort-btn');
+            btn.textContent = sortOrder === 'desc' ? 'Sort by: Newest First' : 'Sort by: Oldest First';
+            renderUserOrders(window.userOrders);
+        });
+
+    </script>
+</body>
+
+</html>

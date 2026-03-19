@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>LocalArtHub</title>
+         <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
+        <link rel="stylesheet" href="style.css">
+        <script type="module" src="script.js" defer></script>
+
+        <style>
+.single-pro-image {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.arrow-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.5);
+  color: white;
+  border: none;
+  font-size: 24px;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 10;
+}
+
+#prev-image-btn {
+  left: 10px;
+}
+
+#next-image-btn {
+  right: 10px;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 20px 25px;
+  border-radius: 8px;
+  width: 300px;
+  text-align: center;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+  gap: 15px;
+}
+
+.modal-buttons button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#cancel-logout {
+  background: #ddd;
+}
+
+#confirm-logout {
+  background: #8b4513;
+  color: white;
+}
+
+
+</style>
+
+    </head>
+
+    <body>
+        <section id="header">
+            <a href="main.html"><img src="./images/LocalArtHub logo.png" class="logo" alt="" style="width: 30px;height: 30px;"></a>
+            
+            <div>
+                <ul id="navbar">
+               <li><a class="navigation-button " href="main.html">Home</a></li>
+                    <li><a href="shop.html" >Shop</a></li>
+                    <!-- <li><a href="#" >Blog</a></li> -->
+                    <li><a href="admin.html" class="navigation-button">Admin</a></li>
+                    <li><a href="aboutus.html" class="navigation-button" >About</a></li>
+                    <li><a href="user-orders.html" class="navigation-button">My Orders</a></li>
+                    <li><a href="contactus.html" class="navigation-button" >Contact</a></li>
+                    <a href="#" id="close"><i class="fas fa-times"></i></a> 
+                </ul>
+            </div>
+            <div id="right-nav">
+                <a id="lg-bag" href="viewcart.html"><i class="far fa-shopping-cart"></i></a>
+                <a id="login-btn" href="signin.html">Login</a>
+            </div>
+            
+            <div id="mobile">
+                <a href="viewcart.html"><i class="far fa-shopping-cart"></i></a>
+                <i id="bar" class="fas fa-bars"></i>
+            </div>
+        </section>
+
+        <section id="prodetails" class="section-p1">
+            <div class="single-pro-image">
+                <button id="prev-image-btn" class="arrow-btn">&lt;</button>
+                <img src="" width="100%" id="MainImg" alt="">
+                <button id="next-image-btn" class="arrow-btn">&gt;</button>
+            </div>
+
+            <div id="gallery-images" style="display: flex; gap: 10px; margin-top: 10px;"></div>
+
+            <div class="single-pro-details" id="product-details">
+                <h6>Home / Art</h6>
+                <h4 id="product-title">Loading...</h4>
+                <h2 id="product-price">Rs. 0</h2>
+                <p><strong>Stock:</strong> <span id="product-stock">0</span></p>
+                <p><strong>Category:</strong> <span id="product-category">N/A</span></p>
+                <p><strong>Subcategory:</strong> <span id="product-subcategory">N/A</span></p>
+                <p><strong>Era:</strong> <span id="product-era">N/A</span></p>
+                <p><strong>Seller:</strong> <span id="product-seller">N/A</span></p>
+                <input type="number" value="1" id="quantity">
+                <button class="normal" id="add-to-cart-btn">Add to Cart</button>
+                <h4>Product Details</h4>
+                <span id="product-description">Loading...</span>
+            </div>
+        </section>
+
+        <!-- <section id="product1" class="section-p1">
+           <h2>You May Like</h2>
+           <p>Other products you might be interested in</p>
+        <div class="pro-container" id="you-may-like">
+           
+        </div>
+        </section> -->
+
+        <section id="product1" class="section-p1">
+  <div id="rec-header" style="display:flex; align-items:baseline; gap:12px; margin-bottom:4px;">
+    <h2 style="margin:0">Recommended For You</h2>
+    <span id="rec-badge" style="
+      display:none;
+      background:#fff3e0; color:#b5551a;
+      border:1px solid rgba(181,85,26,0.25);
+      border-radius:20px; padding:3px 10px;
+      font-size:11px; font-weight:600; letter-spacing:0.04em;
+    ">✦ Personalised</span>
+  </div>
+  <p id="rec-subtitle" style="color:#7a6a58; margin-top:4px; font-size:13px;">
+    Products similar to this one, sorted by price
+  </p>
+  <div class="pro-container" id="you-may-like"></div>
+</section>
+
+        <section id="newsletter"  class="section-p1 section-m1">
+            <div class="newstext">
+                <h4>Sign Up for Newsletter</h4>
+                <p>Get E-mail updates about our latest shop and <span>special offers.</span></p>
+            </div>
+            <div class="form">
+                <input type="text" placeholder="Your email address">
+                <button class="normal">Sign Up</button>
+            </div>
+        </section>
+
+        <footer class="section-p1">
+            <div class="col">
+                <img class="logo" src="images/LocalArtHub logo.png" alt="">
+                <h4>Contact</h4>
+                <p><strong>Address:</strong> Kathmandu, Nepal</p>
+                <p><strong>Phone:</strong> +977 9834567890</p>
+                <p><strong>Hours:</strong> 10:00 - 18:00, Mon - Sat</p>
+                <div class="follow">
+                    <h4>Follow us</h4>
+                    <div class="icon">
+                        <i class="fab fa-facebook-f"></i>
+                        <i class="fab fa-twitter"></i>
+                        <i class="fab fa-instagram"></i>
+                        <i class="fab fa-pinterest-p"></i>
+                        <i class="fab fa-youtube"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <h4>About</h4>
+                <a href="aboutus.html">About us</a>
+                <a href="delivery.html">Delivery Information</a>
+                <a href="privacy.html">Privacy Policy</a>
+                <a href="termsandcondition.html">Terms & Conditions</a>
+                <a href="contactus.html">Contact Us</a>
+            </div>
+            <div class="col">
+                <h4>My Account</h4>
+                <a href="signin.html">Sign In</a>
+                <a href="viewcart.html">View Cart</a>
+                <a href="wishlist.html">My Wishlist</a>
+                <a href="track.html">Track My Order</a>
+                <a href="contactus.html">Help</a>
+            </div>
+
+              <div class="col install">
+                <h4>Install App</h4>
+                <p>From App Store or Google Play</p>
+                <div class="row">
+                     <img src="images/GooglePlayStore.png" alt="googleplaystore" style="width:80px; height:auto;">
+                    <img src="images/AppleStore.png" alt="applestore" style="width:100px; height:auto;">
+                </div>
+               
+                
+
+  <p>Secured Payment Gateways</p> 
+   <div style="display:flex; align-items:center; gap:8px;">
+    <img src="images/paymentlogo.jpg" alt="Payment Methods"  style="width: 50px; height:auto;"> <p>Payment Options</p><br></div>
+    <div style="display:flex; align-items:center; gap:8px;">
+  <img src="images/ESEWA-ALTERNATE.png" alt="Esewa" style="width:40px; height:auto;"><p>Esewa</p><br></div>
+ <div style="display:flex; align-items:center; gap:8px;">
+    <img src="images/imekhalti.png" alt="Imepay"  style="width: 40px; height:auto;"> <p>ImePay</p><br></div>
+<div style="display:flex; align-items:center; gap:8px;">
+    <img src="images/phonepay.jpeg" alt="PhonePay" style="width: 40px; height:auto;"> <p>Phonepay</p><br></div>
+    </div>
+
+            <div class="copyright">
+                <p>&copy; 2024, LocalArtHub - All Rights Reserved</p>
+            </div>
+        </footer>
+
+         <div id="logout-modal" class="modal">
+  <div class="modal-content">
+    <h3>Account</h3>
+    <p>Do you want to logout?</p>
+
+    <div class="modal-buttons">
+      <button id="cancel-logout">Cancel</button>
+      <button id="confirm-logout">Logout</button>
+    </div>
+  </div>
+</div> 
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  const token = localStorage.getItem("authToken");
+  const loginBtn = document.getElementById("login-btn");
+
+  const modal = document.getElementById("logout-modal");
+  const cancelBtn = document.getElementById("cancel-logout");
+  const logoutBtn = document.getElementById("confirm-logout");
+
+  if (token && loginBtn) {
+
+    loginBtn.innerHTML = `
+      <img 
+        src="https://cdn-icons-png.flaticon.com/512/9131/9131478.png" 
+        alt="User" 
+        style="width:24px; height:24px; border-radius:50%;"
+      >
+    `;
+    loginBtn.href = "#";
+
+    // open modal when clicking icon
+    loginBtn.addEventListener("click", () => {
+      modal.style.display = "flex";
+    });
+
+    // close modal
+    cancelBtn.addEventListener("click", () => {
+      modal.style.display = "none";
+    });
+
+    // logout confirmed
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("authToken");
+      modal.style.display = "none";
+      window.location.reload();
+    });
+  }
+
+  // close if clicking outside modal box
+  window.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      modal.style.display = "none";
+    }
+  });
+
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const productId = urlParams.get('productId');
+
+  if (!productId) {
+    alert('No product ID provided');
+    window.location.href = 'shop.html';
+    return;
+  }
+
+  const token = localStorage.getItem("authToken");
+
+  try {
+    // Load product details
+    const res = await fetch(`http://localhost:5000/api/products/${productId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const product = await res.json();
+
+    if (!res.ok) throw new Error(product.message || 'Failed to load product');
+
+    // Handle images - assume it's an array, if string convert to array
+    let images = product.images;
+    if (typeof images === 'string') {
+      images = [images];
+    } else if (!Array.isArray(images)) {
+      images = [];
+    }
+    // Remove duplicates
+    images = [...new Set(images)];
+    if (images.length === 0) {
+      images = ['data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2NjYyIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LXNpemU9IjE4IiBmaWxsPSIjMDAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iMC4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg==']; // Placeholder SVG
+    }
+
+    let currentImageIndex = 0;
+    const imageSrc = getImageSrc(images[currentImageIndex]);
+    document.getElementById('MainImg').src = imageSrc;
+    document.getElementById('product-title').textContent = product.title;
+    document.getElementById('product-price').textContent = `Rs. ${product.price}`;
+    document.getElementById('product-stock').textContent = product.stock;
+    document.getElementById('product-category').textContent = product.category || 'N/A';
+    document.getElementById('product-subcategory').textContent = product.subcategory || 'N/A';
+    document.getElementById('product-era').textContent = product.era || 'N/A';
+    document.getElementById('product-description').textContent = product.description || 'No description';
+
+    // Populate gallery
+    const galleryContainer = document.getElementById('gallery-images');
+    galleryContainer.innerHTML = images.slice(1).map((img, index) => {
+      const imgSrc = getImageSrc(img);
+      return `<img src="${imgSrc}" alt="${product.title}" style="width: 150px; height: 150px; object-fit: cover; cursor: pointer;" onclick="document.getElementById('MainImg').src='${imgSrc}'; window.currentImageIndex=${index + 1};">`;
+    }).join('');
+
+    // Load seller info
+    if (product.sellerId) {
+      try {
+        const sellerRes = await fetch(`http://localhost:5000/api/users/${product.sellerId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const seller = await sellerRes.json();
+        document.getElementById('product-seller').textContent = `${seller.displayName} (${seller.email})`;
+      } catch (error) {
+        document.getElementById('product-seller').textContent = 'Unknown Seller';
+      }
+    } else {
+      document.getElementById('product-seller').textContent = 'Unknown Seller';
+    }
+
+    // Add to cart button
+    document.getElementById('add-to-cart-btn').onclick = () => addToCart(productId);
+
+    // Image navigation
+    document.getElementById('prev-image-btn').onclick = () => {
+      currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+      const imageSrc = getImageSrc(images[currentImageIndex]);
+      document.getElementById('MainImg').src = imageSrc;
+    };
+
+    document.getElementById('next-image-btn').onclick = () => {
+      currentImageIndex = (currentImageIndex + 1) % images.length;
+      const imageSrc = getImageSrc(images[currentImageIndex]);
+      document.getElementById('MainImg').src = imageSrc;
+    };
+
+  } catch (error) {
+    console.error('Error loading product:', error);
+    alert('Failed to load product details: ' + error.message);
+  }
+
+  
+  // ── AI Recommendations of  may like products ─────────────────────────────────────────────────────
+try {
+  const recHeaders = { "Content-Type": "application/json" };
+  if (token) recHeaders["Authorization"] = `Bearer ${token}`;
+
+  const recRes = await fetch(`http://localhost:5000/api/products/recommendations/${productId}`, {
+    headers: recHeaders,
+  });
+
+  const recommendations = recRes.ok ? await recRes.json() : [];
+  const container = document.getElementById("you-may-like");
+
+  // Show "Personalised" badge if user is logged in (order history was used)
+  if (token && recommendations.length > 0) {
+    document.getElementById("rec-badge").style.display = "inline-block";
+    document.getElementById("rec-subtitle").textContent =
+      "Picked based on what you've bought and similar styles, sorted by price";
+  }
+
+  if (recommendations.length === 0) {
+    container.innerHTML = `<p style="color:#7a6a58; padding:20px 0">No recommendations found.</p>`;
+  } else {
+    container.innerHTML = recommendations.map(p => {
+      const imgSrc = getImageSrc(p.images && p.images[0]);
+      return `
+        <div class="pro" onclick="window.location.href='sproduct.html?productId=${p._id}'">
+          <img src="${imgSrc}" alt="${p.title}">
+          <div class="des">
+            <span>${p.category || "Art"}</span>
+            <h5>${p.title}</h5>
+            <div class="star">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star-half-alt"></i>
+            </div>
+            <h4>Rs. ${p.price}</h4>
+          </div>
+          <a href="#" onclick="event.stopPropagation(); addToCart('${p._id}')">
+            <i class="fal fa-shopping-cart cart"></i>
+          </a>
+        </div>`;
+    }).join("");
+  }
+} catch (err) {
+  console.error("Recommendations error:", err);
+}
+  
+});
+
+</script>
+
+    </body>
+
+</html>

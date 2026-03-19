@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>LocalArtHub</title>
+         <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
+        <link rel="stylesheet" href="style.css">
+        <script type="module" src="script.js" defer></script>
+        <style>
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 20px 25px;
+  border-radius: 8px;
+  width: 300px;
+  text-align: center;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+  gap: 15px;
+}
+
+.modal-buttons button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#cancel-logout {
+  background: #ddd;
+}
+
+#confirm-logout {
+  background: #8b4513;
+  color: white;
+}
+/* chatbot styling */
+#chat-icon {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 52px;
+  height: 52px;
+  background: #1e1810;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  z-index: 10000;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+#chat-icon:hover { transform: scale(1.08); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+
+.hidden { display: none !important; }
+
+#chatbot {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 360px;
+  max-width: calc(100vw - 32px);
+  height: 520px;
+  max-height: calc(100vh - 48px);
+  background: #fff;
+  border: 1px solid #e5ddd1;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(30,24,16,0.12);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 9999;
+  animation: chatSlideUp 0.25s ease;
+}
+@keyframes chatSlideUp {
+  from { opacity: 0; transform: translateY(16px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+#chat-header {
+  background: #1e1810;
+  color: #fff;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+#chat-header-avatar {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: #b5551a;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+}
+#chat-header-text { flex: 1; }
+#chat-header-text h4 {
+  margin: 0; font-size: 14px; font-weight: 600; letter-spacing: 0.01em;
+}
+#chat-header-text p {
+  margin: 0; font-size: 11px; opacity: 0.55; margin-top: 1px;
+}
+#chat-status-dot {
+  width: 8px; height: 8px;
+  background: #4ade80; border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(74,222,128,0.2);
+  animation: statusPulse 2s infinite;
+}
+@keyframes statusPulse {
+  0%,100% { box-shadow: 0 0 0 3px rgba(74,222,128,0.2); }
+  50%      { box-shadow: 0 0 0 6px rgba(74,222,128,0.07); }
+}
+#close-chat {
+  cursor: pointer; opacity: 0.6; font-size: 20px;
+  line-height: 1; padding: 0 2px; transition: opacity 0.15s;
+}
+#close-chat:hover { opacity: 1; }
+
+#chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #faf7f2;
+  scroll-behavior: smooth;
+}
+#chat-messages::-webkit-scrollbar { width: 4px; }
+#chat-messages::-webkit-scrollbar-thumb { background: #e5ddd1; border-radius: 2px; }
+
+.chat-msg { display: flex; gap: 8px; align-items: flex-end; animation: msgFadeUp 0.22s ease; }
+.chat-msg.user { flex-direction: row-reverse; }
+@keyframes msgFadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.chat-msg-avatar {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: #f3ede4;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; flex-shrink: 0;
+}
+.chat-msg.user .chat-msg-avatar { background: #b5551a; }
+.chat-bubble {
+  max-width: 75%;
+  padding: 9px 13px;
+  border-radius: 14px;
+  font-size: 13px;
+  line-height: 1.55;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+.chat-msg.bot  .chat-bubble { background: #fff; color: #1e1810; border: 1px solid #e5ddd1; border-bottom-left-radius: 4px; }
+.chat-msg.user .chat-bubble { background: #b5551a; color: #fff; border-bottom-right-radius: 4px; }
+
+.chat-product-cards {
+  display: flex; gap: 8px;
+  overflow-x: auto; padding: 2px 2px 6px;
+  scroll-snap-type: x mandatory;
+  max-width: 260px;
+}
+.chat-product-cards::-webkit-scrollbar { height: 3px; }
+.chat-product-cards::-webkit-scrollbar-thumb { background: #e5ddd1; border-radius: 2px; }
+.chat-product-card {
+  min-width: 120px; max-width: 120px;
+  background: #fff; border: 1px solid #e5ddd1;
+  border-radius: 10px; overflow: hidden;
+  scroll-snap-align: start; cursor: pointer; flex-shrink: 0;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.chat-product-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(30,24,16,0.09); }
+.chat-product-card-img {
+  width: 100%; height: 72px; background: #f3ede4;
+  display: flex; align-items: center; justify-content: center; font-size: 22px;
+}
+.chat-product-card-img img { width: 100%; height: 100%; object-fit: cover; }
+.chat-product-card-body { padding: 6px 8px 8px; }
+.chat-product-card-name {
+  font-size: 10.5px; font-weight: 600; line-height: 1.3;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  color: #1e1810;
+}
+.chat-product-card-price { font-size: 11px; font-weight: 700; color: #b5551a; margin-top: 3px; }
+
+.chat-typing { display: flex; gap: 4px; padding: 9px 13px; }
+.chat-typing span {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #7a6a58; opacity: 0.5;
+  animation: typingBounce 0.8s infinite;
+}
+.chat-typing span:nth-child(2) { animation-delay: 0.15s; }
+.chat-typing span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes typingBounce {
+  0%,80%,100% { transform: translateY(0); }
+  40%         { transform: translateY(-5px); }
+}
+
+#chat-suggestions {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  padding: 8px 12px 4px; background: #faf7f2;
+  border-top: 1px solid #f0e8de;
+}
+.chat-chip {
+  background: #f5ede5; color: #b5551a;
+  border: 1px solid rgba(181,85,26,0.2);
+  border-radius: 20px; padding: 4px 10px;
+  font-size: 11px; font-weight: 500;
+  cursor: pointer; white-space: nowrap;
+  transition: background 0.15s, transform 0.12s;
+}
+.chat-chip:hover { background: rgba(181,85,26,0.12); transform: translateY(-1px); }
+
+#chat-footer {
+  border-top: 1px solid #e5ddd1;
+  padding: 10px 12px;
+  display: flex; gap: 8px; align-items: flex-end;
+  background: #fff; flex-shrink: 0;
+}
+#chat-input {
+  flex: 1;
+  border: 1px solid #e5ddd1;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-family: inherit;
+  font-size: 13px;
+  color: #1e1810;
+  background: #faf7f2;
+  resize: none;
+  outline: none;
+  max-height: 80px;
+  line-height: 1.4;
+  transition: border-color 0.15s, background 0.15s;
+}
+#chat-input:focus { border-color: #b5551a; background: #fff; }
+#chat-input::placeholder { color: #7a6a58; }
+#chat-send {
+  width: 34px; height: 34px;
+  border: none; border-radius: 8px;
+  background: #b5551a; color: #fff;
+  cursor: pointer; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s, transform 0.12s;
+}
+#chat-send:hover  { background: #9b4415; }
+#chat-send:active { transform: scale(0.93); }
+/* ── Order tracking card ── */
+.chat-order-card {
+  background: #fff;
+  border: 1px solid #e5ddd1;
+  border-radius: 12px;
+  padding: 12px 14px;
+  max-width: 260px;
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+.chat-order-card-title {
+  font-size: 11px; font-weight: 600;
+  color: #7a6a58; text-transform: uppercase;
+  letter-spacing: 0.05em; margin-bottom: 8px;
+}
+.chat-order-status {
+  display: inline-block;
+  padding: 3px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 600; margin-bottom: 8px;
+}
+.status-pending    { background: #fef9c3; color: #854d0e; }
+.status-transit    { background: #dbeafe; color: #1e40af; }
+.status-completed  { background: #dcfce7; color: #166534; }
+.status-cancelled  { background: #fee2e2; color: #991b1b; }
+.chat-order-row {
+  display: flex; justify-content: space-between;
+  gap: 12px; padding: 3px 0;
+  border-bottom: 1px solid #f3ede4;
+}
+.chat-order-row:last-child { border-bottom: none; }
+.chat-order-label { color: #7a6a58; }
+.chat-order-value { font-weight: 500; color: #1e1810; text-align: right; }
+
+</style>
+
+    </head>
+ 
+    <body>
+        <section id="header">
+            <a href="main.html"><img src="./images/LocalArtHub logo.png" class="logo" alt="" style="width: 30px;height: 30px;"></a>
+            
+            <div>
+                <ul id="navbar">
+                    <li><a class="navigation-button " href="main.html">Home</a></li>
+                    <li><a href="shop.html" >Shop</a></li>
+                    <li><a href="auctions.html" class="navigation-button">Auctions</a></li>
+                    <!-- <li><a href="#" >Blog</a></li> -->
+                    <li><a href="admin.html" class="navigation-button">Admin</a></li>
+                    <li><a href="aboutus.html" class="navigation-button" >About</a></li>
+                    <li><a href="user-orders.html" class="navigation-button">My Orders</a></li>
+                    <li><a href="contactus.html" class="navigation-button" >Contact</a></li>
+                    <a href="#" id="close"><i class="fas fa-times"></i></a> 
+                </ul>
+            </div>
+
+            <div id="right-nav">
+                <a id="lg-bag" href="viewcart.html"><i class="far fa-shopping-cart"></i></a>
+                <a id="login-btn" href="signin.html">Login</a>
+            </div>
+            <div id="mobile">
+                <a href="viewcart.html"><i class="far fa-shopping-cart"></i></a>
+                <i id="bar" class="fas fa-bars"></i>
+            </div>
+        </section>
+
+        <section id="hero">
+            <div class="slideshow-container">
+                <div class="slide active">
+                    <img src="images/ceramicvase.jpg" alt="Slide 1">
+                    <div class="slide-content">
+                        <h4>Welcome to LocalArtHub</h4>
+                        <h2>Discover Unique<br> Handmade Art</h2>
+                        <h1>Support Local Artists</h1>
+                        <p>Explore our curated collection of handcrafted art pieces from talented local artisans.</p>
+                        <button >Shop Now</button>
+                    </div>
+                </div>
+                <div class="slide">
+                    <img src="images/khukuri.jpg" alt="Slide 2">
+                    <div class="slide-content">
+                        <h4>Welcome to LocalArtHub</h4>
+                        <h2>Discover Unique<br> Handmade Art</h2>
+                        <h1>Support Local Artists</h1>
+                        <p>Explore our curated collection of handcrafted art pieces from talented local artisans.</p>
+                        <button>Shop Now</button>
+                    </div>
+                </div>
+                <div class="slide">
+                    <img src="images/pashmina.jpg" alt="Slide 3">
+                    <div class="slide-content">
+                        <h4>Welcome to LocalArtHub</h4>
+                        <h2>Discover Unique<br> Handmade Art</h2>
+                        <h1>Support Local Artists</h1>
+                        <p>Explore our curated collection of handcrafted art pieces from talented local artisans.</p>
+                        <button>Shop Now</button>
+                    </div>
+                </div>
+                <button class="prev">&#10094;</button>
+                <button class="next">&#10095;</button>
+            </div>
+        </section>
+            
+        <!-- <section id="feature" class="section-p1">
+            <div class="fe-box">
+                <img src="images/mithilaart.jpg" alt="">
+                <h6>Free Shipping</h6>
+            </div>
+               <div class="fe-box">
+                <img src="img/features/f2.png" alt="">
+                <h6>Online order</h6>
+            </div>
+            <div class="fe-box">
+                <img src="img/features/f3.png" alt="">
+                <h6>Save money</h6>
+            </div>
+            <div class="fe-box">
+                <img src="img/features/f4.png" alt="">
+                <h6>Promotions</h6>
+            </div>
+            <div class="fe-box">
+                <img src="img/features/f5.png" alt="">
+                <h6>Happy Sell</h6>
+            </div>
+            <div class="fe-box">
+                <img src="img/features/f6.png" alt="">
+                <h6>24/7 Support</h6>
+            </div>
+         
+        </section> -->
+
+         <section id="product1" class="section-p1">
+           <h2>Featured Products</h2>
+           <p>Handpicked collection of unique art pieces</p>
+        <div class="pro-container" id="featured-products"> 
+           
+        </div>
+        </section>
+
+
+        <section id="banner" class="section-p1 section-m1">
+            <div class="newstext">
+                <h4>NEW ITEMS SALE!!!!</h4>
+                <h2>Shop all the latest items and enjoy special offers upto <span> 60% off.</span></h2>
+              <a href="shop.html">  <button class="normal">Explore More</button></a>
+            </div>
+        </section>
+
+        <section id="product1" class="section-p1">
+           <h2>New Arrivals</h2>
+           <p>Handpicked collection of unique art pieces</p>
+        <div class="pro-container" id="shop-products">
+           
+            </div>
+        </section>
+
+
+
+        <section id="sm-banner" class="section-p1"> 
+            <div class="banner-box">
+                <h4>Crazy deals</h4>
+                <h2>Buy 1 get 1 free</h2>
+                <span>The best classic Artifacts are on sale at LocalArtHub.</span>
+                <button class="white">Learn More</button>
+            </div>
+            <div class="banner-box banner-box2">
+                <h4>Classical Artifacts</h4>
+                <h2>Buy old Artifacts</h2>
+                <span>The best classic Artifacts are on sale at LocalArtHub.</span>
+                <button class="white">Collection</button>
+            </div>
+        </section>
+
+        <section id="banner3">
+            <div class="banner-box">
+                <h2>SEASONAL SALE</h2>
+                <h3>Up to 50% Off</h3>
+            </div>
+            <div class="banner-box banner-box2">
+                <h2>New Artifacts Collection</h2>
+                <h3> Summer 2025</h3>
+            </div>
+            <div class="banner-box banner-box3">
+                <h2>Paintings</h2>
+                <h3>New Paintings</h3>
+            </div>
+        </section>
+
+        <section id="newsletter"  class="section-p1 section-m1">
+            <div class="newstext">
+                <h4>Sign Up for Newsletter</h4>
+                <p>Get E-mail updates about our latest shop and <span>special offers.</span></p>
+            </div>
+            <div class="form">
+                <input type="text" placeholder="Your email address">
+                <button class="normal">Sign Up</button>
+            </div>
+        </section>
+
+        <footer class="section-p1">
+            <div class="col">
+                <img class="logo" src="images/LocalArtHub logo.png" alt="">
+                <h4>Contact</h4>
+                <p><strong>Address:</strong> Kathmandu, Nepal</p>
+                <p><strong>Phone:</strong> +977 9834567890</p>
+                <p><strong>Hours:</strong> 10:00 AM - 6:00 PM, Mon - Sat</p>
+                <div class="follow">
+                    <h4>Follow us</h4>
+                    <div class="icon">
+                      <a href="https://www.facebook.com" target="_blank" title="Visit our Facebook page (opens in new tab)"><i class="fab fa-facebook-f"></i></a>
+                      <a href="https://www.twitter.com" target="_blank" title="Visit our Twitter page (opens in new tab)">
+  <i class="fab fa-twitter"></i></a>
+                      <a href="https://www.instagram.com" target="_blank" title="Visit our Instagram page (opens in new tab)">
+  <i class="fab fa-instagram"></i></a>
+                      <a href="https://www.pinterest.com" target="_blank" title="Visit our Pinterest page (opens in new tab)">
+  <i class="fab fa-pinterest-p"></i></a>
+                      <a href="https://www.youtube.com" target="_blank" title="Visit our Youtube page (opens in new tab)">
+  <i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <h4>About</h4>
+                <a href="aboutus.html">About us</a>
+                <a href="delivery.html">Delivery Information</a>
+                <a href="privacy.html">Privacy Policy</a>
+                <a href="termsandcondition.html">Terms & Conditions</a>
+                  <a href="contactus.html">Contact Us</a>
+
+            </div>
+            <div class="col">
+                <h4>My Account</h4>
+                  <a href="signin.html">Sign In</a>
+                <a href="viewcart.html">View Cart</a>
+                <a href="wishlist.html" target="_blank">My Wishlist</a>
+                <a href="user-orders.html" target="_blank">Track My Order</a>
+                <a href="contactus.html">Help</a>
+            </div>
+            <div class="col install">
+                <h4>Install App</h4>
+                <p>From App Store or Google Play</p>
+                <div class="row">
+                     <img src="images/GooglePlayStore.png" alt="googleplaystore" style="width:80px; height:auto;">
+                    <img src="images/AppleStore.png" alt="applestore" style="width:100px; height:auto;">
+                </div>
+               
+                
+
+  <p>Secured Payment Gateways</p> 
+   <div style="display:flex; align-items:center; gap:8px;">
+    <img src="images/paymentlogo.jpg" alt="Payment Methods"  style="width: 50px; height:auto;"> <p>Payment Options</p><br></div>
+    <div style="display:flex; align-items:center; gap:8px;">
+  <img src="images/ESEWA-ALTERNATE.png" alt="Esewa" style="width:40px; height:auto;"><p>Esewa</p><br></div>
+ <div style="display:flex; align-items:center; gap:8px;">
+    <img src="images/imekhalti.png" alt="Imepay"  style="width: 40px; height:auto;"> <p>ImePay</p><br></div>
+<div style="display:flex; align-items:center; gap:8px;">
+    <img src="images/phonepay.jpeg" alt="PhonePay" style="width: 40px; height:auto;"> <p>Phonepay</p><br></div>
+    </div>
+            <!-- </div> -->
+            <div class="copyright">
+                <p>&copy; 2024, LocalArtHub - All Rights Reserved</p>
+            </div>
+        </footer>
+        
+        <!-- LOGOUT MODAL -->
+<div id="logout-modal" class="modal">
+  <div class="modal-content">
+    <h3>Account</h3>
+    <p>Do you want to logout?</p>
+
+    <div class="modal-buttons">
+            <button id="cancel-logout">Cancel</button>
+            <button id="become-seller">Become Seller</button>
+            <button id="confirm-logout">Logout</button>
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCT DETAIL MODAL -->
+<div id="product-modal" class="modal">
+  <div class="modal-content" style="max-width: 600px;">
+    <span class="close" onclick="closeProductModal()">&times;</span>
+    <div id="product-detail-content">
+      <!-- Product details here -->
+    </div>
+  </div>
+</div>
+
+       
+
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  // Small delay to ensure Firebase auth state listener in script.js has completed
+  setTimeout(() => {
+    const token = localStorage.getItem("authToken");
+    const loginBtn = document.getElementById("login-btn");
+
+    const modal = document.getElementById("logout-modal");
+    const cancelBtn = document.getElementById("cancel-logout");
+    const logoutBtn = document.getElementById("confirm-logout");
+      const becomeSellerBtn = document.getElementById("become-seller");
+
+    if (token && loginBtn) {
+
+      loginBtn.innerHTML = `
+        <img 
+          src="https://cdn-icons-png.flaticon.com/512/9131/9131478.png" 
+          alt="User" 
+          style="width:24px; height:24px; border-radius:50%;"
+        >
+      `;
+      loginBtn.href = "#";
+
+      // open modal when clicking icon
+      loginBtn.addEventListener("click", () => {
+        modal.style.display = "flex";
+      });
+
+      // close modal
+      cancelBtn.addEventListener("click", () => {
+        modal.style.display = "none";
+      });
+
+      // logout confirmed
+      logoutBtn.addEventListener("click", () => {
+        localStorage.removeItem("authToken");
+        modal.style.display = "none";
+        window.location.reload();
+      });
+
+          // become seller
+          if (becomeSellerBtn) {
+              becomeSellerBtn.addEventListener('click', async () => {
+                  if (!token) {
+                      alert('Please login first');
+                      return;
+                  }
+                  try {
+                      const res = await fetch('http://localhost:5000/api/users/become-seller', {
+                          method: 'POST',
+                          headers: { Authorization: `Bearer ${token}` }
+                      });
+                      const data = await res.json();
+                      if (res.ok) {
+                          alert(data.message || 'Seller role granted. Please sign out and sign in again.');
+                          modal.style.display = 'none';
+                      } else {
+                          alert(data.message || 'Failed to become seller');
+                      }
+                  } catch (e) {
+                      alert('Request failed');
+                  }
+              });
+          }
+    }
+
+    // close if clicking outside modal box
+    window.addEventListener("click", (e) => {
+      if (e.target === modal) {
+        modal.style.display = "none";
+      }
+    });
+  }, 200);
+
+});
+</script>
+
+<!-- chatbot code -->
+ <div id="chat-icon">🤖</div>
+
+<div id="chatbot" class="hidden">
+  <div id="chat-header">
+    <div id="chat-header-avatar">🤖</div>
+    <div id="chat-header-text">
+      <h4 style="color: yellow;">LocalArtHub Assistant</h4>
+      <p style="color: yellow;">Artisan product expert</p>
+    </div>
+    <div id="chat-status-dot"></div>
+    <span id="close-chat">&times;</span>
+  </div>
+
+  <div id="chat-messages"></div>
+
+  <div id="chat-suggestions">
+    <button class="chat-chip" onclick="chatSendChip(this)">Bags under Rs. 2000</button>
+    <button class="chat-chip" onclick="chatSendChip(this)">Pottery items</button>
+    <button class="chat-chip" onclick="chatSendChip(this)">Gifts under Rs. 1000</button>
+    <button class="chat-chip" onclick="chatSendChip(this)">Traditional jewelry</button>
+    <button class="chat-chip" onclick="chatSendChip(this)">Track my order</button>
+  </div>
+
+  <div id="chat-footer">
+    <textarea id="chat-input" rows="1" placeholder="Ask about products, prices, orders…" maxlength="500"></textarea>
+    <button id="chat-send" onclick="chatSend()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+      </svg>
+    </button>
+  </div>
+</div>
+<!-- script for chatbot -->
+<script>
+// ── Chat toggle ──
+const chatIcon     = document.getElementById("chat-icon");
+const chatbotWin   = document.getElementById("chatbot");
+const chatCloseBtn = document.getElementById("close-chat");
+
+chatIcon.addEventListener("click", () => {
+  chatbotWin.classList.remove("hidden");
+  chatIcon.classList.add("hidden");
+  if (!chatInitDone) chatInit();
+});
+chatCloseBtn.addEventListener("click", () => {
+  chatbotWin.classList.add("hidden");
+  chatIcon.classList.remove("hidden");
+});
+
+// ── State ──
+let chatInitDone = false;
+const chatHistory = [];
+
+function chatInit() {
+  chatInitDone = true;
+  chatAppendBot("Hello! 👋 I'm your LocalArtHub assistant. I can help you find handmade and artisan products, or track your orders. What are you looking for today?");
+  const input = document.getElementById("chat-input");
+  input.addEventListener("input", () => {
+    input.style.height = "auto";
+    input.style.height = Math.min(input.scrollHeight, 80) + "px";
+  });
+  input.addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); chatSend(); }
+  });
+}
+
+// ── Send ──
+async function chatSend() {
+  const input = document.getElementById("chat-input");
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  input.value = "";
+  input.style.height = "auto";
+  document.getElementById("chat-suggestions").style.display = "none";
+
+  chatAppendUser(msg);
+  chatHistory.push({ role: "user", content: msg });
+
+  const typingId = chatAppendTyping();
+
+  try {
+    // Include Firebase auth token if user is logged in
+    const token = localStorage.getItem("authToken");
+    const headers = { "Content-Type": "application/json" };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+
+    const res = await fetch("http://localhost:5000/api/chatbot", {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ message: msg, conversationHistory: chatHistory.slice(0, -1) }),
+    });
+
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    chatRemoveTyping(typingId);
+    chatAppendBot(data.reply, data.products || [], data.orderInfo || null);
+    chatHistory.push({ role: "assistant", content: data.reply });
+  } catch {
+    chatRemoveTyping(typingId);
+    chatAppendBot("Sorry, I'm having trouble connecting right now. Please try again in a moment.");
+  }
+}
+
+function chatSendChip(btn) {
+  document.getElementById("chat-input").value = btn.textContent;
+  chatSend();
+}
+
+// ── DOM helpers ──
+function chatScrollBottom() {
+  const el = document.getElementById("chat-messages");
+  el.scrollTop = el.scrollHeight;
+}
+
+function chatEsc(str) {
+  return String(str ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function chatFormat(text) {
+  return chatEsc(text)
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\n/g, "<br/>");
+}
+
+function chatAppendUser(text) {
+  const el = document.getElementById("chat-messages");
+  el.insertAdjacentHTML("beforeend", `
+    <div class="chat-msg user">
+      <div class="chat-msg-avatar">👤</div>
+      <div class="chat-bubble">${chatEsc(text)}</div>
+    </div>`);
+  chatScrollBottom();
+}
+
+function chatAppendBot(text, products = [], orderInfo = null) {
+  const el = document.getElementById("chat-messages");
+
+  // ── Product cards ──
+  let cards = "";
+  if (products.length) {
+    const cardHtml = products.map(p => {
+      const img = p.images && p.images[0]
+        ? `<div class="chat-product-card-img"><img src="${chatEsc(p.images[0])}" alt="${chatEsc(p.title)}" onerror="this.parentElement.innerHTML='🛍️'"/></div>`
+        : `<div class="chat-product-card-img">🛍️</div>`;
+      return `<div class="chat-product-card" onclick="location.href='sproduct.html?productId=${chatEsc(p._id)}'">
+        ${img}
+        <div class="chat-product-card-body">
+          <div class="chat-product-card-name">${chatEsc(p.title)}</div>
+          <div class="chat-product-card-price">Rs. ${Number(p.price).toLocaleString()}</div>
+        </div>
+      </div>`;
+    }).join("");
+    cards = `<div class="chat-product-cards">${cardHtml}</div>`;
+  }
+
+  // ── Order info card ──
+  let orderCard = "";
+  if (orderInfo) {
+    const statusMap = { pending: "status-pending", "in transit": "status-transit", completed: "status-completed", cancelled: "status-cancelled" };
+    const statusClass = statusMap[orderInfo.status] || "status-pending";
+    const statusLabel = (orderInfo.status || "pending").toUpperCase();
+    const date = new Date(orderInfo.createdAt).toLocaleDateString("en-NP", {
+      year: "numeric", month: "short", day: "numeric"
+    });
+    orderCard = `
+      <div class="chat-order-card">
+        <div class="chat-order-card-title">📦 Order Details</div>
+        <div class="chat-order-status ${statusClass}">${statusLabel}</div>
+        <div class="chat-order-row">
+          <span class="chat-order-label">Order ID</span>
+          <span class="chat-order-value" style="font-size:10px;word-break:break-all">${chatEsc(String(orderInfo._id))}</span>
+        </div>
+        <div class="chat-order-row">
+          <span class="chat-order-label">Total</span>
+          <span class="chat-order-value">Rs. ${Number(orderInfo.total).toLocaleString()}</span>
+        </div>
+        <div class="chat-order-row">
+          <span class="chat-order-label">Items</span>
+          <span class="chat-order-value">${orderInfo.itemCount}</span>
+        </div>
+        <div class="chat-order-row">
+          <span class="chat-order-label">Placed</span>
+          <span class="chat-order-value">${date}</span>
+        </div>
+        ${orderInfo.shippingAddress ? `
+        <div class="chat-order-row">
+          <span class="chat-order-label">Ship to</span>
+          <span class="chat-order-value">${chatEsc(orderInfo.shippingAddress)}</span>
+        </div>` : ""}
+      </div>`;
+  }
+
+  el.insertAdjacentHTML("beforeend", `
+    <div class="chat-msg bot">
+      <div class="chat-msg-avatar">🤖</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div class="chat-bubble">${chatFormat(text)}</div>
+        ${orderCard}
+        ${cards}
+      </div>
+    </div>`);
+  chatScrollBottom();
+}
+
+function chatAppendTyping() {
+  const el = document.getElementById("chat-messages");
+  const id = "typing-" + Date.now();
+  el.insertAdjacentHTML("beforeend", `
+    <div class="chat-msg bot" id="${id}">
+      <div class="chat-msg-avatar">🤖</div>
+      <div class="chat-bubble" style="padding:9px 13px">
+        <div class="chat-typing"><span></span><span></span><span></span></div>
+      </div>
+    </div>`);
+  chatScrollBottom();
+  return id;
+}
+
+function chatRemoveTyping(id) {
+  document.getElementById(id)?.remove();
+}
+</script>
+
+</body>
+</html>

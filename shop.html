@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>LocalArtHub</title>
+         <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
+        <link rel="stylesheet" href="style.css">
+
+        <style>
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 20px 25px;
+  border-radius: 8px;
+  width: 300px;
+  text-align: center;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.modal-buttons button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#cancel-logout {
+  background: #ddd;
+}
+
+#confirm-logout {
+  background: #8b4513;
+  color: white;
+}
+
+/* Filter Sidebar Styles */
+.shop-section {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 20px;
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.filter-sidebar {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  height: fit-content;
+  top: 20px;
+}
+
+.filter-sidebar h3 {
+  color: #8b4513;
+  margin-bottom: 15px;
+  font-size: 18px;
+}
+
+.filter-group {
+  margin-bottom: 25px;
+}
+
+.filter-group h4 {
+  color: #333;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.filter-option {
+  margin-bottom: 8px;
+}
+
+.filter-option input[type="checkbox"],
+.filter-option input[type="radio"] {
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.filter-option label {
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.price-range {
+  margin-bottom: 15px;
+}
+
+.price-range input {
+  width: 100%;
+  margin-bottom: 5px;
+}
+
+.price-display {
+  font-size: 12px;
+  color: #666;
+  text-align: center;
+}
+
+.clear-filters-btn {
+  width: 100%;
+  padding: 10px;
+  background: #8b4513;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.clear-filters-btn:hover {
+  background: #704010;
+}
+
+/* Active Filters Display */
+.active-filters-container {
+  background: #f0f0f0;
+  padding: 15px 20px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+#active-filters-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.filter-tag {
+  background: #8b4513;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.filter-tag .remove-filter {
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.clear-all-btn {
+  background: #d9534f;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.clear-all-btn:hover {
+  background: #c9302c;
+}
+
+.products-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .shop-section {
+    grid-template-columns: 1fr;
+  }
+  
+  .filter-sidebar {
+    display: none;
+  }
+}
+</style>
+    </head>
+
+    <body>
+       <section id="header">
+            <a href="main.html"><img src="./images/LocalArtHub logo.png" class="logo" alt="" style="width: 30px;height: 30px;"></a>
+            
+            <div>
+                <ul id="navbar">
+                  <li><a class="navigation-button " href="main.html">Home</a></li>
+                    <li><a href="shop.html" >Shop</a></li>
+                    <!-- <li><a href="#" >Blog</a></li> -->
+                    <li><a href="admin.html" class="navigation-button">Admin</a></li>
+                    <li><a href="aboutus.html" class="navigation-button" >About</a></li>
+                    <li><a href="user-orders.html" class="navigation-button">My Orders</a></li>
+                    <li><a href="contactus.html" class="navigation-button" >Contact</a></li>
+                    <a href="#" id="close"><i class="fas fa-times"></i></a> 
+                </ul>
+            </div>
+            <div id="right-nav">
+                <a id="lg-bag" href="viewcart.html"><i class="far fa-shopping-cart"></i></a>
+                <a id="login-btn" href="signin.html">Login</a>
+            </div>
+            <div id="mobile">
+                <a href="viewcart.html"><i class="far fa-shopping-cart"></i></a>
+                <i id="bar" class="fas fa-bars"></i>
+            </div>
+        </section>
+         
+        <section id="page-header">
+            <h2>#UniqueArts</h2>
+            <p>Explore our curated collection of handcrafted art pieces from talented local artisans.</p>
+        </section>
+
+        <div class="shop-section">
+            <!-- Filter Sidebar -->
+            <aside class="filter-sidebar">
+                <h3>Filters</h3>
+
+                <!-- Price Filter -->
+                <div class="filter-group">
+                    <h4>Price Range</h4>
+                    <div class="price-range">
+                        <input type="range" id="price-min" min="0" max="100000" value="0" step="100">
+                        <input type="range" id="price-max" min="0" max="100000" value="100000" step="100">
+                        <div class="price-display">
+                            Rs. <span id="price-min-display">0</span> - Rs. <span id="price-max-display">100000</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Type Filter -->
+                <div class="filter-group">
+                    <h4>Type</h4>
+                    
+                    <div class="filter-option">
+                        <input type="radio" id="type-all" name="type" value="all" checked>
+                        <label for="type-all">All Types</label>
+                    </div>
+
+                    <!-- Antiques Artifacts -->
+                    <div class="filter-option">
+                        <input type="checkbox" id="type-antiques" class="main-category" value="Antiques Artifacts">
+                        <label for="type-antiques">Antiques Artifacts</label>
+                    </div>
+                    <div id="subcategory-antiques" style="margin-left: 20px; display: none;">
+                        <div class="filter-option">
+                            <input type="checkbox" class="subcategory-filter" data-category="Antiques Artifacts" value="Furniture">
+                            <label>Furniture</label>
+                        </div>
+                        <div class="filter-option">
+                            <input type="checkbox" class="subcategory-filter" data-category="Antiques Artifacts" value="Jewelry">
+                            <label>Jewelry</label>
+                        </div>
+                        <div class="filter-option">
+                            <input type="checkbox" class="subcategory-filter" data-category="Antiques Artifacts" value="Metal">
+                            <label>Metal</label>
+                        </div>
+                        <div class="filter-option">
+                            <input type="checkbox" class="subcategory-filter" data-category="Antiques Artifacts" value="Glass">
+                            <label>Glass</label>
+                        </div>
+                        <div class="filter-option">
+                            <input type="checkbox" class="subcategory-filter" data-category="Antiques Artifacts" value="Wood">
+                            <label>Wood</label>
+                        </div>
+                    </div>
+
+                    <!-- Decorative Arts -->
+                    <div class="filter-option">
+                        <input type="checkbox" id="type-decorative" class="main-category" value="Decorative Arts">
+                        <label for="type-decorative">Decorative Arts</label>
+                    </div>
+                    <div id="subcategory-decorative" style="margin-left: 20px; display: none;">
+                        <div class="filter-option">
+                            <input type="checkbox" class="subcategory-filter" data-category="Decorative Arts" value="Ceramics">
+                            <label>Ceramics</label>
+                        </div>
+                        <div class="filter-option">
+                            <input type="checkbox" class="subcategory-filter" data-category="Decorative Arts" value="Pottery">
+                            <label>Pottery</label>
+                        </div>
+                        <div class="filter-option">
+                            <input type="checkbox" class="subcategory-filter" data-category="Decorative Arts" value="Glassware">
+                            <label>Glassware</label>
+                        </div>
+                        <div class="filter-option">
+                            <input type="checkbox" class="subcategory-filter" data-category="Decorative Arts" value="Textile">
+                            <label>Textile</label>
+                        </div>
+                    </div>
+
+                    <!-- Fine Art -->
+                    <div class="filter-option">
+                        <input type="checkbox" id="type-fineart" class="main-category" value="Fine Art">
+                        <label for="type-fineart">Fine Art</label>
+                    </div>
+                    <div id="subcategory-fineart" style="margin-left: 20px; display: none;">
+                        <div class="filter-option">
+                            <input type="checkbox" class="subcategory-filter" data-category="Fine Art" value="Painting">
+                            <label>Painting</label>
+                        </div>
+                        <div class="filter-option">
+                            <input type="checkbox" class="subcategory-filter" data-category="Fine Art" value="Drawing">
+                            <label>Drawing</label>
+                        </div>
+                        <div class="filter-option">
+                            <input type="checkbox" class="subcategory-filter" data-category="Fine Art" value="Sculpture">
+                            <label>Sculpture</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Era/Period Filter -->
+                <div class="filter-group">
+                    <h4>Era/Period</h4>
+                    <div class="filter-option">
+                        <input type="checkbox" class="era-filter" value="18th Century">
+                        <label>18th Century</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" class="era-filter" value="Mid-Century">
+                        <label>Mid-Century</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" class="era-filter" value="Victorian">
+                        <label>Victorian</label>
+                    </div>
+                </div>
+
+                <button class="clear-filters-btn" onclick="clearAllFilters()">Clear All Filters</button>
+            </aside>
+
+            <!-- Products Section -->
+            <div class="products-wrapper">
+                <!-- Active Filters Display -->
+                <div id="active-filters-container" class="active-filters-container" style="display: none;">
+                    <div class="active-filters">
+                        <span id="active-filters-list"></span>
+                        <button class="clear-all-btn" onclick="clearAllFilters()">Clear All</button>
+                    </div>
+                </div>
+
+                <section id="product1" class="section-p1">
+                    <div class="pro-container" id="shop-products">
+                        <!-- Products loaded here -->
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <section id="pagination" class="section-p1">
+    <div id="pagination-controls"></div>
+</section>
+
+        <section id="newsletter"  class="section-p1 section-m1">
+            <div class="newstext">
+                <h4>Sign Up for Newsletter</h4>
+                <p>Get E-mail updates about our latest shop and <span>special offers.</span></p>
+            </div>
+            <div class="form">
+                <input type="text" placeholder="Your email address">
+                <button class="normal">Sign Up</button>
+            </div>
+        </section>
+
+        <footer class="section-p1">
+            <div class="col">
+                <img class="logo" src="./images/LocalArtHub logo.png" alt="">
+                <h4>Contact</h4>
+                <p><strong>Address:</strong> Kathmandu, Nepal</p>
+                <p><strong>Phone:</strong> +977 9834567890</p>
+                <p><strong>Hours:</strong> 10:00 - 18:00, Mon - Sat</p>
+                <div class="follow">
+                    <h4>Follow us</h4>
+                    <div class="icon">
+                        <i class="fab fa-facebook-f"></i>
+                        <i class="fab fa-twitter"></i>
+                        <i class="fab fa-instagram"></i>
+                        <i class="fab fa-pinterest-p"></i>
+                        <i class="fab fa-youtube"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <h4>About</h4>
+                <a href="#">About us</a>
+                <a href="#">Delivery Information</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms & Conditions</a>
+                <a href="#">Contact Us</a>
+            </div>
+            <div class="col">
+                <h4>My Account</h4>
+                <a href="#">Sign In</a>
+                <a href="#">View Cart</a>
+                <a href="#">My Wishlist</a>
+                <a href="#">Track My Order</a>
+                <a href="#">Help</a>
+            </div>
+              <div class="col install">
+                <h4>Install App</h4>
+                <p>From App Store or Google Play</p>
+                <div class="row">
+                     <img src="images/GooglePlayStore.png" alt="googleplaystore" style="width:80px; height:auto;">
+                    <img src="images/AppleStore.png" alt="applestore" style="width:100px; height:auto;">
+                </div>
+               
+                
+
+  <p>Secured Payment Gateways</p> 
+   <div style="display:flex; align-items:center; gap:8px;">
+    <img src="images/paymentlogo.jpg" alt="Payment Methods"  style="width: 50px; height:auto;"> <p>Payment Options</p><br></div>
+    <div style="display:flex; align-items:center; gap:8px;">
+  <img src="images/ESEWA-ALTERNATE.png" alt="Esewa" style="width:40px; height:auto;"><p>Esewa</p><br></div>
+ <div style="display:flex; align-items:center; gap:8px;">
+    <img src="images/imekhalti.png" alt="Imepay"  style="width: 40px; height:auto;"> <p>ImePay</p><br></div>
+<div style="display:flex; align-items:center; gap:8px;">
+    <img src="images/phonepay.jpeg" alt="PhonePay" style="width: 40px; height:auto;"> <p>Phonepay</p><br></div>
+    </div>
+            <div class="copyright">
+                <p>&copy; 2024, LocalArtHub - All Rights Reserved</p>
+            </div>
+        </footer>
+
+        <div id="logout-modal" class="modal">
+  <div class="modal-content">
+    <h3>Account</h3>
+    <p>Do you want to logout?</p>
+
+    <div class="modal-buttons">
+      <button id="cancel-logout">Cancel</button>
+      <button id="confirm-logout">Logout</button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  const token = localStorage.getItem("authToken");
+  const loginBtn = document.getElementById("login-btn");
+
+  const modal = document.getElementById("logout-modal");
+  const cancelBtn = document.getElementById("cancel-logout");
+  const logoutBtn = document.getElementById("confirm-logout");
+
+  if (token && loginBtn) {
+
+    loginBtn.innerHTML = `
+      <img 
+        src="https://cdn-icons-png.flaticon.com/512/9131/9131478.png" 
+        alt="User" 
+        style="width:24px; height:24px; border-radius:50%;"
+      >
+    `;
+    loginBtn.href = "#";
+
+    // open modal when clicking icon
+    loginBtn.addEventListener("click", () => {
+      modal.style.display = "flex";
+    });
+
+    // close modal
+    cancelBtn.addEventListener("click", () => {
+      modal.style.display = "none";
+    });
+
+    // logout confirmed
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("authToken");
+      modal.style.display = "none";
+      window.location.reload();
+    });
+  }
+
+  // close if clicking outside modal box
+  window.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      modal.style.display = "none";
+    }
+  });
+
+});
+</script>
+
+<!-- Product Detail Modal -->
+<div id="product-modal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeProductModal()">&times;</span>
+    <div id="product-detail-content">
+      <!-- Product details will be loaded here -->
+    </div>
+  </div>
+</div>
+
+        <script type="module" src="script.js"></script>
+    </body>
+
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In / Register - Local Art Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            background-color: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #8b4513;
+            margin-bottom: 30px;
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #faf8f3;
+        }
+        .tab-button {
+            padding: 12px 24px;
+            background-color: #faf8f3;
+            border: none;
+            color: #8b4513;
+            cursor: pointer;
+            font-size: 16px;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        .tab-button.active {
+            border-bottom-color: #8b4513;
+            background-color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #8b4513;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        input:focus {
+            outline: none;
+            border-color: #8b4513;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #8b4513;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #704010;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Local Art Hub</h1>
+        
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab('signin', this)">Sign In</button> <!---opens the sign in tab--->
+            <button class="tab-button" onclick="switchTab('register', this)">Register</button>
+        </div>
+
+        <div id="signin" class="tab-content active">
+            <form>
+                <div class="form-group">
+                    <label for="signin-email">Email Address</label>
+                    <input type="email" id="signin-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="signin-password">Password</label>
+                    <input type="password" id="signin-password" required>
+                </div>
+                <button id="Existing-Signin" type="button">Sign In</button>
+            </form>
+        </div>
+
+        <div id="register" class="tab-content">
+            <form>
+                <div class="form-group">
+                    <label for="register-name">Full Name</label>
+                    <input type="text" id="register-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-email">Email Address</label>
+                    <input type="email" id="register-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Password</label>
+                    <input type="password" id="register-password" required>
+                </div>
+                <button id="Register-New" type="button">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName, button) {
+            const contents = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-button');
+            
+            contents.forEach(content => content.classList.remove('active'));
+            buttons.forEach(button => button.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            button.classList.add('active');
+        }
+    </script>
+    <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+import { 
+  getAuth, 
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile
+} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+
+// Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyBsQNrAnhfzhWSepgMJEr3DbnLIUwHhOP0",
+  authDomain: "localarthub-38ae5.firebaseapp.com",
+  projectId: "localarthub-38ae5",
+  storageBucket: "localarthub-38ae5.firebasestorage.app",   
+  messagingSenderId: "741966380978",
+  appId: "1:741966380978:web:d94d5516d308b799c1eeab",
+  measurementId: "G-Y7F4HQQ3ZX"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// ---------- LOGIN ----------
+document.getElementById("Existing-Signin").addEventListener("click", async () => {
+  const email = document.getElementById("signin-email").value;
+  const password = document.getElementById("signin-password").value;
+
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    
+    // Get ID token result to check custom claims
+    const idTokenResult = await userCredential.user.getIdTokenResult();
+    const isSeller = idTokenResult.claims.seller === true;
+    const isAdmin = idTokenResult.claims.admin === true;
+    
+    alert("Sign in successful!");
+    
+    // Redirect based on role
+    if (isSeller || isAdmin) {
+      window.location.href = "seller-dashboard.html";
+    } else {
+      window.location.href = "main.html";
+    }
+  } catch (error) {
+    alert(error.message);
+  }
+});
+
+// ---------- REGISTER ----------
+document.getElementById("Register-New").addEventListener("click", async () => {
+  const name = document.getElementById("register-name").value;
+  const email = document.getElementById("register-email").value;
+  const password = document.getElementById("register-password").value;
+
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    // Set display name
+    await updateProfile(userCredential.user, {
+      displayName: name
+    });
+    alert("Account created — you can now sign in");
+    document.querySelector(".tab-button").click();
+  } catch (error) {
+    alert(error.message);
+  }
+});
+</script>
+
+</body>
+</html>

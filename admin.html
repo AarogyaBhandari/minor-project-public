@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - LocalArtHub</title>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .admin-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-section, .products-section {
+            margin-bottom: 40px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .btn {
+            padding: 10px 20px;
+            background: #088178;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background: #066c63;
+        }
+        .products-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .product-card {
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .product-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .product-card h3 {
+            margin: 10px 0;
+        }
+        .product-card p {
+            margin: 5px 0;
+        }
+        .product-actions {
+            margin-top: 10px;
+        }
+        .product-actions button {
+            margin-right: 10px;
+        }
+        .sellers-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .seller-card {
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 8px;
+        }
+         /* logoutmodal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .modal-content {
+            background: #fff;
+            padding: 20px 25px;
+            border-radius: 8px;
+            width: 300px;
+            text-align: center;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .modal-buttons button {
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        #cancel-logout {
+            background: #ddd;
+        }
+
+        #confirm-logout {
+            background: #8b4513;
+            color: white;
+        }
+    </style>
+    
+    
+    <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+
+const token = localStorage.getItem("authToken");
+if (!token) {
+  alert("Please login first");
+  window.location.href = "signin.html";
+}
+
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyBsQNrAnhfzhWSepgMJEr3DbnLIUwHhOP0",
+  authDomain: "localarthub-38ae5.firebaseapp.com",
+  projectId: "localarthub-38ae5",
+  storageBucket: "localarthub-38ae5.firebasestorage.app",
+  messagingSenderId: "741966380978",
+  appId: "1:741966380978:web:d94d5516d308b799c1eeab",
+  measurementId: "G-Y7F4HQQ3ZX"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// Determine home redirect based on user role
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    try {
+      const idTokenResult = await user.getIdTokenResult();
+      const isSeller = idTokenResult.claims.seller === true;
+      const isAdmin = idTokenResult.claims.admin === true;
+      
+      const targetUrl = (isSeller || isAdmin) ? "seller-dashboard.html" : "main.html";
+      
+      const homeBtn = document.getElementById("home-btn");
+      const homeLogo = document.getElementById("home-logo");
+      
+      if (homeBtn) homeBtn.href = targetUrl;
+      if (homeLogo) homeLogo.href = targetUrl;
+    } catch (e) {
+      console.error("Error checking user role:", e);
+    }
+  }
+});
+</script>
+
+</head>
+<body>
+    <section id="header">
+        <a id="home-logo" href="main.html"><img src="./images/LocalArtHub logo.png" class="logo" alt="" style="width: 30px;height: 30px;"></a>
+        <div>
+            <ul id="navbar">
+                <li><a id="home-btn" href="main.html">Dashboard</a></li>
+                <li  ><a class="active" href="admin.html">Admin</a></li>
+                <a href="#" id="close"><i class="fas fa-times"></i></a>
+            </ul>
+        </div>
+            
+            <div id="right-nav">
+                <a id="login-btn" href="signin.html">Login</a>
+            </div>
+        
+    </section>
+
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>Admin Panel</h1>
+            <p>Manage products for LocalArtHub</p>
+        </div>
+
+        <div class="form-section">
+            <h4>Add New Product</h4>
+            <form id="add-product-form">
+                <div class="form-group">
+                    <input id="pname" placeholder="Name">
+                </div>
+                <div class="form-group">
+                    <input id="pprice" placeholder="Price">
+                </div>
+                <div class="form-group">
+                    <label>Image Source:</label>
+                    <div>
+                        <input type="radio" id="image-url-radio" name="image-source" value="url" checked>
+                        <label for="image-url-radio">Image URL</label>
+                        <input type="radio" id="image-upload-radio" name="image-source" value="upload">
+                        <label for="image-upload-radio">Upload Image</label>
+                    </div>
+                </div>
+                <div class="form-group" id="url-group">
+                    <input id="pimage" placeholder="Image URL" type="url">
+                </div>
+                <div class="form-group" id="upload-group" style="display: none;">
+                    <input type="file" id="pimagefile" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <input id="stock" placeholder="Stock">
+                </div>
+                <div class="form-group">
+                    <select id="pcategory">
+                        <option value="">Select Category</option>
+                        <option value="Antiques Artifacts">Antiques Artifacts</option>
+                        <option value="Decorative Arts">Decorative Arts</option>
+                        <option value="Fine Art">Fine Art</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select id="psubcategory">
+                        <option value="">Select Subcategory</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select id="pera">
+                        <option value="">Select Era/Period</option>
+                        <option value="18th Century">18th Century</option>
+                        <option value="Mid-Century">Mid-Century</option>
+                        <option value="Victorian">Victorian</option>
+                        <option value="Modern">Modern</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <textarea id="pdescription" placeholder="Description"></textarea>
+                </div>
+            
+                <button type="button" onclick="addProduct()">Save</button>
+            </form>
+
+            <h2 id="edit-title" style="display: none;">Edit Product</h2>
+            <form id="edit-product-form" style="display: none;">
+                <input type="hidden" id="edit-id">
+                <div class="form-group">
+                    <label for="edit-name">Product Name:</label>
+                    <input type="text" id="edit-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-price">Price:</label>
+                    <input type="number" id="edit-price" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>Image Source:</label>
+                    <div>
+                        <input type="radio" id="edit-image-url-radio" name="edit-image-source" value="url" checked>
+                        <label for="edit-image-url-radio">Image URL</label>
+                        <input type="radio" id="edit-image-upload-radio" name="edit-image-source" value="upload">
+                        <label for="edit-image-upload-radio">Upload Image</label>
+                    </div>
+                </div>
+                <div class="form-group" id="edit-url-group">
+                    <label for="edit-image">Image URL:</label>
+                    <input type="url" id="edit-image">
+                </div>
+                <div class="form-group" id="edit-upload-group" style="display: none;">
+                    <label for="edit-imagefile">Upload Image:</label>
+                    <input type="file" id="edit-imagefile" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label for="edit-stock">Stock:</label>
+                    <input type="number" id="edit-stock" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-category">Category:</label>
+                    <select id="edit-category">
+                        <option value="">Select Category</option>
+                        <option value="Antiques Artifacts">Antiques Artifacts</option>
+                        <option value="Decorative Arts">Decorative Arts</option>
+                        <option value="Fine Art">Fine Art</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="edit-subcategory">Subcategory:</label>
+                    <select id="edit-subcategory">
+                        <option value="">Select Subcategory</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="edit-era">Era/Period:</label>
+                    <select id="edit-era">
+                        <option value="">Select Era/Period</option>
+                        <option value="18th Century">18th Century</option>
+                        <option value="Mid-Century">Mid-Century</option>
+                        <option value="Victorian">Victorian</option>
+                        <option value="Modern">Modern</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="edit-description">Description:</label>
+                    <textarea id="edit-description"></textarea>
+                </div>
+                <button type="submit" class="btn">Update Product</button>
+                <button type="button" class="btn" onclick="cancelEdit()" style="background: #6c757d;">Cancel</button>
+            </form>
+        </div>
+
+        <div class="products-section">
+            <h4>Existing Products</h4>
+            <div class="products-list">
+                <!-- Products will be loaded here -->
+            </div>
+        </div>
+
+        <div class="sellers-section" id="sellers-section" style="display: none;">
+            <h4>Current Sellers</h4>
+            <div class="sellers-list">
+                <!-- Sellers will be loaded here -->
+            </div>
+        </div>
+
+    <script type="module" src="script.js"></script>
+    
+    <script>
+        // Toggle image source for add form
+        document.getElementById('image-url-radio').addEventListener('change', function() {
+            document.getElementById('url-group').style.display = 'block';
+            document.getElementById('upload-group').style.display = 'none';
+        });
+        document.getElementById('image-upload-radio').addEventListener('change', function() {
+            document.getElementById('url-group').style.display = 'none';
+            document.getElementById('upload-group').style.display = 'block';
+        });
+
+        // Toggle for edit form
+        document.getElementById('edit-image-url-radio').addEventListener('change', function() {
+            document.getElementById('edit-url-group').style.display = 'block';
+            document.getElementById('edit-upload-group').style.display = 'none';
+        });
+        document.getElementById('edit-image-upload-radio').addEventListener('change', function() {
+            document.getElementById('edit-url-group').style.display = 'none';
+            document.getElementById('edit-upload-group').style.display = 'block';
+        });
+
+        // Check if master admin
+        const token = localStorage.getItem("authToken");
+        if (token) {
+            fetch('http://localhost:5000/api/users/sellers', {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+            .then(res => res.json())
+            .then(sellers => {
+                if (sellers.length > 0) {
+                    document.getElementById('sellers-section').style.display = 'block';
+                    const container = document.querySelector('.sellers-list');
+                    container.innerHTML = sellers.map(seller => `
+                        <div class="seller-card">
+                            <h3>${seller.displayName}</h3>
+                            <p>Email: ${seller.email}</p>
+                            <p>Products Sold: Loading...</p>
+                        </div>
+                    `).join('');
+                    // For products sold, need to fetch orders or something
+                }
+            })
+            .catch(err => console.error('Error loading sellers:', err));
+        }
+    </script>
+
+    
+    <div id="logout-modal" class="modal">
+        <div class="modal-content">
+            <h3>Account</h3>
+            <p>Do you want to logout?</p>
+            <div class="modal-buttons">
+                <button id="cancel-logout">Cancel</button>
+                <button id="confirm-logout">Logout</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
+

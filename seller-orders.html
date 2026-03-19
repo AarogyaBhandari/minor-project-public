@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Orders - LocalArtHub</title>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
+    <link rel="stylesheet" href="style.css">
+    <script type="module" src="script.js" defer></script>
+
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .admin-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .orders-section {
+            margin-bottom: 40px;
+        }
+
+        .order-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background: #f9f9f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .order-details {
+            flex: 1;
+        }
+
+        .order-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-left: 20px;
+        }
+
+        .order-card h3 {
+            margin: 0 0 10px 0;
+            color: #8b4513;
+        }
+
+        .order-items {
+            margin: 15px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+        }
+
+        .order-item {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .order-actions {
+            margin-top: 10px;
+        }
+
+        .order-actions button {
+            padding: 8px 12px;
+            margin-right: 10px;
+            background: #8b4513;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .order-actions button:hover {
+            background: #704010;
+        }
+
+        .order-status {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: inline-block;
+            margin: 10px 0;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-in-transit {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .no-orders {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        .modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  width: 90%;
+  max-width: 500px;
+  border-radius: 8px;
+  position: relative;
+}
+
+.close {
+padding: 8px 12px;
+background: yellow;
+border: none;
+  top: 10px;
+  right: 15px;
+  font-size: 22px;
+  cursor: pointer;
+  text-align: center;
+  border-radius: 8px;
+}
+.open {
+padding: 8px 12px;
+background: yellow;
+border: none;
+  top: 10px;
+  right: 15px;
+  font-size: 22px;
+  cursor: pointer;
+  text-align: center;
+  border-radius: 8px;
+  /* position: absolute; */
+  
+  
+}
+
+/*logout modal css*/
+.modal-logout {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-content-logout {
+  background: #fff;
+  padding: 20px 25px;
+  border-radius: 8px;
+  width: 300px;
+  text-align: center;
+}
+
+.modal-buttons-logout {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+  gap: 15px;
+}
+
+.modal-buttons-logout button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#cancel-logout {
+  background: #ddd;
+}
+
+#confirm-logout {
+  background: #8b4513;
+  color: white;
+}
+
+    </style>
+
+</head>
+
+<body>
+    <section id="header">
+        <a href="seller-dashboard.html"><img src="images/LocalArtHub logo.png" class="logo" alt="" style="width: 30px;height: 30px;"></a>
+
+        <div>
+            <ul id="navbar">
+                <li><a href="seller-dashboard.html">Dashboard</a></li>
+                <li><a href="admin.html">Admin Panel</a></li>
+                <li><a class="active" href="seller-orders.html">Orders</a></li>
+                <!-- <li><a href="contactus.html">Contact</a></li> -->
+                <a href="#" id="close"><i class="fas fa-times"></i></a>
+            </ul>
+        </div>
+
+        <div id="right-nav">
+            <a id="login-btn" href="signin.html">Login</a>
+        </div>
+        <div id="mobile">
+            <i id="bar" class="fas fa-bars"></i>
+        </div>
+    </section>
+
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>Your Orders</h1>
+            <p>Manage orders for products you've sold</p>
+            <button id="sort-btn">Sort by: Newest First</button>
+        </div>
+
+        <div class="orders-section">
+            <div id="orders-list">
+                <div class="no-orders">
+                    <p>Loading orders...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="section-p1">
+        <div class="col">
+            <img class="logo" src="images/LocalArtHub logo.png" alt="">
+            <h4>Contact</h4>
+            <p><strong>Address:</strong> Kathmandu, Nepal</p>
+            <p><strong>Phone:</strong> +977 9834567890</p>
+            <p><strong>Hours:</strong> 10:00 AM - 6:00 PM, Mon - Sat</p>
+            <div class="follow">
+                <h4>Follow us</h4>
+                <div class="icon">
+                    <a href="https://www.facebook.com" target="_blank" title="Visit our Facebook page"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.twitter.com" target="_blank" title="Visit our Twitter page"><i class="fab fa-twitter"></i></a>
+                    <a href="https://www.instagram.com" target="_blank" title="Visit our Instagram page"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.pinterest.com" target="_blank" title="Visit our Pinterest page"><i class="fab fa-pinterest-p"></i></a>
+                    <a href="https://www.youtube.com" target="_blank" title="Visit our Youtube page"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <h4>About</h4>
+            <a href="aboutus.html">About us</a>
+            <a href="delivery.html">Delivery Information</a>
+            <a href="privacy.html">Privacy Policy</a>
+            <a href="termsandcondition.html">Terms & Conditions</a>
+            <a href="contactus.html">Contact Us</a>
+        </div>
+        <div class="col">
+            <h4>My Account</h4>
+            <a href="signin.html">Sign In</a>
+            <a href="viewcart.html">View Cart</a>
+            <a href="wishlist.html">My Wishlist</a>
+            <a href="track.html">Track My Order</a>
+            <a href="contactus.html">Help</a>
+        </div>
+        <div class="col install">
+            <h4>Install App</h4>
+            <p>From App Store or Google Play</p>
+            <div class="row">
+                <img src="#" alt="">
+                <img src="#" alt="">
+            </div>
+
+            <p>Secured Payment Gateways</p>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <img src="images/paymentlogo.jpg" alt="Payment Methods" style="width: 40px; height:auto;">
+                <p>Payment</p>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <img src="images/esewa.png" alt="Esewa" style="width:40px; height:auto;">
+                <p>Esewa</p>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <img src="images/imekhalti.png" alt="Imepay" style="width: 40px; height:auto;">
+                <p>ImePay</p>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <img src="images/phonepay.jpeg" alt="PhonePay" style="width: 40px; height:auto;">
+                <p>Phonepay</p>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2024, LocalArtHub - All Rights Reserved</p>
+        </div>                    <!---  style="display:none; margin-right:10px;" -->
+    </footer>
+
+    <div id="order-details-modal" class="modal">
+        <div class="modal-content" style="max-width:600px;">
+            <!-- <span class="close" onclick="closeOrderModal()">×</span> -->
+             
+
+            <h3>Order Details</h3>
+            <div id="order-details-content" style="text-align:left; max-height:60vh; overflow:auto;">
+                <!-- Details inserted here -->
+            </div>
+               <button class="open"
+      id="save-status-btn"
+      
+      onclick="saveOrderStatus()"
+    >
+      Save
+    </button> 
+            <div style="margin-top:12px; text-align:right;">
+                <!-- <button id="close-order-details" style="padding:8px 12px;background:#ddd;border:none;border-radius:6px;cursor:pointer;">Close</button> -->
+                  <button id="close-order-details" class="close">Close</button> 
+            </div>
+        </div>
+    </div>
+
+    <div id="logout-modal" class="modal-logout">
+        <div class="modal-content-logout">
+            <h3>Account</h3>
+            <p>Do you want to logout?</p>
+            <div class="modal-buttons-logout">
+                <button id="cancel-logout">Cancel</button>
+                <button id="confirm-logout">Logout</button>
+            </div>
+        </div>
+    </div>
+
+  
+
+    <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBsQNrAnhfzhWSepgMJEr3DbnLIUwHhOP0",
+  authDomain: "localarthub-38ae5.firebaseapp.com",
+  projectId: "localarthub-38ae5",
+  storageBucket: "localarthub-38ae5.firebasestorage.app",
+  messagingSenderId: "741966380978",
+  appId: "1:741966380978:web:d94d5516d308b799c1eeab",
+  measurementId: "G-Y7F4HQQ3ZX"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const token = localStorage.getItem("authToken");
+            const loginBtn = document.getElementById("login-btn");
+            const modal = document.getElementById("logout-modal");
+            const cancelBtn = document.getElementById("cancel-logout");
+            const logoutBtn = document.getElementById("confirm-logout");
+
+            if (token && loginBtn) {
+                loginBtn.innerHTML = `
+                <img 
+                    src="https://cdn-icons-png.flaticon.com/512/9131/9131478.png" 
+                    alt="User" 
+                    style="width:24px; height:24px; border-radius:50%;"
+                >
+                `;
+                loginBtn.href = "#";
+
+                loginBtn.addEventListener("click", () => {
+                    modal.style.display = "flex";
+                });
+
+                cancelBtn.addEventListener("click", () => {
+                    modal.style.display = "none";
+                });
+
+                logoutBtn.addEventListener("click", async () => {
+                    try {
+                        await signOut(auth);
+                        localStorage.removeItem("authToken");
+                        modal.style.display = "none";
+                        window.location.href = "main.html";
+                    } catch (e) {
+                        console.error("Logout error:", e);
+                        localStorage.removeItem("authToken");
+                        window.location.href = "main.html";
+                    }
+                });
+            }
+
+            window.addEventListener("click", (e) => {
+                if (e.target === modal) {
+                    modal.style.display = "none";
+                }
+            });
+        });
+
+        // Load seller orders
+        async function loadSellerOrders() {
+            const token = localStorage.getItem("authToken");
+            if (!token) {
+                window.location.href = "signin.html";
+                return;
+            }
+
+            try {
+                const res = await fetch("http://localhost:5000/api/orders", {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+
+                if (!res.ok) {
+                    alert("Failed to load orders");
+                    return;
+                }
+
+                const orders = await res.json();
+                window.sellerOrders = orders;
+
+                // Get unique product IDs
+                const productIds = [...new Set(orders.flatMap(o => o.items.map(i => i.productId)))];
+                const productMap = {};
+                for (const id of productIds) {
+                    try {
+                        const prodRes = await fetch(`http://localhost:5000/api/products/${id}`);
+                        if (prodRes.ok) {
+                            const prod = await prodRes.json();
+                            productMap[id] = prod;
+                        }
+                    } catch (e) {
+                        console.error("Error fetching product", id, e);
+                    }
+                }
+                window.productMap = productMap;
+
+                // Get unique user IDs
+                const userIds = [...new Set(orders.map(o => o.userId))];
+                const userMap = {};
+                for (const id of userIds) {
+                    try {
+                        const userRes = await fetch(`http://localhost:5000/api/users/${id}`);
+                        if (userRes.ok) {
+                            const user = await userRes.json();
+                            userMap[id] = user;
+                        }
+                    } catch (e) {
+                        console.error("Error fetching user", id, e);
+                    }
+                }
+                window.userMap = userMap;
+
+                renderSellerOrders(orders);
+            } catch (e) {
+                console.error("Error loading orders:", e);
+                document.getElementById("orders-list").innerHTML = "<div class='no-orders'><p>Failed to load orders</p></div>";
+            }
+        }
+
+let sortOrder = 'desc'; // desc: newest first
+
+        function renderSellerOrders(orders) {
+            const container = document.getElementById("orders-list");
+
+            if (!orders || orders.length === 0) {
+                container.innerHTML = "<div class='no-orders'><p>No orders found</p></div>";
+                return;
+            }
+
+            // Sort orders
+            const sortedOrders = [...orders].sort((a, b) => {
+                const dateA = new Date(a.createdAt);
+                const dateB = new Date(b.createdAt);
+                return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
+            });
+
+            container.innerHTML = "";
+             
+            sortedOrders.forEach(order => {
+                const statusClass = `status-${order.status.replace(/\s+/g, '-')}`;
+                const itemsHtml = order.items.map(item => `
+                    <div class="order-item">
+                        <strong>Product ID:</strong> ${item.productId} | <strong>Qty:</strong> ${item.qty}
+                    </div>
+                `).join("");
+
+                const firstItem = order.items[0];
+                const product = window.productMap ? window.productMap[firstItem.productId] : null;
+                const imageSrc = product && product.images && product.images[0] ? (product.images[0].startsWith('http') ? product.images[0] : 'http://localhost:5000' + product.images[0]) : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2NjYyIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LXNpemU9IjE4IiBmaWxsPSIjMDAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iMC4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg==';
+
+                const buyer = window.userMap ? window.userMap[order.userId] : null;
+                const buyerName = buyer ? buyer.displayName : 'Unknown';
+
+                container.innerHTML += `
+                    <div class="order-card">
+                        <div class="order-details">
+                            <h3>Order ID: ${order._id}</h3>
+                            <p><strong>Buyer:</strong> ${buyerName}</p>
+                            <p><strong>Total:</strong> Rs. ${order.total}</p>
+                            <div class="order-status ${statusClass}">${order.status.toUpperCase()}</div>
+                            
+                            <div class="order-items">
+                                <strong>Items:</strong>
+                                ${itemsHtml}
+                            </div>
+
+                            <div class="order-actions">
+                                ${order.status !== 'cancelled' ? `<button onclick="cancelOrder('${order._id}')">Cancel Order</button>` : '<p>Order is cancelled</p>'}
+                                <td>
+                                <button onclick="viewOrderDetails('${order._id}')">View Details</button>
+                                ${
+    order.status === "completed" || order.status === "cancelled"
+      ? `<button class="delete-btn" onclick="deleteOrder('${order._id}')">Delete</button>`
+      : ""
+  }
+                                </td>
+                            </div>
+                        </div>
+                        <img src="${imageSrc}" alt="Order Image" class="order-image">
+                    </div>
+                `;
+            });
+        
+        }
+
+        async function cancelOrder(orderId) {
+            if (!confirm("Are you sure you want to cancel this order?")) return;
+
+            const token = localStorage.getItem("authToken");
+            try {
+                const res = await fetch(`http://localhost:5000/api/orders/${orderId}/cancel`, {
+                    method: "PUT",
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    alert("Order cancelled successfully");
+                    loadSellerOrders();
+                } else {
+                    alert("Failed to cancel order");
+                }
+            } catch (e) {
+                alert("Error cancelling order");
+            }
+        }
+        
+let selectedOrderId = null;
+
+        // View order details in modal
+        function viewOrderDetails(orderId) {
+            
+            const orders = window.sellerOrders || [];
+            const order = orders.find(o => o._id === orderId);
+            if (!order) {
+                alert('Order not found');
+                return;
+            }
+            selectedOrderId = orderId;
+            const content = document.getElementById('order-details-content');
+              const addr = order.shippingAddress || {};
+                 
+                
+            
+            
+  
+
+          
+
+            let html = `
+                <p><strong>Order ID:</strong> ${order._id}</p>
+                <p><strong>Customer ID:</strong> ${order.userId}</p>
+                <p><strong>Total:</strong> Rs. ${order.total}</p>
+                <p><label><strong>Status:</strong> ${order.status}</label></p>
+                <select id="order-status-select">
+      <option value="pending" ${order.status === "pending" ? "selected" : ""}>Pending</option>
+      <option value="in transit" ${order.status === "in transit" ? "selected" : ""}>In Transit</option>
+      <option value="completed" ${order.status === "completed" ? "selected" : ""}>Completed</option>
+    </select>
+                <hr>
+                <h4>Shipping Address</h4>
+                <p>${addr.firstName || ''} ${addr.lastName || ''}</p>
+                <p>${addr.address || ''}, ${addr.city || ''} ${addr.zip || ''}</p>
+                <p>${addr.email || ''} | ${addr.phone || ''}</p>
+                <h4>Notes</h4>
+                <p>${order.notes || '-'}</p>
+                <hr>
+                <h4>Items</h4>
+                ${order.items.map(i => `<div style="padding:6px 0;border-bottom:1px solid #eee;"><strong>Product ID:</strong> ${i.productId} &nbsp; <strong>Qty:</strong> ${i.qty}</div>`).join('')}
+            `;
+               content.innerHTML = html;
+                           const saveBtn = document.getElementById("save-status-btn");
+                        const statusSelect = document.getElementById("order-status-select");
+
+  if (saveBtn && statusSelect) {
+    saveBtn.style.display = "none";
+
+    statusSelect.addEventListener("change", e => {
+      saveBtn.style.display =
+        e.target.value === "completed" || e.target.value === "in transit" ? "inline-block" : "none";
+    });
+  }
+            const modal = document.getElementById('order-details-modal');
+            modal.style.display = 'flex';
+        }
+
+        // close order details modal
+        document.addEventListener('click', (e) => {
+            const modal = document.getElementById('order-details-modal');
+            if (!modal) return;
+            if (e.target === modal) modal.style.display = 'none';
+        });
+        document.addEventListener('DOMContentLoaded', () => {
+            const closeBtn = document.getElementById('close-order-details');
+            if (closeBtn) closeBtn.addEventListener('click', () => {
+                const modal = document.getElementById('order-details-modal');
+                if (modal) modal.style.display = 'none';
+            });
+        });
+
+        // Expose to window for onclick handlers
+        window.cancelOrder = cancelOrder;
+        window.viewOrderDetails = viewOrderDetails;
+        window.deleteOrder = deleteOrder;
+window.saveOrderStatus = saveOrderStatus;
+window.closeOrderModal = closeOrderModal;
+
+        // Load orders on page load
+        loadSellerOrders();
+
+        // Sort button
+        document.getElementById('sort-btn').addEventListener('click', () => {
+            sortOrder = sortOrder === 'desc' ? 'asc' : 'desc';
+            const btn = document.getElementById('sort-btn');
+            btn.textContent = sortOrder === 'desc' ? 'Sort by: Newest First' : 'Sort by: Oldest First';
+            renderSellerOrders(window.sellerOrders);
+        });
+
+        //save order status
+        async function saveOrderStatus() {
+  const newStatus = document.getElementById("order-status-select").value;
+
+  try {
+    const res = await fetch(`http://localhost:5000/api/orders/${selectedOrderId}/status`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("authToken")}`
+      },
+      body: JSON.stringify({ status: newStatus })
+    });
+
+    if (!res.ok) throw new Error("Failed to update status");
+
+    // Update frontend copy
+    const order = window.sellerOrders.find(o => o._id === selectedOrderId);
+    order.status = newStatus;
+
+    closeOrderModal();
+   renderSellerOrders(window.sellerOrders); // re-render list so delete button appears
+  } catch (err) {
+    console.error(err);
+    alert("Failed to update order status");
+  }
+}
+ 
+
+//delete order function
+
+async function deleteOrder(orderId) {
+  if (!confirm("Delete this order permanently?")) return;
+
+  try {
+    const res = await fetch(`http://localhost:5000/api/orders/${orderId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("authToken")}`
+      }
+    });
+
+    if (!res.ok) throw new Error("Delete failed");
+
+    window.sellerOrders = window.sellerOrders.filter(o => o._id !== orderId);
+    renderSellerOrders(window.sellerOrders);
+  } catch (err) {
+    console.error(err);
+    alert("Failed to delete order");
+  }
+}
+
+
+//close modal 
+function closeOrderModal() {
+  document.getElementById("order-details-modal").style.display = "none";
+}
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms and Conditions - Local Art Hub</title>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
+        <!-- <link rel="stylesheet" href="style.css"> -->
+        <script type="module" src="script.js" defer></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            background-color: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #8b4513;
+            margin-bottom: 30px;
+        }
+        .terms-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .term-item {
+            padding: 15px;
+            background-color: #faf8f3;
+            border-left: 4px solid #8b4513;
+            border-radius: 4px;
+        }
+        .term-item h2 {
+            font-size: 18px;
+            color: #8b4513;
+            margin-bottom: 8px;
+        }
+        .term-item p {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+          #header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 80px;
+  background-color: #f8f8f8;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.06);
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 999;
+}
+
+  #navbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  list-style: none;
+}
+#navbar li {
+  list-style: none;
+  padding: 0px 20px;
+  margin: 0 15px;
+  position: relative;
+}
+
+#navbar li a {
+  text-decoration: none;
+  color:#1a1a1a;
+  font-weight: 600;
+  /* opacity: 0.7; */
+  font-size: 16px;
+  text-transform: uppercase;
+  transition: 0.3s ease;
+  position: relative; /*for the underline effect */
+  padding-bottom: 8px;
+}
+#navbar li a:hover,
+#navbar li a.active {
+   font-weight: 400;   /* lighter font */
+  color: #088178;
+  cursor: pointer;
+
+}
+/* underline always exists but hidden */
+#navbar li a::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  background-color: #088178;
+  border-radius: 2px;
+  transform: translateX(-50%);
+  transition: width 0.3s ease;
+}
+ #navbar li a.active::after
+{
+   content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -5px;
+  transform: translateX(-50%);
+  width: 30%;
+  height: 2px;
+  background-color: #088178;
+  border-radius: 2px;
+}
+
+
+#login-btn {
+  background-color: yellow;
+  padding: 10px;
+  border-radius: 4px;
+  color: black;
+  text-decoration: none;
+  font-weight: 600;
+}
+#mobile {
+  display: none;
+  align-items: center;
+}
+#close{
+  display: none;
+}
+  #right-nav {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+        
+      /* Mobile Styles */
+@media (max-width:768px) {
+   .section-p1 {
+    padding: 20px;
+} 
+ footer {
+    flex-direction: column;
+  }
+  #header {
+    padding: 10px 30px;
+}
+  #right-nav {
+    display: none;
+  }
+
+ footer .copyright {
+    text-align: start;
+} 
+}  
+ /* logoutmodal styles */
+        .modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 20px 25px;
+  border-radius: 8px;
+  width: 300px;
+  text-align: center;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+  gap: 15px;
+}
+
+.modal-buttons button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#cancel-logout {
+  background: #ddd;
+}
+
+#confirm-logout {
+  background: #8b4513;
+  color: white;
+}
+
+/* footer styles */
+.section-p1 {
+  padding: 40px 80px;
+}
+footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+   background-color: #f8f8f8;
+  margin-top: 40px;
+  border-top: 1px solid #ddd;
+}
+footer .col{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+footer .logo{
+  margin-bottom: 30px;
+  width: 30px;
+  height: 30px;
+}
+footer h4{
+  font-size: 14px;
+  padding-bottom: 20px;
+
+}
+footer p{
+  font-size: 13px;
+  margin: 0 0 8px 0;
+}
+
+footer a{
+  font-size: 13px;
+  text-decoration: none;
+  color: #222;
+  margin-bottom: 10px;
+}
+footer .follow {
+  margin-top: 20px;
+}
+footer .follow i{
+  color: #465b52;
+  padding-right: 4px;
+  cursor: pointer;
+}
+footer .install .row img{
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+footer .install img{
+  margin: 10px 0 15px 0;
+}
+footer .follow i:hover,
+footer a:hover {
+  color: #088178;
+}
+footer .copyright{
+  width: 100%;
+  text-align: center;}
+    </style>
+</head>
+<body>
+     <section id="header">
+            <a href="main.html"><img src="./images/LocalArtHub logo.png" class="logo" alt="" style="width: 30px;height: 30px;"></a>
+            
+            <div>
+                <ul id="navbar">
+                 <li><a class="navigation-button " href="main.html">Home</a></li>
+                    <li><a href="shop.html" >Shop</a></li>
+                    <!-- <li><a href="#" >Blog</a></li> -->
+                    <li><a href="admin.html" class="navigation-button">Admin</a></li>
+                    <li><a href="aboutus.html" class="navigation-button" >About</a></li>
+                    <li><a href="user-orders.html" class="navigation-button">My Orders</a></li>
+                    <li><a href="contactus.html" class="navigation-button" >Contact</a></li>
+                    <a href="#" id="close"><i class="fas fa-times"></i></a> 
+                </ul>
+            </div>
+
+            <div id="right-nav">
+                <a id="lg-bag" href="viewcart.html"><i class="far fa-shopping-cart"></i></a>
+                <a id="login-btn" href="signin.html">Login</a>
+            </div>
+            <div id="mobile">
+                <a href="viewcart.html"><i class="far fa-shopping-cart"></i></a>
+                <i id="bar" class="fas fa-bars"></i>
+            </div>
+        </section>
+    <div class="container">
+        <h1>Terms and Conditions</h1>
+        <div class="terms-content">
+            <div class="term-item">
+                <h2>1. Product Quality</h2>
+                <p>All art and artifacts are authentic and carefully inspected before shipment. We guarantee the quality and condition of each item as described.</p>
+            </div>
+            <div class="term-item">
+                <h2>2. Payment Terms</h2>
+                <p>Payment must be made in full before order processing. We accept all major payment methods. Invoices are provided upon request.</p>
+            </div>
+            <div class="term-item">
+                <h2>3. Shipping and Delivery</h2>
+                <p>Items are shipped within 5-7 business days. Delivery timeframes depend on location. Insurance is included for all shipments.</p>
+            </div>
+            <div class="term-item">
+                <h2>4. Returns and Refunds</h2>
+                <p>Items can be returned within 30 days of purchase if damaged or not as described. Full refunds will be processed after inspection.</p>
+            </div>
+            <div class="term-item">
+                <h2>5. Intellectual Property</h2>
+                <p>All artwork and designs are protected by copyright. Reproduction without permission is strictly prohibited.</p>
+            </div>
+            <div class="term-item">
+                <h2>6. Limitation of Liability</h2>
+                <p>Local Art Hub is not liable for indirect damages. Our liability is limited to the purchase price of the item.</p>
+            </div>
+        </div>
+    </div>
+      <div id="logout-modal" class="modal">
+  <div class="modal-content">
+    <h3>Account</h3>
+    <p>Do you want to logout?</p>
+
+    <div class="modal-buttons">
+            <button id="cancel-logout">Cancel</button>
+            <button id="become-seller">Become Seller</button>
+            <button id="confirm-logout">Logout</button>
+    </div>
+  </div>
+</div>
+
+ <footer class="section-p1">
+            <div class="col">
+                <img class="logo" src="./images/LocalArtHub logo.png" alt="">
+                <h4>Contact</h4>
+                <p><strong>Address:</strong> Kathmandu, Nepal</p>
+                <p><strong>Phone:</strong> +977 9834567890</p>
+                <p><strong>Hours:</strong> 10:00 - 18:00, Mon - Sat</p>
+                <div class="follow">
+                    <h4>Follow us</h4>
+                    <div class="icon">
+                        <i class="fab fa-facebook-f"></i>
+                        <i class="fab fa-twitter"></i>
+                        <i class="fab fa-instagram"></i>
+                        <i class="fab fa-pinterest-p"></i>
+                        <i class="fab fa-youtube"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <h4>About</h4>
+                <a href="aboutus.html">About us</a>
+                <a href="delivery.html">Delivery Information</a>
+                <a href="privacy.html">Privacy Policy</a>
+                <a href="termsandcondition.html">Terms & Conditions</a>
+                <a href="contactus.html">Contact Us</a>
+            </div>
+            <div class="col">
+                <h4>My Account</h4>
+                <a href="signin.html">Sign In</a>
+                <a href="viewcart.html">View Cart</a>
+                <a href="wishlist.html" target="_blank">My Wishlist</a>
+                <a href="user-orders.html" target="_blank">Track My Order</a>
+                <a href="contactus.html">Help</a>
+            </div>
+              <div class="col install">
+                <h4>Install App</h4>
+                <p>From App Store or Google Play</p>
+                <div class="row">
+                     <img src="images/GooglePlayStore.png" alt="googleplaystore" style="width:80px; height:auto;">
+                    <img src="images/AppleStore.png" alt="applestore" style="width:100px; height:auto;">
+                </div>
+               
+                
+
+  <p>Secured Payment Gateways</p> 
+   <div style="display:flex; align-items:center; gap:8px;">
+    <img src="images/paymentlogo.jpg" alt="Payment Methods"  style="width: 50px; height:auto;"> <p>Payment Options</p><br></div>
+    <div style="display:flex; align-items:center; gap:8px;">
+  <img src="images/ESEWA-ALTERNATE.png" alt="Esewa" style="width:40px; height:auto;"><p>Esewa</p><br></div>
+ <div style="display:flex; align-items:center; gap:8px;">
+    <img src="images/imekhalti.png" alt="Imepay"  style="width: 40px; height:auto;"> <p>ImePay</p><br></div>
+<div style="display:flex; align-items:center; gap:8px;">
+    <img src="images/phonepay.jpeg" alt="PhonePay" style="width: 40px; height:auto;"> <p>Phonepay</p><br></div>
+    </div>
+            <div class="copyright">
+                <p>&copy; 2024, LocalArtHub - All Rights Reserved</p>
+            </div>
+        </footer>
+</body>
+</html>
