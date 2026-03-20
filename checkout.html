@@ -101,15 +101,6 @@
             border-bottom: none;
         }
 
-        .order-item-name {
-            flex: 1;
-        }
-
-        .order-item-price {
-            text-align: right;
-            min-width: 80px;
-        }
-
         .order-total {
             margin-top: 20px;
             padding-top: 15px;
@@ -121,22 +112,149 @@
             color: #8b4513;
         }
 
-        .checkout-btn {
-            width: 100%;
-            padding: 12px;
+        /* ── Payment Method Section ── */
+        .payment-section {
             margin-top: 20px;
-            background: #8b4513;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.3s;
         }
 
-        .checkout-btn:hover {
+        .payment-section h4 {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .payment-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .payment-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .payment-option:hover {
+            border-color: #8b4513;
+            background: #fdf8f5;
+        }
+
+        .payment-option.selected {
+            border-color: #8b4513;
+            background: #fdf3ec;
+        }
+
+        .payment-option input[type="radio"] {
+            accent-color: #8b4513;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .payment-option-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #333;
+            flex: 1;
+            cursor: pointer;
+        }
+
+        .esewa-logo {
+            background: #60bb46;
+            color: white;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 4px;
+            letter-spacing: 0.02em;
+        }
+
+        .cod-icon {
+            font-size: 16px;
+        }
+
+        .esewa-sandbox-badge {
+            font-size: 10px;
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffc107;
+            padding: 2px 6px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        /* eSewa info box */
+        .esewa-info-box {
+            display: none;
+            background: #f0faf0;
+            border: 1px solid #c3e6c3;
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-top: 4px;
+            font-size: 12.5px;
+            color: #2d6a2d;
+            line-height: 1.6;
+        }
+
+        .esewa-info-box.visible {
+            display: block;
+        }
+
+        .esewa-info-box strong {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 13px;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 14px;
+            margin-top: 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.1s;
+        }
+
+        .checkout-btn:active {
+            transform: scale(0.98);
+        }
+
+        .checkout-btn.cod-btn {
+            background: #8b4513;
+            color: white;
+        }
+
+        .checkout-btn.cod-btn:hover {
             background: #704010;
+        }
+
+        .checkout-btn.esewa-btn {
+            background: #60bb46;
+            color: white;
+        }
+
+        .checkout-btn.esewa-btn:hover {
+            background: #4ea336;
+        }
+
+        .checkout-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
         }
 
         .back-btn {
@@ -153,6 +271,7 @@
             background: #ccc;
         }
 
+        /* Modals */
         .modal {
             display: none;
             position: fixed;
@@ -184,22 +303,56 @@
             cursor: pointer;
         }
 
-        #cancel-logout {
-            background: #ddd;
+        #cancel-logout { background: #ddd; }
+        #confirm-logout { background: #8b4513; color: white; }
+
+        /* Processing overlay */
+        #processing-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            flex-direction: column;
+            gap: 20px;
         }
 
-        #confirm-logout {
-            background: #8b4513;
-            color: white;
+        #processing-overlay .spinner {
+            width: 52px;
+            height: 52px;
+            border: 5px solid rgba(255,255,255,0.3);
+            border-top-color: #60bb46;
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+        }
+
+        #processing-overlay p {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 700px) {
+            .checkout-content {
+                grid-template-columns: 1fr;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
-
 </head>
 
 <body>
     <section id="header">
         <a href="main.html"><img src="./images/LocalArtHub logo.png" class="logo" alt="" style="width: 30px;height: 30px;"></a>
-
         <div>
             <ul id="navbar">
                 <li><a href="main.html">Home</a></li>
@@ -209,7 +362,6 @@
                 <a href="#" id="close"><i class="fas fa-times"></i></a>
             </ul>
         </div>
-
         <div id="right-nav">
             <a id="lg-bag" href="viewcart.html"><i class="far fa-shopping-cart"></i></a>
             <a id="login-btn" href="signin.html">Login</a>
@@ -232,7 +384,6 @@
             <form class="checkout-form" id="checkout-form">
                 <div class="form-section">
                     <h3>Shipping Address</h3>
-
                     <div class="form-row">
                         <div class="form-group">
                             <label for="first-name">First Name *</label>
@@ -243,22 +394,18 @@
                             <input type="text" id="last-name" required>
                         </div>
                     </div>
-
                     <div class="form-group">
                         <label for="email">Email Address *</label>
                         <input type="email" id="email" required>
                     </div>
-
                     <div class="form-group">
                         <label for="phone">Phone Number *</label>
                         <input type="tel" id="phone" required>
                     </div>
-
                     <div class="form-group">
                         <label for="address">Street Address *</label>
                         <input type="text" id="address" required>
                     </div>
-
                     <div class="form-row">
                         <div class="form-group">
                             <label for="city">City *</label>
@@ -270,10 +417,8 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="form-section">
                     <h3>Additional Information</h3>
-
                     <div class="form-group">
                         <label for="notes">Order Notes (Optional)</label>
                         <textarea id="notes" placeholder="Special instructions for your order..."></textarea>
@@ -283,17 +428,62 @@
 
             <div class="order-summary">
                 <h3>Order Summary</h3>
-                <div id="summary-items">
-                    <!-- Items will be loaded here -->
-                </div>
+                <div id="summary-items"></div>
                 <div class="order-total">
                     <span>Total:</span>
                     <span id="order-total">Rs. 0</span>
                 </div>
-                <button class="checkout-btn" onclick="placeOrder()">Place Order</button>
+
+                <!-- Payment Method -->
+                <div class="payment-section">
+                    <h4>Payment Method</h4>
+                    <div class="payment-options">
+                        <div class="payment-option" id="opt-esewa" onclick="selectPayment('esewa')">
+                            <input type="radio" name="payment" id="radio-esewa" value="esewa">
+                            <label class="payment-option-label" for="radio-esewa">
+                                <span class="esewa-logo">eSewa</span>
+                                Pay with eSewa
+                                <span class="esewa-sandbox-badge">SANDBOX</span>
+                            </label>
+                        </div>
+                        <div class="payment-option selected" id="opt-cod" onclick="selectPayment('cod')">
+                            <input type="radio" name="payment" id="radio-cod" value="cod" checked>
+                            <label class="payment-option-label" for="radio-cod">
+                                <span class="cod-icon">💵</span>
+                                Cash on Delivery
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- eSewa sandbox hint -->
+                    <div class="esewa-info-box" id="esewa-info-box">
+                        <strong>🧪 eSewa Sandbox Test Credentials</strong>
+                        eSewa ID: <b>9806800001</b> &nbsp;|&nbsp; Password: <b>Nepal@123</b><br>
+                        Token: <b>123456</b> &nbsp;|&nbsp; MPIN: <b>1122</b>
+                    </div>
+
+                    <button class="checkout-btn cod-btn" id="place-order-btn" onclick="placeOrder()">
+                        Place Order
+                    </button>
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- eSewa hidden form (submitted programmatically) -->
+    <form id="esewa-form" action="https://rc-epay.esewa.com.np/api/epay/main/v2/form" method="POST" style="display:none;">
+        <input type="hidden" name="amount" id="esewa-amount">
+        <input type="hidden" name="tax_amount" id="esewa-tax" value="0">
+        <input type="hidden" name="total_amount" id="esewa-total">
+        <input type="hidden" name="transaction_uuid" id="esewa-uuid">
+        <input type="hidden" name="product_code" value="EPAYTEST">
+        <input type="hidden" name="product_service_charge" value="0">
+        <input type="hidden" name="product_delivery_charge" value="0">
+        <input type="hidden" name="success_url" id="esewa-success-url">
+        <input type="hidden" name="failure_url" id="esewa-failure-url">
+        <input type="hidden" name="signed_field_names" value="total_amount,transaction_uuid,product_code">
+        <input type="hidden" name="signature" id="esewa-signature">
+    </form>
 
     <footer class="section-p1">
         <div class="col">
@@ -302,16 +492,6 @@
             <p><strong>Address:</strong> Kathmandu, Nepal</p>
             <p><strong>Phone:</strong> +977 9834567890</p>
             <p><strong>Hours:</strong> 10:00 AM - 6:00 PM, Mon - Sat</p>
-            <div class="follow">
-                <h4>Follow us</h4>
-                <div class="icon">
-                    <a href="https://www.facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://www.twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
-                    <a href="https://www.instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
-                    <a href="https://www.pinterest.com" target="_blank"><i class="fab fa-pinterest-p"></i></a>
-                    <a href="https://www.youtube.com" target="_blank"><i class="fab fa-youtube"></i></a>
-                </div>
-            </div>
         </div>
         <div class="col">
             <h4>About</h4>
@@ -343,7 +523,70 @@
         </div>
     </div>
 
+    <!-- Processing overlay -->
+    <div id="processing-overlay">
+        <div class="spinner"></div>
+        <p id="processing-text">Processing your order...</p>
+    </div>
+
     <script>
+        // ── Constants ──────────────────────────────────────────────────────────
+        const ESEWA_SECRET_KEY = "8gBm/:&EnhH.1/q";
+        const ESEWA_PRODUCT_CODE = "EPAYTEST";
+        // Use absolute URL so eSewa can redirect back properly
+        const BASE_URL = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '');
+
+        // ── State ──────────────────────────────────────────────────────────────
+        let cartData = [];
+        let selectedPayment = 'cod';
+
+        // ── Payment selection ──────────────────────────────────────────────────
+        function selectPayment(method) {
+            selectedPayment = method;
+
+            document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('selected'));
+            document.getElementById(`opt-${method}`).classList.add('selected');
+            document.getElementById(`radio-${method}`).checked = true;
+
+            const btn = document.getElementById('place-order-btn');
+            const infoBox = document.getElementById('esewa-info-box');
+
+            if (method === 'esewa') {
+                btn.textContent = '💚 Pay with eSewa';
+                btn.className = 'checkout-btn esewa-btn';
+                infoBox.classList.add('visible');
+            } else {
+                btn.textContent = 'Place Order';
+                btn.className = 'checkout-btn cod-btn';
+                infoBox.classList.remove('visible');
+            }
+        }
+
+        // ── HMAC-SHA256 signature (Web Crypto API) ─────────────────────────────
+        async function generateHMACSHA256(message, secret) {
+            const encoder = new TextEncoder();
+            const keyData = encoder.encode(secret);
+            const msgData = encoder.encode(message);
+
+            const key = await crypto.subtle.importKey(
+                "raw", keyData,
+                { name: "HMAC", hash: "SHA-256" },
+                false, ["sign"]
+            );
+            const signature = await crypto.subtle.sign("HMAC", key, msgData);
+            // base64 encode
+            return btoa(String.fromCharCode(...new Uint8Array(signature)));
+        }
+
+        // ── Generate UUID ──────────────────────────────────────────────────────
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+                const r = Math.random() * 16 | 0;
+                return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+            });
+        }
+
+        // ── Load cart ──────────────────────────────────────────────────────────
         document.addEventListener("DOMContentLoaded", () => {
             const token = localStorage.getItem("authToken");
             const loginBtn = document.getElementById("login-btn");
@@ -352,186 +595,193 @@
             const logoutBtn = document.getElementById("confirm-logout");
 
             if (token && loginBtn) {
-                loginBtn.innerHTML = `
-                <img 
-                    src="https://cdn-icons-png.flaticon.com/512/9131/9131478.png" 
-                    alt="User" 
-                    style="width:24px; height:24px; border-radius:50%;"
-                >
-                `;
+                loginBtn.innerHTML = `<img src="https://cdn-icons-png.flaticon.com/512/9131/9131478.png" alt="User" style="width:24px;height:24px;border-radius:50%;">`;
                 loginBtn.href = "#";
-
-                loginBtn.addEventListener("click", () => {
-                    modal.style.display = "flex";
-                });
-
-                cancelBtn.addEventListener("click", () => {
-                    modal.style.display = "none";
-                });
-
+                loginBtn.addEventListener("click", () => { modal.style.display = "flex"; });
+                cancelBtn.addEventListener("click", () => { modal.style.display = "none"; });
                 logoutBtn.addEventListener("click", () => {
                     localStorage.removeItem("authToken");
                     modal.style.display = "none";
                     window.location.reload();
                 });
             }
+            window.addEventListener("click", e => { if (e.target === modal) modal.style.display = "none"; });
 
-            window.addEventListener("click", (e) => {
-                if (e.target === modal) {
-                    modal.style.display = "none";
-                }
-            });
-
-            // Load cart summary
             loadCheckoutSummary();
         });
 
-        let cartData = [];
-
         async function loadCheckoutSummary() {
             const token = localStorage.getItem("authToken");
-            if (!token) {
-                window.location.href = "signin.html";
-                return;
-            }
+            if (!token) { window.location.href = "signin.html"; return; }
 
             try {
-                // Fetch cart
-                const cartRes = await fetch("http://localhost:5000/api/cart", {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                const [cartRes, productsRes] = await Promise.all([
+                    fetch("http://localhost:5000/api/cart", { headers: { Authorization: `Bearer ${token}` } }),
+                    fetch("http://localhost:5000/api/products")
+                ]);
                 const cart = await cartRes.json();
-
-                // Fetch products
-                const productsRes = await fetch("http://localhost:5000/api/products");
                 const products = await productsRes.json();
 
                 const productMap = {};
                 products.forEach(p => productMap[p._id] = p);
 
-                cartData = cart.map(item => ({
-                    ...item,
-                    product: productMap[item.productId]
-                })).filter(item => item.product);
-
+                cartData = cart.map(item => ({ ...item, product: productMap[item.productId] })).filter(i => i.product);
                 renderCheckoutSummary();
             } catch (e) {
-                console.error("Error loading checkout summary:", e);
+                console.error("Error loading checkout:", e);
                 alert("Failed to load cart");
             }
         }
 
         function renderCheckoutSummary() {
             const summaryContainer = document.getElementById("summary-items");
-            const totalElement = document.getElementById("order-total");
-
+            const totalEl = document.getElementById("order-total");
             summaryContainer.innerHTML = "";
             let total = 0;
 
             cartData.forEach(item => {
                 const itemTotal = item.product.price * item.qty;
                 total += itemTotal;
-
                 summaryContainer.innerHTML += `
                     <div class="order-item">
-                        <div class="order-item-name">
-                            <strong>${item.product.title}</strong>
-                            <br>
-                            <small>Qty: ${item.qty}</small>
-                        </div>
-                        <div class="order-item-price">
-                            Rs. ${itemTotal}
-                        </div>
-                    </div>
-                `;
+                        <div><strong>${item.product.title}</strong><br><small>Qty: ${item.qty}</small></div>
+                        <div>Rs. ${itemTotal.toLocaleString()}</div>
+                    </div>`;
             });
-
-            totalElement.textContent = `Rs. ${total}`;
+            totalEl.textContent = `Rs. ${total.toLocaleString()}`;
         }
 
-        async function placeOrder() {
-            const token = localStorage.getItem("authToken");
-            if (!token) {
-                alert("Please login first");
-                return;
-            }
-
-            // Validate form
+        // ── Validate form ──────────────────────────────────────────────────────
+        function validateForm() {
             const form = document.getElementById("checkout-form");
             if (!form.checkValidity()) {
-                alert("Please fill in all required fields");
-                return;
+                form.reportValidity();
+                return false;
             }
+            return true;
+        }
 
-            // Calculate total
+        // ── Collect order payload ──────────────────────────────────────────────
+        function buildOrderPayload(total) {
+            return {
+                items: cartData.map(item => ({ productId: item.productId, qty: item.qty })),
+                total,
+                shippingAddress: {
+                    firstName: document.getElementById("first-name").value,
+                    lastName:  document.getElementById("last-name").value,
+                    email:     document.getElementById("email").value,
+                    phone:     document.getElementById("phone").value,
+                    address:   document.getElementById("address").value,
+                    city:      document.getElementById("city").value,
+                    zip:       document.getElementById("zip").value
+                },
+                notes: document.getElementById("notes").value
+            };
+        }
+
+        // ── Clear cart ─────────────────────────────────────────────────────────
+        async function clearCart() {
+            const token = localStorage.getItem("authToken");
+            try {
+                await fetch("http://localhost:5000/api/cart/clear", {
+                    method: "DELETE",
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+            } catch (e) { console.warn("Cart clear failed:", e); }
+        }
+
+        // ── Show / hide processing overlay ─────────────────────────────────────
+        function showProcessing(text = "Processing your order...") {
+            document.getElementById("processing-text").textContent = text;
+            document.getElementById("processing-overlay").style.display = "flex";
+        }
+        function hideProcessing() {
+            document.getElementById("processing-overlay").style.display = "none";
+        }
+
+        // ── Main placeOrder dispatcher ─────────────────────────────────────────
+        async function placeOrder() {
+            if (!validateForm()) return;
+            if (selectedPayment === 'esewa') {
+                await initiateEsewaPayment();
+            } else {
+                await placeCODOrder();
+            }
+        }
+
+        // ── COD order ─────────────────────────────────────────────────────────
+        async function placeCODOrder() {
+            const token = localStorage.getItem("authToken");
             let total = 0;
-            cartData.forEach(item => {
-                total += item.product.price * item.qty;
-            });
+            cartData.forEach(item => { total += item.product.price * item.qty; });
+
+            showProcessing("Placing your order...");
+            document.getElementById("place-order-btn").disabled = true;
 
             try {
-                // Create order with cart items
-                const orderPayload = {
-                    items: cartData.map(item => ({
-                        productId: item.productId,
-                        qty: item.qty
-                    })),
-                    total: total,
-                    shippingAddress: {
-                        firstName: document.getElementById("first-name").value,
-                        lastName: document.getElementById("last-name").value,
-                        email: document.getElementById("email").value,
-                        phone: document.getElementById("phone").value,
-                        address: document.getElementById("address").value,
-                        city: document.getElementById("city").value,
-                        zip: document.getElementById("zip").value
-                    },
-                    notes: document.getElementById("notes").value
-                };
-
                 const res = await fetch("http://localhost:5000/api/orders", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`
-                    },
-                    body: JSON.stringify(orderPayload)
+                    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                    body: JSON.stringify(buildOrderPayload(total))
                 });
 
-                if (!res.ok) {
-                    alert("Failed to place order");
-                    return;
-                }
+                if (!res.ok) { hideProcessing(); alert("Failed to place order"); return; }
 
                 const order = await res.json();
-                alert("Order placed successfully! Order ID: " + order._id);
-
-                // Clear cart on server
-                try {
-                  const clearRes = await fetch("http://localhost:5000/api/cart/clear", {
-                    method: "DELETE",
-                    headers: {
-                    //   Authorization: `Bearer ${token}`
-                    Authorization: `Bearer ${localStorage.getItem("authToken")}`}
-                  });
-                  if (!clearRes.ok) {
-                    console.warn("Failed to clear cart:", clearRes.status);
-                    alert("Order placed, but failed to clear cart. Please refresh.");
-                  }
-                } catch (err) {
-                  console.warn("Error clearing cart:", err);
-                  alert("Order placed, but failed to clear cart. Please refresh.");
-                }
-
-                // Redirect after clearing cart
-                window.location.href = "main.html";
+                await clearCart();
+                hideProcessing();
+                alert(`Order placed successfully!\nOrder ID: ${order._id}`);
+                window.location.href = "user-orders.html";
             } catch (e) {
-                console.error("Error placing order:", e);
-                alert("Failed to place order");
+                hideProcessing();
+                document.getElementById("place-order-btn").disabled = false;
+                alert("Failed to place order: " + e.message);
             }
+        }
+
+        // ── eSewa payment initiation ───────────────────────────────────────────
+        async function initiateEsewaPayment() {
+            const token = localStorage.getItem("authToken");
+            if (!token) { alert("Please login first"); return; }
+
+            let total = 0;
+            cartData.forEach(item => { total += item.product.price * item.qty; });
+
+            if (total <= 0) { alert("Cart is empty"); return; }
+
+            showProcessing("Redirecting to eSewa...");
+            document.getElementById("place-order-btn").disabled = true;
+
+            // 1. Save pending order to localStorage so we can create it after payment success
+            const pendingOrder = buildOrderPayload(total);
+            const txnUUID = generateUUID();
+            pendingOrder._txnUUID = txnUUID;
+            localStorage.setItem("pendingOrder", JSON.stringify(pendingOrder));
+
+            // 2. Build signature: "total_amount=X,transaction_uuid=Y,product_code=Z"
+            const signatureMessage = `total_amount=${total},transaction_uuid=${txnUUID},product_code=${ESEWA_PRODUCT_CODE}`;
+            const signature = await generateHMACSHA256(signatureMessage, ESEWA_SECRET_KEY);
+
+            // 3. Fill hidden form fields
+            document.getElementById("esewa-amount").value  = total;
+            document.getElementById("esewa-tax").value     = 0;
+            document.getElementById("esewa-total").value   = total;
+            document.getElementById("esewa-uuid").value    = txnUUID;
+            document.getElementById("esewa-signature").value = signature;
+
+            // Use full absolute URLs for success/failure
+            const base = window.location.href.replace(/\/[^/]*$/, '');
+            document.getElementById("esewa-success-url").value = `${base}/esewa-success.html`;
+            document.getElementById("esewa-failure-url").value = `${base}/esewa-failure.html`;
+
+            // 4. Submit to eSewa
+            setTimeout(() => {
+                document.getElementById("esewa-form").submit();
+            }, 600);
         }
 
         window.placeOrder = placeOrder;
+        window.selectPayment = selectPayment;
     </script>
 </body>
 

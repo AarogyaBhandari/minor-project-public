@@ -11,203 +11,579 @@
     <script type="module" src="script.js" defer></script>
 
     <style>
+        /* ═══════════════════════════════════════════
+           PAGE BASE
+        ═══════════════════════════════════════════ */
         .admin-container {
             max-width: 1200px;
             margin: 20px auto;
-            padding: 20px;
+            padding: 20px 24px;
         }
 
         .admin-header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 32px;
         }
 
-        .orders-section {
-            margin-bottom: 40px;
+        .admin-header h1 {
+            font-size: 30px;
+            color: #1a1a1a;
+            margin-bottom: 6px;
         }
+
+        .admin-header p {
+            color: #888;
+            font-size: 14px;
+            margin: 0 0 16px;
+        }
+
+        /* ═══════════════════════════════════════════
+           SORT BUTTON — styled
+        ═══════════════════════════════════════════ */
+        #sort-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #fff;
+            color: #8b4513;
+            border: 2px solid #8b4513;
+            padding: 9px 20px;
+            border-radius: 24px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: 0.03em;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.12s;
+            box-shadow: 0 2px 8px rgba(139,69,19,0.10);
+        }
+
+        #sort-btn::before {
+            content: "↕";
+            font-size: 14px;
+            font-weight: 900;
+            transition: transform 0.3s;
+        }
+
+        #sort-btn:hover {
+            background: #8b4513;
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(139,69,19,0.22);
+            transform: translateY(-1px);
+        }
+
+        #sort-btn.sorted-asc::before { content: "↑"; }
+        #sort-btn.sorted-desc::before { content: "↓"; }
+
+        /* ═══════════════════════════════════════════
+           ORDERS SECTION
+        ═══════════════════════════════════════════ */
+        .orders-section { margin-bottom: 40px; }
 
         .order-card {
-            border: 1px solid #ddd;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            background: #f9f9f9;
+            border: 1px solid #e8e8e8;
+            padding: 20px 20px 16px;
+            border-radius: 14px;
+            margin-bottom: 18px;
+            background: #fff;
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
+            gap: 16px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.045);
+            transition: box-shadow 0.2s, transform 0.15s;
         }
 
-        .order-details {
-            flex: 1;
+        .order-card:hover {
+            box-shadow: 0 6px 24px rgba(0,0,0,0.09);
+            transform: translateY(-1px);
         }
+
+        .order-details { flex: 1; min-width: 0; }
 
         .order-image {
-            width: 100px;
-            height: 100px;
+            width: 96px;
+            height: 96px;
             object-fit: cover;
-            border-radius: 8px;
-            margin-left: 20px;
+            border-radius: 10px;
+            flex-shrink: 0;
+            border: 1px solid #eee;
         }
 
         .order-card h3 {
-            margin: 0 0 10px 0;
+            margin: 0 0 8px;
             color: #8b4513;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .order-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 16px;
+            margin-bottom: 10px;
+        }
+
+        .order-meta p {
+            margin: 0;
+            font-size: 13px;
+            color: #555;
         }
 
         .order-items {
-            margin: 15px 0;
-            padding: 10px;
-            background: white;
-            border-radius: 4px;
+            margin: 10px 0;
+            padding: 10px 12px;
+            background: #fafafa;
+            border-radius: 8px;
+            border: 1px solid #f0f0f0;
         }
 
         .order-item {
-            padding: 8px;
-            border-bottom: 1px solid #eee;
+            padding: 5px 0;
+            font-size: 13px;
+            color: #444;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
         }
 
-        .order-item:last-child {
-            border-bottom: none;
-        }
+        .order-item:last-child { border-bottom: none; }
 
-        .order-actions {
-            margin-top: 10px;
-        }
-
-        .order-actions button {
-            padding: 8px 12px;
-            margin-right: 10px;
-            background: #8b4513;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .order-actions button:hover {
-            background: #704010;
-        }
-
+        /* ── Status badge ── */
         .order-status {
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-weight: bold;
-            display: inline-block;
-            margin: 10px 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 11px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
         }
 
-        .status-pending {
-            background: #fff3cd;
-            color: #856404;
+        .status-pending    { background: #fff8e1; color: #b45309; border: 1px solid #fde68a; }
+        .status-in-transit { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+        .status-cancelled  { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+        .status-completed  { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+
+        /* ── Payment status badge ── */
+        .payment-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 11px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            margin-bottom: 8px;
         }
 
-        .status-in-transit {
-            background: #cce5ff;
-            color: #004085;
+        .payment-badge.esewa {
+            background: #f0faf0;
+            color: #166534;
+            border: 1px solid #86efac;
         }
 
-        .status-cancelled {
-            background: #f8d7da;
-            color: #721c24;
+        .payment-badge.cod {
+            background: #fefce8;
+            color: #854d0e;
+            border: 1px solid #fde68a;
         }
 
-        .status-completed {
-            background: #d4edda;
-            color: #155724;
+        .payment-badge .badge-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
         }
+
+        .payment-badge.esewa .badge-dot { background: #22c55e; }
+        .payment-badge.cod .badge-dot   { background: #f59e0b; }
+
+        /* ── Order action buttons ── */
+        .order-actions {
+            margin-top: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .order-actions button,
+        .order-actions td button {
+            padding: 7px 16px;
+            border-radius: 8px;
+            border: none;
+            font-size: 12.5px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.18s, transform 0.1s;
+            letter-spacing: 0.01em;
+        }
+
+        .order-actions button:active { transform: scale(0.96); }
+
+        /* Cancel */
+        .order-actions button:first-of-type {
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+        }
+        .order-actions button:first-of-type:hover {
+            background: #fee2e2;
+        }
+
+        /* View Details */
+        .order-actions td button:first-of-type,
+        .btn-view {
+            background: #8b4513;
+            color: #fff;
+        }
+        .btn-view:hover { background: #6b3410; }
+
+        /* Delete */
+        .delete-btn {
+            background: #fef2f2 !important;
+            color: #b91c1c !important;
+            border: 1px solid #fecaca !important;
+        }
+        .delete-btn:hover { background: #fee2e2 !important; }
 
         .no-orders {
             text-align: center;
-            padding: 40px;
-            color: #666;
+            padding: 60px 20px;
+            color: #aaa;
         }
+
+        /* ═══════════════════════════════════════════
+           MODAL — fully redesigned
+        ═══════════════════════════════════════════ */
         .modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  justify-content: center;
-  align-items: center;
-  z-index: 99999;
-}
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15,15,15,0.55);
+            backdrop-filter: blur(3px);
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            padding: 16px;
+        }
 
-.modal-content {
-  background: #fff;
-  padding: 20px;
-  width: 90%;
-  max-width: 500px;
-  border-radius: 8px;
-  position: relative;
-}
+        /* Order details modal content */
+        #order-details-modal .modal-content {
+            background: #fff;
+            width: 100%;
+            max-width: 620px;
+            border-radius: 18px;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.18);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh;
+            animation: modalSlide 0.25s cubic-bezier(0.34,1.56,0.64,1);
+        }
 
-.close {
-padding: 8px 12px;
-background: yellow;
-border: none;
-  top: 10px;
-  right: 15px;
-  font-size: 22px;
-  cursor: pointer;
-  text-align: center;
-  border-radius: 8px;
-}
-.open {
-padding: 8px 12px;
-background: yellow;
-border: none;
-  top: 10px;
-  right: 15px;
-  font-size: 22px;
-  cursor: pointer;
-  text-align: center;
-  border-radius: 8px;
-  /* position: absolute; */
-  
-  
-}
+        @keyframes modalSlide {
+            from { opacity: 0; transform: translateY(24px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
 
-/*logout modal css*/
-.modal-logout {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-}
+        /* Modal header */
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            flex-shrink: 0;
+        }
 
-.modal-content-logout {
-  background: #fff;
-  padding: 20px 25px;
-  border-radius: 8px;
-  width: 300px;
-  text-align: center;
-}
+        .modal-header h3 {
+            margin: 0;
+            font-size: 17px;
+            font-weight: 800;
+            color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-.modal-buttons-logout {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 15px;
-  gap: 15px;
-}
+        .modal-header h3 .modal-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #8b4513, #c0622a);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #fff;
+            flex-shrink: 0;
+        }
 
-.modal-buttons-logout button {
-  padding: 8px 14px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
+        .modal-close-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            background: #f5f5f5;
+            color: #555;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s, color 0.15s;
+            line-height: 1;
+        }
 
-#cancel-logout {
-  background: #ddd;
-}
+        .modal-close-btn:hover { background: #ffe4e4; color: #b91c1c; }
 
-#confirm-logout {
-  background: #8b4513;
-  color: white;
-}
+        /* Modal body — scrollable */
+        .modal-body {
+            padding: 20px 24px;
+            overflow-y: auto;
+            flex: 1;
+        }
 
+        /* ── Section heading inside modal ── */
+        .modal-section-title {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #8b4513;
+            margin: 0 0 10px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #f5ede8;
+        }
+
+        /* ── Info grid rows ── */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            gap: 0;
+            margin-bottom: 20px;
+            border: 1px solid #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .info-grid-row {
+            display: contents;
+        }
+
+        .info-grid-row > .ig-label,
+        .info-grid-row > .ig-value {
+            padding: 9px 14px;
+            font-size: 13px;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .info-grid-row:last-child > .ig-label,
+        .info-grid-row:last-child > .ig-value {
+            border-bottom: none;
+        }
+
+        .ig-label {
+            background: #faf8f6;
+            color: #8a7060;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border-right: 1px solid #f0f0f0;
+        }
+
+        .ig-label i {
+            width: 14px;
+            color: #c07850;
+            font-size: 11px;
+        }
+
+        .ig-value {
+            color: #1a1a1a;
+            font-weight: 500;
+            background: #fff;
+        }
+
+        /* ── Payment status in modal ── */
+        .modal-payment-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid #f0f0f0;
+            background: #fafafa;
+        }
+
+        .modal-payment-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #8a7060;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            flex-shrink: 0;
+        }
+
+        /* ── Status select — styled ── */
+        .status-select-wrapper {
+            margin-bottom: 18px;
+        }
+
+        .status-select-label {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #8a7060;
+            margin-bottom: 7px;
+            display: block;
+        }
+
+        #order-status-select {
+            width: 100%;
+            appearance: none;
+            -webkit-appearance: none;
+            background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238b4513' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 14px center;
+            background-size: 12px 8px;
+            border: 2px solid #e8ddd5;
+            border-radius: 10px;
+            padding: 10px 40px 10px 14px;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #1a1a1a;
+            cursor: pointer;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            font-family: inherit;
+        }
+
+        #order-status-select:focus {
+            outline: none;
+            border-color: #8b4513;
+            box-shadow: 0 0 0 3px rgba(139,69,19,0.12);
+        }
+
+        #order-status-select option { font-weight: 600; }
+
+        /* ── Items table in modal ── */
+        .modal-items-list {
+            border: 1px solid #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .modal-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 9px 14px;
+            font-size: 13px;
+            border-bottom: 1px solid #f5f5f5;
+            color: #333;
+        }
+
+        .modal-item-row:last-child { border-bottom: none; }
+        .modal-item-row:nth-child(even) { background: #fafafa; }
+
+        .modal-item-name { font-weight: 600; color: #1a1a1a; }
+        .modal-item-qty  { color: #888; font-size: 12px; }
+
+        /* ── Modal footer ── */
+        .modal-footer {
+            padding: 14px 24px 18px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            flex-shrink: 0;
+        }
+
+        .modal-footer button {
+            padding: 10px 22px;
+            border-radius: 10px;
+            border: none;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.18s, transform 0.1s;
+            font-family: inherit;
+            letter-spacing: 0.01em;
+        }
+
+        .modal-footer button:active { transform: scale(0.97); }
+
+        #save-status-btn {
+            background: linear-gradient(135deg, #8b4513, #c0622a);
+            color: #fff;
+            box-shadow: 0 3px 12px rgba(139,69,19,0.25);
+        }
+
+        #save-status-btn:hover {
+            background: linear-gradient(135deg, #7a3a0e, #a8531f);
+            box-shadow: 0 5px 18px rgba(139,69,19,0.35);
+        }
+
+        #close-order-details {
+            background: #f5f5f5;
+            color: #555;
+            border: 1px solid #e8e8e8;
+        }
+
+        #close-order-details:hover { background: #ebebeb; }
+
+        /* ── Logout modal ── */
+        .modal-logout {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .modal-content-logout {
+            background: #fff;
+            padding: 28px 28px 22px;
+            border-radius: 14px;
+            width: 300px;
+            text-align: center;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.14);
+        }
+
+        .modal-content-logout h3 { font-size: 17px; margin-bottom: 8px; color: #1a1a1a; }
+        .modal-content-logout p  { color: #666; font-size: 14px; margin: 0 0 18px; }
+
+        .modal-buttons-logout {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .modal-buttons-logout button {
+            flex: 1;
+            padding: 10px 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 13px;
+            transition: background 0.18s;
+        }
+
+        #cancel-logout  { background: #f0f0f0; color: #333; }
+        #cancel-logout:hover { background: #e5e5e5; }
+        #confirm-logout { background: #8b4513; color: white; }
+        #confirm-logout:hover { background: #704010; }
+
+        /* Shipping address section */
+        .shipping-block {
+            margin-bottom: 20px;
+        }
     </style>
 
 </head>
@@ -221,7 +597,6 @@ border: none;
                 <li><a href="seller-dashboard.html">Dashboard</a></li>
                 <li><a href="admin.html">Admin Panel</a></li>
                 <li><a class="active" href="seller-orders.html">Orders</a></li>
-                <!-- <li><a href="contactus.html">Contact</a></li> -->
                 <a href="#" id="close"><i class="fas fa-times"></i></a>
             </ul>
         </div>
@@ -238,7 +613,7 @@ border: none;
         <div class="admin-header">
             <h1>Your Orders</h1>
             <p>Manage orders for products you've sold</p>
-            <button id="sort-btn">Sort by: Newest First</button>
+            <button id="sort-btn" class="sorted-desc">Sort by: Newest First</button>
         </div>
 
         <div class="orders-section">
@@ -260,11 +635,11 @@ border: none;
             <div class="follow">
                 <h4>Follow us</h4>
                 <div class="icon">
-                    <a href="https://www.facebook.com" target="_blank" title="Visit our Facebook page"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://www.twitter.com" target="_blank" title="Visit our Twitter page"><i class="fab fa-twitter"></i></a>
-                    <a href="https://www.instagram.com" target="_blank" title="Visit our Instagram page"><i class="fab fa-instagram"></i></a>
-                    <a href="https://www.pinterest.com" target="_blank" title="Visit our Pinterest page"><i class="fab fa-pinterest-p"></i></a>
-                    <a href="https://www.youtube.com" target="_blank" title="Visit our Youtube page"><i class="fab fa-youtube"></i></a>
+                    <i class="fab fa-facebook-f"></i>
+                    <i class="fab fa-twitter"></i>
+                    <i class="fab fa-instagram"></i>
+                    <i class="fab fa-pinterest-p"></i>
+                    <i class="fab fa-youtube"></i>
                 </div>
             </div>
         </div>
@@ -288,56 +663,44 @@ border: none;
             <h4>Install App</h4>
             <p>From App Store or Google Play</p>
             <div class="row">
-                <img src="#" alt="">
-                <img src="#" alt="">
-            </div>
-
-            <p>Secured Payment Gateways</p>
-            <div style="display:flex; align-items:center; gap:8px;">
-                <img src="images/paymentlogo.jpg" alt="Payment Methods" style="width: 40px; height:auto;">
-                <p>Payment</p>
-            </div>
-            <div style="display:flex; align-items:center; gap:8px;">
-                <img src="images/esewa.png" alt="Esewa" style="width:40px; height:auto;">
-                <p>Esewa</p>
-            </div>
-            <div style="display:flex; align-items:center; gap:8px;">
-                <img src="images/imekhalti.png" alt="Imepay" style="width: 40px; height:auto;">
-                <p>ImePay</p>
-            </div>
-            <div style="display:flex; align-items:center; gap:8px;">
-                <img src="images/phonepay.jpeg" alt="PhonePay" style="width: 40px; height:auto;">
-                <p>Phonepay</p>
+                <img src="images/GooglePlayStore.png" alt="googleplaystore" style="width:80px; height:auto;">
+                <img src="images/AppleStore.png" alt="applestore" style="width:100px; height:auto;">
             </div>
         </div>
         <div class="copyright">
             <p>&copy; 2024, LocalArtHub - All Rights Reserved</p>
-        </div>                    <!---  style="display:none; margin-right:10px;" -->
+        </div>
     </footer>
 
+    <!-- ═══ ORDER DETAILS MODAL ═══ -->
     <div id="order-details-modal" class="modal">
-        <div class="modal-content" style="max-width:600px;">
-            <!-- <span class="close" onclick="closeOrderModal()">×</span> -->
-             
+        <div class="modal-content" style="max-width:620px;">
 
-            <h3>Order Details</h3>
-            <div id="order-details-content" style="text-align:left; max-height:60vh; overflow:auto;">
-                <!-- Details inserted here -->
+            <!-- Header -->
+            <div class="modal-header">
+                <h3>
+                    <span class="modal-icon"><i class="fas fa-receipt"></i></span>
+                    Order Details
+                </h3>
+                <button class="modal-close-btn" id="close-order-details" title="Close">&#215;</button>
             </div>
-               <button class="open"
-      id="save-status-btn"
-      
-      onclick="saveOrderStatus()"
-    >
-      Save
-    </button> 
-            <div style="margin-top:12px; text-align:right;">
-                <!-- <button id="close-order-details" style="padding:8px 12px;background:#ddd;border:none;border-radius:6px;cursor:pointer;">Close</button> -->
-                  <button id="close-order-details" class="close">Close</button> 
+
+            <!-- Body -->
+            <div class="modal-body">
+                <div id="order-details-content"></div>
+            </div>
+
+            <!-- Footer -->
+            <div class="modal-footer">
+                <button id="save-status-btn" style="display:none;" onclick="saveOrderStatus()">
+                    <i class="fas fa-save" style="margin-right:6px;"></i>Save Status
+                </button>
+                <button id="close-order-details-footer">Close</button>
             </div>
         </div>
     </div>
 
+    <!-- ═══ LOGOUT MODAL ═══ -->
     <div id="logout-modal" class="modal-logout">
         <div class="modal-content-logout">
             <h3>Account</h3>
@@ -349,367 +712,419 @@ border: none;
         </div>
     </div>
 
-  
-
+    <!-- ═══ SCRIPTS ═══ -->
     <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBsQNrAnhfzhWSepgMJEr3DbnLIUwHhOP0",
-  authDomain: "localarthub-38ae5.firebaseapp.com",
-  projectId: "localarthub-38ae5",
-  storageBucket: "localarthub-38ae5.firebasestorage.app",
-  messagingSenderId: "741966380978",
-  appId: "1:741966380978:web:d94d5516d308b799c1eeab",
-  measurementId: "G-Y7F4HQQ3ZX"
-};
+        const firebaseConfig = {
+            apiKey: "AIzaSyBsQNrAnhfzhWSepgMJEr3DbnLIUwHhOP0",
+            authDomain: "localarthub-38ae5.firebaseapp.com",
+            projectId: "localarthub-38ae5",
+            storageBucket: "localarthub-38ae5.firebasestorage.app",
+            messagingSenderId: "741966380978",
+            appId: "1:741966380978:web:d94d5516d308b799c1eeab",
+            measurementId: "G-Y7F4HQQ3ZX"
+        };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+        const app  = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
 
         document.addEventListener("DOMContentLoaded", () => {
-            const token = localStorage.getItem("authToken");
-            const loginBtn = document.getElementById("login-btn");
-            const modal = document.getElementById("logout-modal");
+            const token     = localStorage.getItem("authToken");
+            const loginBtn  = document.getElementById("login-btn");
+            const modal     = document.getElementById("logout-modal");
             const cancelBtn = document.getElementById("cancel-logout");
             const logoutBtn = document.getElementById("confirm-logout");
 
             if (token && loginBtn) {
-                loginBtn.innerHTML = `
-                <img 
-                    src="https://cdn-icons-png.flaticon.com/512/9131/9131478.png" 
-                    alt="User" 
-                    style="width:24px; height:24px; border-radius:50%;"
-                >
-                `;
+                loginBtn.innerHTML = `<img src="https://cdn-icons-png.flaticon.com/512/9131/9131478.png" alt="User" style="width:24px;height:24px;border-radius:50%;">`;
                 loginBtn.href = "#";
-
-                loginBtn.addEventListener("click", () => {
-                    modal.style.display = "flex";
-                });
-
-                cancelBtn.addEventListener("click", () => {
-                    modal.style.display = "none";
-                });
-
+                loginBtn.addEventListener("click", () => { modal.style.display = "flex"; });
+                cancelBtn.addEventListener("click", () => { modal.style.display = "none"; });
                 logoutBtn.addEventListener("click", async () => {
-                    try {
-                        await signOut(auth);
-                        localStorage.removeItem("authToken");
-                        modal.style.display = "none";
-                        window.location.href = "main.html";
-                    } catch (e) {
-                        console.error("Logout error:", e);
-                        localStorage.removeItem("authToken");
-                        window.location.href = "main.html";
-                    }
+                    try { await signOut(auth); } catch (e) { console.error(e); }
+                    localStorage.removeItem("authToken");
+                    modal.style.display = "none";
+                    window.location.href = "main.html";
                 });
             }
 
-            window.addEventListener("click", (e) => {
-                if (e.target === modal) {
-                    modal.style.display = "none";
-                }
-            });
+            window.addEventListener("click", e => { if (e.target === modal) modal.style.display = "none"; });
         });
+    </script>
 
-        // Load seller orders
+    <script type="module">
+        /* ══════════════════════════════════════════════════════
+           HELPERS
+        ══════════════════════════════════════════════════════ */
+
+        /** Detect payment method from order notes field */
+        function detectPaymentMethod(order) {
+            const notes = (order.notes || '').toLowerCase();
+            if (notes.includes('esewa') || notes.includes('epay')) return 'esewa';
+            return 'cod'; // default: Cash on Delivery
+        }
+
+        /** Render a payment badge */
+        function paymentBadgeHTML(method) {
+            if (method === 'esewa') {
+                return `<span class="payment-badge esewa">
+                    <span class="badge-dot"></span>
+                    Paid via eSewa
+                </span>`;
+            }
+            return `<span class="payment-badge cod">
+                <span class="badge-dot"></span>
+                Cash on Delivery
+            </span>`;
+        }
+
+        /** Return a status badge icon */
+        function statusIcon(status) {
+            const map = {
+                pending:      '⏳',
+                'in transit': '🚚',
+                completed:    '✅',
+                cancelled:    '✕'
+            };
+            return map[status] || '📦';
+        }
+
+        /* ══════════════════════════════════════════════════════
+           LOAD ORDERS
+        ══════════════════════════════════════════════════════ */
         async function loadSellerOrders() {
             const token = localStorage.getItem("authToken");
-            if (!token) {
-                window.location.href = "signin.html";
-                return;
-            }
+            if (!token) { window.location.href = "signin.html"; return; }
 
             try {
                 const res = await fetch("http://localhost:5000/api/orders", {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-
-                if (!res.ok) {
-                    alert("Failed to load orders");
-                    return;
-                }
+                if (!res.ok) { alert("Failed to load orders"); return; }
 
                 const orders = await res.json();
                 window.sellerOrders = orders;
 
-                // Get unique product IDs
+                // Fetch products
                 const productIds = [...new Set(orders.flatMap(o => o.items.map(i => i.productId)))];
                 const productMap = {};
-                for (const id of productIds) {
+                await Promise.all(productIds.map(async id => {
                     try {
-                        const prodRes = await fetch(`http://localhost:5000/api/products/${id}`);
-                        if (prodRes.ok) {
-                            const prod = await prodRes.json();
-                            productMap[id] = prod;
-                        }
-                    } catch (e) {
-                        console.error("Error fetching product", id, e);
-                    }
-                }
+                        const r = await fetch(`http://localhost:5000/api/products/${id}`);
+                        if (r.ok) productMap[id] = await r.json();
+                    } catch (e) {}
+                }));
                 window.productMap = productMap;
 
-                // Get unique user IDs
+                // Fetch buyers
                 const userIds = [...new Set(orders.map(o => o.userId))];
                 const userMap = {};
-                for (const id of userIds) {
+                await Promise.all(userIds.map(async id => {
                     try {
-                        const userRes = await fetch(`http://localhost:5000/api/users/${id}`);
-                        if (userRes.ok) {
-                            const user = await userRes.json();
-                            userMap[id] = user;
-                        }
-                    } catch (e) {
-                        console.error("Error fetching user", id, e);
-                    }
-                }
+                        const r = await fetch(`http://localhost:5000/api/users/${id}`, {
+                            headers: { Authorization: `Bearer ${token}` }
+                        });
+                        if (r.ok) userMap[id] = await r.json();
+                    } catch (e) {}
+                }));
                 window.userMap = userMap;
 
                 renderSellerOrders(orders);
             } catch (e) {
-                console.error("Error loading orders:", e);
-                document.getElementById("orders-list").innerHTML = "<div class='no-orders'><p>Failed to load orders</p></div>";
+                console.error("Error:", e);
+                document.getElementById("orders-list").innerHTML = "<div class='no-orders'><p>Failed to load orders.</p></div>";
             }
         }
 
-let sortOrder = 'desc'; // desc: newest first
+        /* ══════════════════════════════════════════════════════
+           RENDER ORDER CARDS
+        ══════════════════════════════════════════════════════ */
+        let sortOrder = 'desc';
 
         function renderSellerOrders(orders) {
             const container = document.getElementById("orders-list");
-
             if (!orders || orders.length === 0) {
-                container.innerHTML = "<div class='no-orders'><p>No orders found</p></div>";
+                container.innerHTML = "<div class='no-orders'><p>No orders found.</p></div>";
                 return;
             }
 
-            // Sort orders
-            const sortedOrders = [...orders].sort((a, b) => {
-                const dateA = new Date(a.createdAt);
-                const dateB = new Date(b.createdAt);
-                return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
+            const sorted = [...orders].sort((a, b) => {
+                const da = new Date(a.createdAt), db = new Date(b.createdAt);
+                return sortOrder === 'desc' ? db - da : da - db;
             });
 
             container.innerHTML = "";
-             
-            sortedOrders.forEach(order => {
-                const statusClass = `status-${order.status.replace(/\s+/g, '-')}`;
-                const itemsHtml = order.items.map(item => `
-                    <div class="order-item">
-                        <strong>Product ID:</strong> ${item.productId} | <strong>Qty:</strong> ${item.qty}
-                    </div>
-                `).join("");
 
+            sorted.forEach(order => {
+                const statusClass   = `status-${order.status.replace(/\s+/g, '-')}`;
+                const paymentMethod = detectPaymentMethod(order);
+
+                // Image
                 const firstItem = order.items[0];
-                const product = window.productMap ? window.productMap[firstItem.productId] : null;
-                const imageSrc = product && product.images && product.images[0] ? (product.images[0].startsWith('http') ? product.images[0] : 'http://localhost:5000' + product.images[0]) : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2NjYyIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LXNpemU9IjE4IiBmaWxsPSIjMDAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iMC4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg==';
+                const product   = window.productMap?.[firstItem?.productId];
+                const imageSrc  = product?.images?.[0]
+                    ? (product.images[0].startsWith('http') ? product.images[0] : 'http://localhost:5000' + product.images[0])
+                    : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2Y1ZjVmNSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LXNpemU9IjE0IiBmaWxsPSIjYWFhIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iMC4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg==';
 
-                const buyer = window.userMap ? window.userMap[order.userId] : null;
-                const buyerName = buyer ? buyer.displayName : 'Unknown';
+                // Buyer
+                const buyer     = window.userMap?.[order.userId];
+                const buyerName = buyer?.displayName || buyer?.email || 'Unknown';
+
+                // Items summary
+                const itemsHtml = order.items.map(item => {
+                    const p    = window.productMap?.[item.productId];
+                    const name = p ? p.title : item.productId;
+                    return `<div class="order-item"><span>${name}</span><span style="color:#888">× ${item.qty}</span></div>`;
+                }).join('');
 
                 container.innerHTML += `
-                    <div class="order-card">
-                        <div class="order-details">
-                            <h3>Order ID: ${order._id}</h3>
-                            <p><strong>Buyer:</strong> ${buyerName}</p>
-                            <p><strong>Total:</strong> Rs. ${order.total}</p>
-                            <div class="order-status ${statusClass}">${order.status.toUpperCase()}</div>
-                            
-                            <div class="order-items">
-                                <strong>Items:</strong>
-                                ${itemsHtml}
-                            </div>
+                <div class="order-card">
+                    <div class="order-details">
+                        <h3>Order #${order._id.slice(-8).toUpperCase()}</h3>
 
-                            <div class="order-actions">
-                                ${order.status !== 'cancelled' ? `<button onclick="cancelOrder('${order._id}')">Cancel Order</button>` : '<p>Order is cancelled</p>'}
-                                <td>
-                                <button onclick="viewOrderDetails('${order._id}')">View Details</button>
-                                ${
-    order.status === "completed" || order.status === "cancelled"
-      ? `<button class="delete-btn" onclick="deleteOrder('${order._id}')">Delete</button>`
-      : ""
-  }
-                                </td>
-                            </div>
+                        <div class="order-meta">
+                            <p><strong>Buyer:</strong> ${buyerName}</p>
+                            <p><strong>Total:</strong> Rs. ${Number(order.total).toLocaleString()}</p>
+                            <p><strong>Items:</strong> ${order.items.length}</p>
                         </div>
-                        <img src="${imageSrc}" alt="Order Image" class="order-image">
+
+                        <!-- Payment status badge -->
+                        ${paymentBadgeHTML(paymentMethod)}
+
+                        <!-- Order status badge -->
+                        <div class="order-status ${statusClass}">
+                            ${statusIcon(order.status)} ${order.status.toUpperCase()}
+                        </div>
+
+                        <div class="order-items">${itemsHtml}</div>
+
+                        <div class="order-actions">
+                            ${order.status === 'cancelled'
+                                ? `<span style="font-size:12px;color:#b91c1c;font-weight:600;">✕ Cancelled</span>`
+                                : order.status === 'completed'
+                                    ? ''
+                                    : `<button onclick="cancelOrder('${order._id}')"><i class="fas fa-times" style="margin-right:4px;"></i>Cancel</button>`
+                            }
+                            <td>
+                                <button class="btn-view" onclick="viewOrderDetails('${order._id}')">
+                                    <i class="fas fa-eye" style="margin-right:4px;"></i>View Details
+                                </button>
+                                ${(order.status === 'completed' || order.status === 'cancelled')
+                                    ? `<button class="delete-btn" onclick="deleteOrder('${order._id}')">
+                                        <i class="fas fa-trash" style="margin-right:4px;"></i>Delete
+                                       </button>`
+                                    : ''
+                                }
+                            </td>
+                        </div>
                     </div>
-                `;
+                    <img src="${imageSrc}" alt="Product" class="order-image">
+                </div>`;
             });
-        
         }
 
+        /* ══════════════════════════════════════════════════════
+           VIEW ORDER DETAILS MODAL
+        ══════════════════════════════════════════════════════ */
+        let selectedOrderId = null;
+
+        function viewOrderDetails(orderId) {
+            const order = (window.sellerOrders || []).find(o => o._id === orderId);
+            if (!order) { alert('Order not found'); return; }
+            selectedOrderId = orderId;
+
+            const addr          = order.shippingAddress || {};
+            const paymentMethod = detectPaymentMethod(order);
+
+            // Items rows
+            const itemsHtml = order.items.map(item => {
+                const p    = window.productMap?.[item.productId];
+                const name = p ? p.title : item.productId;
+                const price = p ? `Rs. ${Number(p.price).toLocaleString()}` : '—';
+                return `<div class="modal-item-row">
+                    <span class="modal-item-name">${name}</span>
+                    <span class="modal-item-qty">Qty: ${item.qty} &nbsp;|&nbsp; ${price}</span>
+                </div>`;
+            }).join('');
+
+            const content = `
+                <!-- Payment Status -->
+                <div class="modal-payment-row">
+                    <span class="modal-payment-label"><i class="fas fa-credit-card" style="margin-right:5px;color:#c07850;"></i>Payment</span>
+                    ${paymentBadgeHTML(paymentMethod)}
+                </div>
+
+                <!-- Order Status Select -->
+                <div class="status-select-wrapper">
+                    <span class="status-select-label"><i class="fas fa-tag" style="margin-right:5px;color:#c07850;"></i>Update Order Status</span>
+                    <select id="order-status-select">
+                        <option value="pending"    ${order.status === 'pending'    ? 'selected' : ''}>⏳ Pending</option>
+                        <option value="in transit" ${order.status === 'in transit' ? 'selected' : ''}>🚚 In Transit</option>
+                        <option value="completed"  ${order.status === 'completed'  ? 'selected' : ''}>✅ Completed</option>
+                    </select>
+                </div>
+
+                <!-- Order Info -->
+                <p class="modal-section-title"><i class="fas fa-info-circle" style="margin-right:5px;"></i>Order Information</p>
+                <div class="info-grid">
+                    <div class="info-grid-row">
+                        <div class="ig-label"><i class="fas fa-hashtag"></i>Order ID</div>
+                        <div class="ig-value" style="font-size:11px;word-break:break-all;">${order._id}</div>
+                    </div>
+                    <div class="info-grid-row">
+                        <div class="ig-label"><i class="fas fa-circle"></i>Status</div>
+                        <div class="ig-value">${statusIcon(order.status)} ${order.status.toUpperCase()}</div>
+                    </div>
+                    <div class="info-grid-row">
+                        <div class="ig-label"><i class="fas fa-coins"></i>Total</div>
+                        <div class="ig-value" style="font-weight:700;color:#8b4513;">Rs. ${Number(order.total).toLocaleString()}</div>
+                    </div>
+                    ${order.notes ? `<div class="info-grid-row">
+                        <div class="ig-label"><i class="fas fa-sticky-note"></i>Notes</div>
+                        <div class="ig-value">${order.notes}</div>
+                    </div>` : ''}
+                </div>
+
+                <!-- Shipping Address -->
+                <p class="modal-section-title"><i class="fas fa-map-marker-alt" style="margin-right:5px;"></i>Shipping Address</p>
+                <div class="info-grid">
+                    <div class="info-grid-row">
+                        <div class="ig-label"><i class="fas fa-user"></i>Full Name</div>
+                        <div class="ig-value">${[addr.firstName, addr.lastName].filter(Boolean).join(' ') || '—'}</div>
+                    </div>
+                    <div class="info-grid-row">
+                        <div class="ig-label"><i class="fas fa-map-pin"></i>Address</div>
+                        <div class="ig-value">${addr.address || '—'}</div>
+                    </div>
+                    <div class="info-grid-row">
+                        <div class="ig-label"><i class="fas fa-city"></i>City</div>
+                        <div class="ig-value">${addr.city || '—'}</div>
+                    </div>
+                    <div class="info-grid-row">
+                        <div class="ig-label"><i class="fas fa-mail-bulk"></i>Postal Code</div>
+                        <div class="ig-value">${addr.zip || '—'}</div>
+                    </div>
+                    <div class="info-grid-row">
+                        <div class="ig-label"><i class="fas fa-envelope"></i>Email</div>
+                        <div class="ig-value">${addr.email || '—'}</div>
+                    </div>
+                    <div class="info-grid-row">
+                        <div class="ig-label"><i class="fas fa-phone"></i>Phone</div>
+                        <div class="ig-value">${addr.phone || '—'}</div>
+                    </div>
+                </div>
+
+                <!-- Items -->
+                <p class="modal-section-title"><i class="fas fa-box-open" style="margin-right:5px;"></i>Items Ordered</p>
+                <div class="modal-items-list">${itemsHtml}</div>
+            `;
+
+            document.getElementById('order-details-content').innerHTML = content;
+
+            // Wire up status select → show/hide save button
+            const saveBtn      = document.getElementById('save-status-btn');
+            const statusSelect = document.getElementById('order-status-select');
+
+            saveBtn.style.display = 'none';
+            statusSelect.addEventListener('change', e => {
+                saveBtn.style.display =
+                    (e.target.value === 'completed' || e.target.value === 'in transit') ? 'inline-flex' : 'none';
+            });
+
+            document.getElementById('order-details-modal').style.display = 'flex';
+        }
+
+        /* ══════════════════════════════════════════════════════
+           CANCEL / DELETE / SAVE
+        ══════════════════════════════════════════════════════ */
         async function cancelOrder(orderId) {
             if (!confirm("Are you sure you want to cancel this order?")) return;
-
             const token = localStorage.getItem("authToken");
             try {
                 const res = await fetch(`http://localhost:5000/api/orders/${orderId}/cancel`, {
                     method: "PUT",
                     headers: { Authorization: `Bearer ${token}` }
                 });
-
-                if (res.ok) {
-                    alert("Order cancelled successfully");
-                    loadSellerOrders();
-                } else {
-                    alert("Failed to cancel order");
-                }
-            } catch (e) {
-                alert("Error cancelling order");
-            }
-        }
-        
-let selectedOrderId = null;
-
-        // View order details in modal
-        function viewOrderDetails(orderId) {
-            
-            const orders = window.sellerOrders || [];
-            const order = orders.find(o => o._id === orderId);
-            if (!order) {
-                alert('Order not found');
-                return;
-            }
-            selectedOrderId = orderId;
-            const content = document.getElementById('order-details-content');
-              const addr = order.shippingAddress || {};
-                 
-                
-            
-            
-  
-
-          
-
-            let html = `
-                <p><strong>Order ID:</strong> ${order._id}</p>
-                <p><strong>Customer ID:</strong> ${order.userId}</p>
-                <p><strong>Total:</strong> Rs. ${order.total}</p>
-                <p><label><strong>Status:</strong> ${order.status}</label></p>
-                <select id="order-status-select">
-      <option value="pending" ${order.status === "pending" ? "selected" : ""}>Pending</option>
-      <option value="in transit" ${order.status === "in transit" ? "selected" : ""}>In Transit</option>
-      <option value="completed" ${order.status === "completed" ? "selected" : ""}>Completed</option>
-    </select>
-                <hr>
-                <h4>Shipping Address</h4>
-                <p>${addr.firstName || ''} ${addr.lastName || ''}</p>
-                <p>${addr.address || ''}, ${addr.city || ''} ${addr.zip || ''}</p>
-                <p>${addr.email || ''} | ${addr.phone || ''}</p>
-                <h4>Notes</h4>
-                <p>${order.notes || '-'}</p>
-                <hr>
-                <h4>Items</h4>
-                ${order.items.map(i => `<div style="padding:6px 0;border-bottom:1px solid #eee;"><strong>Product ID:</strong> ${i.productId} &nbsp; <strong>Qty:</strong> ${i.qty}</div>`).join('')}
-            `;
-               content.innerHTML = html;
-                           const saveBtn = document.getElementById("save-status-btn");
-                        const statusSelect = document.getElementById("order-status-select");
-
-  if (saveBtn && statusSelect) {
-    saveBtn.style.display = "none";
-
-    statusSelect.addEventListener("change", e => {
-      saveBtn.style.display =
-        e.target.value === "completed" || e.target.value === "in transit" ? "inline-block" : "none";
-    });
-  }
-            const modal = document.getElementById('order-details-modal');
-            modal.style.display = 'flex';
+                if (res.ok) { await loadSellerOrders(); }
+                else        { alert("Failed to cancel order."); }
+            } catch (e) { alert("Error cancelling order."); }
         }
 
-        // close order details modal
-        document.addEventListener('click', (e) => {
-            const modal = document.getElementById('order-details-modal');
-            if (!modal) return;
-            if (e.target === modal) modal.style.display = 'none';
-        });
+        async function saveOrderStatus() {
+            const newStatus = document.getElementById("order-status-select").value;
+            try {
+                const res = await fetch(`http://localhost:5000/api/orders/${selectedOrderId}/status`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("authToken")}` },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                if (!res.ok) throw new Error("Failed");
+
+                const order = window.sellerOrders.find(o => o._id === selectedOrderId);
+                if (order) order.status = newStatus;
+
+                closeOrderModal();
+                renderSellerOrders(window.sellerOrders);
+            } catch (err) {
+                console.error(err);
+                alert("Failed to update order status.");
+            }
+        }
+
+        async function deleteOrder(orderId) {
+            if (!confirm("Delete this order permanently?")) return;
+            try {
+                const res = await fetch(`http://localhost:5000/api/orders/${orderId}`, {
+                    method: "DELETE",
+                    headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` }
+                });
+                if (!res.ok) throw new Error("Delete failed");
+                window.sellerOrders = window.sellerOrders.filter(o => o._id !== orderId);
+                renderSellerOrders(window.sellerOrders);
+            } catch (err) { alert("Failed to delete order."); }
+        }
+
+        function closeOrderModal() {
+            document.getElementById("order-details-modal").style.display = "none";
+        }
+
+        /* ══════════════════════════════════════════════════════
+           CLOSE MODAL EVENTS
+        ══════════════════════════════════════════════════════ */
         document.addEventListener('DOMContentLoaded', () => {
-            const closeBtn = document.getElementById('close-order-details');
-            if (closeBtn) closeBtn.addEventListener('click', () => {
-                const modal = document.getElementById('order-details-modal');
-                if (modal) modal.style.display = 'none';
+            document.getElementById('close-order-details').addEventListener('click', closeOrderModal);
+            document.getElementById('close-order-details-footer').addEventListener('click', closeOrderModal);
+
+            document.getElementById('order-details-modal').addEventListener('click', e => {
+                if (e.target === document.getElementById('order-details-modal')) closeOrderModal();
             });
         });
 
-        // Expose to window for onclick handlers
-        window.cancelOrder = cancelOrder;
-        window.viewOrderDetails = viewOrderDetails;
-        window.deleteOrder = deleteOrder;
-window.saveOrderStatus = saveOrderStatus;
-window.closeOrderModal = closeOrderModal;
-
-        // Load orders on page load
-        loadSellerOrders();
-
-        // Sort button
-        document.getElementById('sort-btn').addEventListener('click', () => {
-            sortOrder = sortOrder === 'desc' ? 'asc' : 'desc';
+        /* ══════════════════════════════════════════════════════
+           SORT BUTTON
+        ══════════════════════════════════════════════════════ */
+        document.addEventListener('DOMContentLoaded', () => {
             const btn = document.getElementById('sort-btn');
-            btn.textContent = sortOrder === 'desc' ? 'Sort by: Newest First' : 'Sort by: Oldest First';
-            renderSellerOrders(window.sellerOrders);
+            btn.addEventListener('click', () => {
+                sortOrder = sortOrder === 'desc' ? 'asc' : 'desc';
+                btn.textContent = sortOrder === 'desc' ? 'Sort by: Newest First' : 'Sort by: Oldest First';
+                btn.className   = sortOrder === 'desc' ? 'sorted-desc' : 'sorted-asc';
+                renderSellerOrders(window.sellerOrders);
+            });
         });
 
-        //save order status
-        async function saveOrderStatus() {
-  const newStatus = document.getElementById("order-status-select").value;
+        /* ══════════════════════════════════════════════════════
+           EXPOSE GLOBALS & INIT
+        ══════════════════════════════════════════════════════ */
+        window.cancelOrder      = cancelOrder;
+        window.viewOrderDetails = viewOrderDetails;
+        window.deleteOrder      = deleteOrder;
+        window.saveOrderStatus  = saveOrderStatus;
+        window.closeOrderModal  = closeOrderModal;
 
-  try {
-    const res = await fetch(`http://localhost:5000/api/orders/${selectedOrderId}/status`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("authToken")}`
-      },
-      body: JSON.stringify({ status: newStatus })
-    });
-
-    if (!res.ok) throw new Error("Failed to update status");
-
-    // Update frontend copy
-    const order = window.sellerOrders.find(o => o._id === selectedOrderId);
-    order.status = newStatus;
-
-    closeOrderModal();
-   renderSellerOrders(window.sellerOrders); // re-render list so delete button appears
-  } catch (err) {
-    console.error(err);
-    alert("Failed to update order status");
-  }
-}
- 
-
-//delete order function
-
-async function deleteOrder(orderId) {
-  if (!confirm("Delete this order permanently?")) return;
-
-  try {
-    const res = await fetch(`http://localhost:5000/api/orders/${orderId}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("authToken")}`
-      }
-    });
-
-    if (!res.ok) throw new Error("Delete failed");
-
-    window.sellerOrders = window.sellerOrders.filter(o => o._id !== orderId);
-    renderSellerOrders(window.sellerOrders);
-  } catch (err) {
-    console.error(err);
-    alert("Failed to delete order");
-  }
-}
-
-
-//close modal 
-function closeOrderModal() {
-  document.getElementById("order-details-modal").style.display = "none";
-}
-
+        loadSellerOrders();
     </script>
 </body>
 
