@@ -398,7 +398,7 @@ async function loadFeaturedProducts() {
             const sameSubcat  = allProds.filter(p => p.subcategory === topSubcat);
             const sameCat     = allProds.filter(p => p.category === topCategory && p.subcategory !== topSubcat);
             const others      = allProds.filter(p => p.category !== topCategory);
-            const featured    = [...sameSubcat, ...sameCat, ...others].slice(0, 8);
+            const featured    = [...sameSubcat, ...sameCat, ...others].slice(0, 12);
 
             renderProducts("featured-products", featured);
 
@@ -418,44 +418,76 @@ async function loadFeaturedProducts() {
     }
   }
 
-  // Fallback: guest or user with no orders → newest 8 products
-  loadProducts("featured-products", { sort: "newest", limit: 8 });
+  // Fallback: guest or user with no orders → newest 12 products
+  loadProducts("featured-products", { sort: "newest", limit: 12 });
 }
 
 // Render product cards
 const PRODUCTS_PER_PAGE = 18;
 
-function renderProducts(containerId, products, page = 1) {
+// ── Rating star helper ────────────────────────────────────────────────────────
+// Converts a numeric average (0–5) into 5 Font Awesome star icons.
+function buildStarHTML(average, count) {
+  const stars = [];
+  for (let i = 1; i <= 5; i++) {
+    if (average >= i)           stars.push('<i class="fas fa-star"></i>');
+    else if (average >= i - 0.5) stars.push('<i class="fas fa-star-half-alt"></i>');
+    else                         stars.push('<i class="far fa-star"></i>');
+  }
+  const label = count > 0 ? `<small style="color:#888;font-size:11px;margin-left:4px;">(${count})</small>` : '';
+  return stars.join('') + label;
+}
+
+// Fetch bulk ratings for an array of product IDs.
+// Returns a map { productId: { average, count } }
+async function fetchBulkRatings(productIds) {
+  if (!productIds.length) return {};
+  try {
+    const res = await fetch("http://localhost:5000/api/reviews/products", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ productIds })
+    });
+    return res.ok ? await res.json() : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+async function renderProducts(containerId, products, page = 1) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
+  // Fetch ratings for the products we are about to render
+  const productIds  = products.map(p => p._id);
+  const ratingsMap  = await fetchBulkRatings(productIds);
+
+  const makeCard = (p) => {
+    const imageSrc = getImageSrc(p.images && p.images[0]);
+    const ratingInfo = ratingsMap[p._id] || { average: 0, count: 0 };
+    const starHTML   = buildStarHTML(ratingInfo.average, ratingInfo.count);
+    return `
+      <div class="pro" onclick="window.location.href='sproduct.html?productId=${p._id}'">
+        <img src="${imageSrc}" alt="${p.title}">
+        <div class="des">
+          <span>${p.category || ""}</span>
+          <h5>${p.title}</h5>
+          <div class="star">${starHTML}</div>
+          <h4>Rs. ${p.price}</h4>
+        </div>
+        <a href="#" onclick="event.stopPropagation(); addToCart('${p._id}')">
+          <i class="fal fa-shopping-cart cart"></i>
+        </a>
+      </div>`;
+  };
+
   // Only paginate the shop page
   if (containerId === "shop-products") {
-    const start = (page - 1) * PRODUCTS_PER_PAGE;
-    const end   = start + PRODUCTS_PER_PAGE;
-    const paginated = products.slice(start, end);
+    const start     = (page - 1) * PRODUCTS_PER_PAGE;
+    const paginated = products.slice(start, start + PRODUCTS_PER_PAGE);
 
     container.innerHTML = "";
-    paginated.forEach(p => {
-      const imageSrc = getImageSrc(p.images && p.images[0]);
-      container.innerHTML += `
-        <div class="pro" onclick="window.location.href='sproduct.html?productId=${p._id}'">
-          <img src="${imageSrc}" alt="${p.title}">
-          <div class="des">
-            <span>${p.category || ""}</span>
-            <h5>${p.title}</h5>
-            <div class="star">
-              <i class="fas fa-star"></i><i class="fas fa-star"></i>
-              <i class="fas fa-star"></i><i class="fas fa-star"></i>
-              <i class="fas fa-star-half-alt"></i>
-            </div>
-            <h4>Rs. ${p.price}</h4>
-          </div>
-          <a href="#" onclick="event.stopPropagation(); addToCart('${p._id}')">
-            <i class="fal fa-shopping-cart cart"></i>
-          </a>
-        </div>`;
-    });
+    paginated.forEach(p => { container.innerHTML += makeCard(p); });
 
     renderPagination(containerId, products, page);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -464,26 +496,7 @@ function renderProducts(containerId, products, page = 1) {
 
   // Non-paginated containers (featured, admin, etc.)
   container.innerHTML = "";
-  products.forEach(p => {
-    const imageSrc = getImageSrc(p.images && p.images[0]);
-    container.innerHTML += `
-      <div class="pro" onclick="window.location.href='sproduct.html?productId=${p._id}'">
-        <img src="${imageSrc}" alt="${p.title}">
-        <div class="des">
-          <span>${p.category || ""}</span>
-          <h5>${p.title}</h5>
-          <div class="star">
-            <i class="fas fa-star"></i><i class="fas fa-star"></i>
-            <i class="fas fa-star"></i><i class="fas fa-star"></i>
-            <i class="fas fa-star-half-alt"></i>
-          </div>
-          <h4>Rs. ${p.price}</h4>
-        </div>
-        <a href="#" onclick="event.stopPropagation(); addToCart('${p._id}')">
-          <i class="fal fa-shopping-cart cart"></i>
-        </a>
-      </div>`;
-  });
+  products.forEach(p => { container.innerHTML += makeCard(p); });
 }
 
 function renderPagination(containerId, products, currentPage) {
@@ -594,15 +607,48 @@ async function editProduct(id, title, price, image, stock, category, subcategory
   
   updateSubcategories('edit-category', 'edit-subcategory');
 
-  document.getElementById("add-product-form").style.display  = "none";
-  document.getElementById("edit-title").style.display        = "block";
-  document.getElementById("edit-product-form").style.display = "block";
+  // ── Show the edit panel, hide the add panel ──
+  const addPanel  = document.getElementById("add-product-panel");
+  const editPanel = document.getElementById("edit-product-panel");
+  if (addPanel)  addPanel.style.display  = "none";
+  if (editPanel) editPanel.style.display = "block";
+
+  // Always restore the inner form to visible.
+  // cancelEdit() hides it; without this reset the form stays hidden
+  // when Edit is clicked a second time on a different product.
+  const editFormInner = document.getElementById("edit-product-form");
+  if (editFormInner) editFormInner.style.display = "block";
+
+  if (editPanel) editPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  // Legacy fallbacks (kept for compatibility with admin.html dummy elements)
+  const addForm   = document.getElementById("add-product-form");
+  const editTitle = document.getElementById("edit-title");
+  if (addForm)   addForm.style.display   = "none";
+  if (editTitle) editTitle.style.display = "block";
 }
 
+// ── cancelEdit: hides edit panel, shows add panel ──
+// Called directly by the editForm submit listener (module-local scope).
+// Also assigned to window.cancelEdit but that is locked to _ourCancelEdit
+// in admin.html — both implementations must be kept in sync.
 function cancelEdit() {
-  document.getElementById("add-product-form").style.display  = "block";
-  document.getElementById("edit-title").style.display        = "none";
-  document.getElementById("edit-product-form").style.display = "none";
+  // Toggle the panel cards (admin.html structure)
+  const addPanel  = document.getElementById("add-product-panel");
+  const editPanel = document.getElementById("edit-product-panel");
+  if (addPanel)  addPanel.style.display  = "block";
+  if (editPanel) editPanel.style.display = "none";
+
+  // Hide the inner form so it doesn't show when the panel is re-opened
+  // (editProduct() will set it back to "block" on the next edit click)
+  const editFormEl = document.getElementById("edit-product-form");
+  if (editFormEl) editFormEl.style.display = "none";
+
+  // Legacy fallbacks
+  const addForm   = document.getElementById("add-product-form");
+  const editTitle = document.getElementById("edit-title");
+  if (addForm)   addForm.style.display   = "block";
+  if (editTitle) editTitle.style.display = "none";
 }
 
 async function deleteProduct(id) {
@@ -648,8 +694,16 @@ if (editForm) {
       body: formData
     });
 
-    if (response.ok) { alert("Product updated"); cancelEdit(); loadAdminProducts(); }
-    else              { alert("Failed to update product"); }
+    if (response.ok) {
+      alert("Product updated");
+      // Use cancelEdit() directly — it now correctly toggles both panel cards AND form elements.
+      // window.cancelEdit (locked to _ourCancelEdit in admin.html) also works but the local
+      // cancelEdit is guaranteed available in this module scope.
+      cancelEdit();
+      loadAdminProducts();
+    } else {
+      alert("Failed to update product");
+    }
   });
 }
 
@@ -695,15 +749,25 @@ async function loadCart() {
   renderCart(cart, productMap);
 }
 
+// Stores price/qty data keyed by cart item _id so updateSelectionSummary can recalc without re-fetching
+const _cartItemMeta = {};
+
 function renderCart(cart, productMap) {
-  const container = document.getElementById("cart-list");
+  const container    = document.getElementById("cart-list");
   const summaryPanel = document.getElementById("cart-summary-panel");
-  const countLabel = document.getElementById("cart-count-label");
+  const countLabel   = document.getElementById("cart-count-label");
   if (!container) return;
 
   container.innerHTML = "";
-  let total = 0;
+  // Reset meta cache
+  Object.keys(_cartItemMeta).forEach(k => delete _cartItemMeta[k]);
+
+  let total     = 0;
   let itemCount = 0;
+
+  // Split into regular items and auction-won items
+  const regularItems = cart.filter(item => !item.isAuctionWin);
+  const auctionItems = cart.filter(item =>  item.isAuctionWin);
 
   if (cart.length === 0) {
     if (summaryPanel) summaryPanel.style.display = "none";
@@ -718,41 +782,107 @@ function renderCart(cart, productMap) {
     return;
   }
 
-  cart.forEach(item => {
-    const product = productMap[item.productId];
-    if (!product) return;
-
-    const qty       = item.qty || 1;
-    const itemTotal = product.price * qty;
-    total      += itemTotal;
-    itemCount  += qty;
-
-    const imageSrc = getImageSrc(product.images && product.images[0]);
-
+  // ── Auction-won items ────────────────────────────────────────────────────────
+  if (auctionItems.length > 0) {
     container.innerHTML += `
-      <div class="cart-item" id="cart-item-${item._id}">
-        <img src="${imageSrc}" alt="${product.title}" class="cart-item-img"
-             onerror="this.style.background='#f0f5f0'; this.style.display='flex'">
-        <div class="cart-item-details">
-          <div class="cart-item-cat">${product.category || "Art"}</div>
-          <h4>${product.title}</h4>
-          <div class="cart-item-unit-price">Rs. ${Number(product.price).toLocaleString()} each</div>
-          <div class="cart-item-price-line">
-            <div class="cart-qty-control">
-              <button class="qty-btn" onclick="updateQty('${item._id}', ${qty - 1}, '${item.productId}')">−</button>
-              <span class="qty-val">${qty}</span>
-              <button class="qty-btn" onclick="updateQty('${item._id}', ${qty + 1}, '${item.productId}')">+</button>
-            </div>
-            <span class="cart-item-subtotal">Rs. ${Number(itemTotal).toLocaleString()}</span>
-          </div>
-        </div>
-        <div class="cart-item-actions">
-          <button class="remove-btn" onclick="removeFromCart('${item._id}')">Remove</button>
-        </div>
+      <div class="cart-section-label">
+        <i class="fas fa-gavel"></i> Auction Wins
       </div>`;
-  });
 
-  // Update summary panel
+    auctionItems.forEach(item => {
+      const price = item.auctionPrice || 0;
+      total      += price;
+      itemCount  += 1;
+      _cartItemMeta[item._id] = { price, qty: 1 };
+
+      const imgSrc = item.auctionImage || "images/ceramicvase.jpg";
+
+      container.innerHTML += `
+        <div class="cart-item cart-item--auction" id="cart-item-${item._id}">
+          <img src="${imgSrc}" alt="${item.auctionTitle || 'Auction item'}" class="cart-item-img"
+               onerror="this.src='images/ceramicvase.jpg'">
+          <div class="cart-item-details">
+            <div class="cart-item-cat auction-win-badge">
+              <i class="fas fa-gavel"></i> Won at Auction
+            </div>
+            <h4>${item.auctionTitle || 'Auction Item'}</h4>
+            <div class="cart-item-unit-price">
+              Final bid: <strong>Rs. ${Number(price).toLocaleString()}</strong>
+            </div>
+            <div class="cart-item-price-line">
+              <span class="auction-qty-note">Qty: 1 (fixed)</span>
+              <span class="cart-item-subtotal">Rs. ${Number(price).toLocaleString()}</span>
+              <button class="checkout-item-btn" onclick="checkoutItem('${item._id}')">
+                <i class="fas fa-bolt"></i> Buy Now
+              </button>
+            </div>
+          </div>
+          <div class="cart-item-actions">
+            <label class="cart-item-select" title="Select for checkout">
+              <input type="checkbox" class="cart-select-cb" data-id="${item._id}"
+                     onchange="updateSelectionSummary()">
+              <span class="cart-select-mark"></span>
+            </label>
+            <button class="remove-btn" onclick="removeFromCart('${item._id}')">Remove</button>
+          </div>
+        </div>`;
+    });
+  }
+
+  // ── Regular product items ────────────────────────────────────────────────────
+  if (regularItems.length > 0) {
+    if (auctionItems.length > 0) {
+      container.innerHTML += `
+        <div class="cart-section-label">
+          <i class="fas fa-shopping-bag"></i> Shop Items
+        </div>`;
+    }
+
+    regularItems.forEach(item => {
+      const product = productMap[item.productId];
+      if (!product) return;
+
+      const qty       = item.qty || 1;
+      const itemTotal = product.price * qty;
+      total      += itemTotal;
+      itemCount  += qty;
+      _cartItemMeta[item._id] = { price: product.price, qty };
+
+      const imageSrc = getImageSrc(product.images && product.images[0]);
+
+      container.innerHTML += `
+        <div class="cart-item" id="cart-item-${item._id}">
+          <img src="${imageSrc}" alt="${product.title}" class="cart-item-img"
+               onerror="this.style.background='#f0f5f0'; this.style.display='flex'">
+          <div class="cart-item-details">
+            <div class="cart-item-cat">${product.category || "Art"}</div>
+            <h4>${product.title}</h4>
+            <div class="cart-item-unit-price">Rs. ${Number(product.price).toLocaleString()} each</div>
+            <div class="cart-item-price-line">
+              <div class="cart-qty-control">
+                <button class="qty-btn" onclick="updateQty('${item._id}', ${qty - 1}, '${item.productId}')">−</button>
+                <span class="qty-val">${qty}</span>
+                <button class="qty-btn" onclick="updateQty('${item._id}', ${qty + 1}, '${item.productId}')">+</button>
+              </div>
+              <span class="cart-item-subtotal">Rs. ${Number(itemTotal).toLocaleString()}</span>
+              <button class="checkout-item-btn" onclick="checkoutItem('${item._id}')">
+                <i class="fas fa-bolt"></i> Buy Now
+              </button>
+            </div>
+          </div>
+          <div class="cart-item-actions">
+            <label class="cart-item-select" title="Select for checkout">
+              <input type="checkbox" class="cart-select-cb" data-id="${item._id}"
+                     onchange="updateSelectionSummary()">
+              <span class="cart-select-mark"></span>
+            </label>
+            <button class="remove-btn" onclick="removeFromCart('${item._id}')">Remove</button>
+          </div>
+        </div>`;
+    });
+  }
+
+  // Update summary panel (full total — selection recalc happens on checkbox change)
   if (summaryPanel) {
     summaryPanel.style.display = "block";
     document.getElementById("summary-subtotal").textContent = `Rs. ${Number(total).toLocaleString()}`;
@@ -761,10 +891,82 @@ function renderCart(cart, productMap) {
   if (countLabel) {
     countLabel.textContent = `${itemCount} item${itemCount !== 1 ? "s" : ""} in your bag`;
   }
+
+  // Ensure the checkout-selected button exists in the summary panel
+  _ensureCheckoutSelectedBtn();
 }
 
-function checkoutItem(cartId) { window.location.href = "checkout.html"; }
-function checkoutAll()        { window.location.href = "checkout.html"; }
+/* Inject "Checkout Selected" button into summary panel once */
+function _ensureCheckoutSelectedBtn() {
+  const panel = document.getElementById("cart-summary-panel");
+  if (!panel || panel.querySelector("#checkout-selected-btn")) return;
+  const checkoutAllBtn = panel.querySelector(".checkout-all-btn");
+  if (!checkoutAllBtn) return;
+
+  const selBtn = document.createElement("button");
+  selBtn.id        = "checkout-selected-btn";
+  selBtn.className = "checkout-selected-btn";
+  selBtn.innerHTML = `<i class="fas fa-check-square"></i> Checkout Selected (<span id="sel-count">0</span>)`;
+  selBtn.onclick   = checkoutSelected;
+  selBtn.style.display = "none";
+  // Insert right below the main checkout button
+  checkoutAllBtn.insertAdjacentElement("afterend", selBtn);
+}
+
+/* Recalculate summary when checkboxes change */
+function updateSelectionSummary() {
+  const checkboxes = document.querySelectorAll(".cart-select-cb");
+  const checked    = [...checkboxes].filter(cb => cb.checked);
+
+  const selBtn   = document.getElementById("checkout-selected-btn");
+  const selCount = document.getElementById("sel-count");
+
+  if (checked.length === 0) {
+    // Nothing selected — revert to full-cart totals
+    let total = 0;
+    checkboxes.forEach(cb => {
+      const meta = _cartItemMeta[cb.dataset.id];
+      if (meta) total += meta.price * meta.qty;
+    });
+    document.getElementById("summary-subtotal").textContent = `Rs. ${Number(total).toLocaleString()}`;
+    document.getElementById("summary-total").textContent    = `Rs. ${Number(total).toLocaleString()}`;
+    if (selBtn)   selBtn.style.display   = "none";
+    return;
+  }
+
+  // Calculate selected-only total
+  let selTotal = 0;
+  checked.forEach(cb => {
+    const meta = _cartItemMeta[cb.dataset.id];
+    if (meta) selTotal += meta.price * meta.qty;
+  });
+
+  document.getElementById("summary-subtotal").textContent = `Rs. ${Number(selTotal).toLocaleString()}`;
+  document.getElementById("summary-total").textContent    = `Rs. ${Number(selTotal).toLocaleString()}`;
+
+  if (selBtn) {
+    selBtn.style.display = "flex";
+    if (selCount) selCount.textContent = checked.length;
+  }
+}
+
+function checkoutSelected() {
+  const checked = [...document.querySelectorAll(".cart-select-cb:checked")];
+  if (checked.length === 0) { alert("Please select at least one item."); return; }
+  const ids = checked.map(cb => cb.dataset.id).join(",");
+  window.location.href = `checkout.html?items=${ids}`;
+}
+
+function checkoutItem(cartId) { window.location.href = `checkout.html?items=${cartId}`; }
+function checkoutAll() {
+  const checked = [...document.querySelectorAll(".cart-select-cb:checked")];
+  if (checked.length > 0) {
+    const ids = checked.map(cb => cb.dataset.id).join(",");
+    window.location.href = `checkout.html?items=${ids}`;
+  } else {
+    window.location.href = "checkout.html";
+  }
+}
 
 async function viewProductDetails(productId) {
   const token     = localStorage.getItem("authToken");
@@ -954,8 +1156,9 @@ document.addEventListener("DOMContentLoaded", loadCart);
 // ── Page-specific product loading ────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
   if (document.getElementById("shop-products")) {
-    // New Arrivals — always newest first
-    loadProducts("shop-products", { sort: "newest" });
+    // New Arrivals — always newest first, capped at 16 on main page
+    const isMainPage = !document.getElementById("pagination-controls");
+    loadProducts("shop-products", { sort: "newest", ...(isMainPage && { limit: 16 }) });
   }
   if (document.getElementById("featured-products")) {
     // Featured — personalised for logged-in users, newest fallback for guests
@@ -997,15 +1200,21 @@ window.updateQty   = updateQty;
 window.applyPromo  = applyPromo;
 
 // Expose functions to global scope
-window.addProduct        = addProduct;
-window.editProduct       = editProduct;
-window.cancelEdit        = cancelEdit;
-window.deleteProduct     = deleteProduct;
-window.loadProducts      = loadProducts;
-window.loadFeaturedProducts = loadFeaturedProducts;
-window.addToCart         = addToCart;
-window.checkoutItem      = checkoutItem;
-window.checkoutAll       = checkoutAll;
-window.removeFromCart    = removeFromCart;
-window.viewProductDetails = viewProductDetails;
-window.closeProductModal = closeProductModal;
+window.addProduct              = addProduct;
+window.editProduct             = editProduct;
+window.cancelEdit              = cancelEdit;
+window.deleteProduct           = deleteProduct;
+window.loadProducts            = loadProducts;
+window.loadFeaturedProducts    = loadFeaturedProducts;
+window.addToCart               = addToCart;
+window.checkoutItem            = checkoutItem;
+window.checkoutAll             = checkoutAll;
+window.checkoutSelected        = checkoutSelected;
+window.updateSelectionSummary  = updateSelectionSummary;
+window.removeFromCart          = removeFromCart;
+window.viewProductDetails      = viewProductDetails;
+window.closeProductModal       = closeProductModal;
+window.updateSubcategories     = updateSubcategories;
+// Rating helpers — used by sproduct.html
+window.buildStarHTML           = buildStarHTML;
+window.fetchBulkRatings        = fetchBulkRatings;

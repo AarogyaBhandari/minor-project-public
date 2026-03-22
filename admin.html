@@ -8,9 +8,6 @@
     <link rel="stylesheet" href="style.css">
 
     <style>
-        /* ═══════════════════════════════════════════
-           CSS VARIABLES — shared token system
-        ═══════════════════════════════════════════ */
         :root {
             --brand:        #8b4513;
             --brand-dark:   #6b3410;
@@ -39,9 +36,6 @@
             --transition:   0.2s cubic-bezier(0.4,0,0.2,1);
         }
 
-        /* ═══════════════════════════════════════════
-           PAGE BODY & LAYOUT
-        ═══════════════════════════════════════════ */
         body {
             background: var(--bg);
             min-height: 100vh;
@@ -53,9 +47,6 @@
             padding: 32px 28px 60px;
         }
 
-        /* ═══════════════════════════════════════════
-           PAGE HEADER STRIP
-        ═══════════════════════════════════════════ */
         .admin-page-header {
             display: flex;
             align-items: center;
@@ -93,9 +84,6 @@
             margin: 0;
         }
 
-        /* ═══════════════════════════════════════════
-           TWO-COLUMN LAYOUT
-        ═══════════════════════════════════════════ */
         .admin-layout {
             display: grid;
             grid-template-columns: 420px 1fr;
@@ -107,9 +95,6 @@
             .admin-layout { grid-template-columns: 1fr; }
         }
 
-        /* ═══════════════════════════════════════════
-           PANEL CARD — shared wrapper
-        ═══════════════════════════════════════════ */
         .panel-card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -163,9 +148,6 @@
             padding: 22px;
         }
 
-        /* ═══════════════════════════════════════════
-           SECTION TITLE inside panel
-        ═══════════════════════════════════════════ */
         .section-label {
             font-size: 10.5px;
             font-weight: 800;
@@ -182,9 +164,6 @@
 
         .section-label i { font-size: 10px; }
 
-        /* ═══════════════════════════════════════════
-           FORM FIELDS — refined
-        ═══════════════════════════════════════════ */
         .form-group {
             margin-bottom: 14px;
         }
@@ -241,7 +220,6 @@
             min-height: 76px;
         }
 
-        /* Custom select arrow */
         .form-group select {
             appearance: none;
             -webkit-appearance: none;
@@ -253,14 +231,12 @@
             cursor: pointer;
         }
 
-        /* Form row — two columns */
         .form-row-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
         }
 
-        /* Image source toggle */
         .image-source-toggle {
             display: flex;
             gap: 6px;
@@ -291,9 +267,6 @@
             color: var(--brand);
         }
 
-        /* ═══════════════════════════════════════════
-           SUBMIT BUTTON
-        ═══════════════════════════════════════════ */
         .btn-primary {
             display: inline-flex;
             align-items: center;
@@ -348,9 +321,6 @@
             color: var(--brand);
         }
 
-        /* ═══════════════════════════════════════════
-           PRODUCTS GRID — right panel
-        ═══════════════════════════════════════════ */
         .products-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
@@ -358,7 +328,6 @@
             padding: 22px;
         }
 
-        /* Product card */
         .product-card {
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
@@ -475,7 +444,6 @@
             border: 1px solid var(--danger-border);
         }
 
-        /* Product card actions — new card markup */
         .product-card-actions {
             display: flex;
             gap: 8px;
@@ -524,11 +492,6 @@
             color: #fff;
         }
 
-        /* ═══════════════════════════════════════════
-           LEGACY .product-actions — from script.js renderAdminProducts
-           These rules target the old DOM output so it inherits
-           the same visual language without requiring a JS patch.
-        ═══════════════════════════════════════════ */
         .product-actions {
             display: flex;
             gap: 8px;
@@ -537,7 +500,6 @@
             border-top: 1px solid var(--border);
         }
 
-        /* Base reset for both buttons */
         .product-actions button {
             flex: 1;
             padding: 7px 12px;
@@ -556,11 +518,8 @@
             line-height: 1;
         }
 
-        .product-actions button:active {
-            transform: scale(0.95);
-        }
+        .product-actions button:active { transform: scale(0.95); }
 
-        /* First button → Edit (warm brown) */
         .product-actions button:first-of-type {
             background: var(--brand-light);
             color: var(--brand);
@@ -568,7 +527,7 @@
         }
 
         .product-actions button:first-of-type::before {
-            content: "\f303";          /* fa-pen */
+            content: "\f303";
             font-family: "Font Awesome 5 Pro", "Font Awesome 5 Free";
             font-weight: 900;
             font-size: 10px;
@@ -581,7 +540,6 @@
             box-shadow: 0 3px 10px rgba(139,69,19,0.25);
         }
 
-        /* Second button → Delete (red) */
         .product-actions button:last-of-type {
             background: var(--danger-bg);
             color: var(--danger-text);
@@ -589,7 +547,7 @@
         }
 
         .product-actions button:last-of-type::before {
-            content: "\f2ed";          /* fa-trash-alt */
+            content: "\f2ed";
             font-family: "Font Awesome 5 Pro", "Font Awesome 5 Free";
             font-weight: 900;
             font-size: 10px;
@@ -602,9 +560,6 @@
             box-shadow: 0 3px 10px rgba(185,28,28,0.22);
         }
 
-        /* ═══════════════════════════════════════════
-           PRODUCTS PANEL TOOLBAR
-        ═══════════════════════════════════════════ */
         .products-toolbar {
             display: flex;
             align-items: center;
@@ -648,17 +603,6 @@
             color: var(--text-secondary);
         }
 
-        /* ═══════════════════════════════════════════
-           LEGACY .product-card bare markup (script.js)
-           script.js renderAdminProducts writes:
-             <div class="product-card">
-               <img>
-               <h3>, <p>, <p>…
-               <div class="product-actions"><button>Edit</button><button>Delete</button></div>
-             </div>
-           These rules make that old markup look polished
-           inside the new grid without any JS changes.
-        ═══════════════════════════════════════════ */
         .products-grid .product-card > img {
             width: 100%;
             height: 160px;
@@ -682,21 +626,16 @@
             padding: 0;
         }
 
-        /* First <p> is usually "Price: Rs. X" — highlight it */
         .products-grid .product-card > p:first-of-type {
             font-size: 13px;
             font-weight: 800;
             color: var(--brand);
         }
 
-        /* .product-actions sits directly inside .product-card in the old markup */
         .products-grid .product-card .product-actions {
             margin: 8px 14px 14px;
         }
 
-        /* ═══════════════════════════════════════════
-           EDIT FORM PANEL — appears above product list
-        ═══════════════════════════════════════════ */
         #edit-form-panel {
             display: none;
             margin-bottom: 0;
@@ -706,9 +645,6 @@
             display: block;
         }
 
-        /* ═══════════════════════════════════════════
-           SELLERS SECTION
-        ═══════════════════════════════════════════ */
         .sellers-section {
             margin-top: 28px;
         }
@@ -753,9 +689,6 @@
             margin: 0;
         }
 
-        /* ═══════════════════════════════════════════
-           LOGOUT MODAL
-        ═══════════════════════════════════════════ */
         .modal {
             display: none;
             position: fixed;
@@ -808,9 +741,6 @@
         #confirm-logout { background: var(--brand); color: white; }
         #confirm-logout:hover { background: var(--brand-dark); }
 
-        /* ═══════════════════════════════════════════
-           ADMIN PAGINATION BAR
-        ═══════════════════════════════════════════ */
         #admin-pg-wrap {
             display: flex;
             align-items: center;
@@ -894,9 +824,7 @@
             #admin-pg-wrap { justify-content: center; }
             #admin-pg-info { width: 100%; text-align: center; }
         }
-        /* ═══════════════════════════════════════════
-           FORM VALIDATION — inline error states
-        ═══════════════════════════════════════════ */
+
         .form-group input.field-error,
         .form-group select.field-error,
         .form-group textarea.field-error {
@@ -927,7 +855,6 @@
             font-size: 11px;
         }
 
-        /* Form-level toast banner */
         .form-error-banner {
             display: flex;
             align-items: center;
@@ -1094,6 +1021,10 @@
                                 <label><i class="fas fa-stream"></i> Subcategory</label>
                                 <select id="psubcategory">
                                     <option value="">Select Subcategory</option>
+                                    <!-- Populated dynamically by updateSubcategories() in script.js
+                                         Antiques Artifacts → Furniture, Jewelry, Metal, Glass, Wood
+                                         Decorative Arts    → Ceramics, Pottery, Glassware, Textile
+                                         Fine Art           → Painting, Drawing, Sculpture -->
                                 </select>
                             </div>
 
@@ -1101,10 +1032,12 @@
                                 <label><i class="fas fa-hourglass-half"></i> Era / Period</label>
                                 <select id="pera">
                                     <option value="">Select Era/Period</option>
+                                    <option value="Kirant Dynasty">Kirant Dynasty</option>
+                                    <option value="Lichhavi Period">Lichhavi Period</option>
                                     <option value="Malla Period">Malla Period</option>
                                     <option value="Shah Period">Shah Period</option>
                                     <option value="Rana Period">Rana Period</option>
-                                    <option value="Modern">Modern</option>
+                                    <option value="Modern Period">Modern Period</option>
                                 </select>
                             </div>
 
@@ -1187,6 +1120,10 @@
                                 <label><i class="fas fa-stream"></i> Subcategory</label>
                                 <select id="edit-subcategory">
                                     <option value="">Select Subcategory</option>
+                                    <!-- Populated dynamically by updateSubcategories() in script.js
+                                         Antiques Artifacts → Furniture, Jewelry, Metal, Glass, Wood
+                                         Decorative Arts    → Ceramics, Pottery, Glassware, Textile
+                                         Fine Art           → Painting, Drawing, Sculpture -->
                                 </select>
                             </div>
 
@@ -1194,10 +1131,12 @@
                                 <label><i class="fas fa-hourglass-half"></i> Era / Period</label>
                                 <select id="edit-era">
                                     <option value="">Select Era/Period</option>
+                                    <option value="Kirant Dynasty">Kirant Dynasty</option>
+                                    <option value="Lichhavi Period">Lichhavi Period</option>
                                     <option value="Malla Period">Malla Period</option>
                                     <option value="Shah Period">Shah Period</option>
                                     <option value="Rana Period">Rana Period</option>
-                                    <option value="Modern">Modern</option>
+                                    <option value="Modern Period">Modern Period</option>
                                 </select>
                             </div>
 
@@ -1248,7 +1187,6 @@
                 </div>
 
                 <div class="products-grid products-list">
-                    <!-- Products injected here -->
                     <div class="no-products">
                         <i class="fas fa-box-open"></i>
                         <p>No products yet. Add your first product.</p>
@@ -1280,7 +1218,7 @@
             <a href="aboutus.html">About us</a>
             <a href="delivery.html">Delivery Information</a>
             <a href="privacy.html">Privacy Policy</a>
-            <a href="termsandcondition.html">Terms & Conditions</a>
+            <a href="termsandcondition.html">Terms &amp; Conditions</a>
             <a href="contactus.html">Contact Us</a>
         </div>
         <div class="col">
@@ -1314,28 +1252,9 @@
     <input type="radio" id="edit-image-url-radio"    name="edit-image-source" value="url"    checked style="display:none;">
     <input type="radio" id="edit-image-upload-radio" name="edit-image-source" value="upload"         style="display:none;">
 
-    <!--
-        script.js (ES module, strict mode) does:
-          window.editProduct = editProduct;   ← property assignment we CAN intercept
-          window.cancelEdit  = cancelEdit;    ← same
-
-        We lock both with a getter/no-op-setter BEFORE script.js loads.
-        A no-op setter does NOT throw in strict mode (unlike writable:false).
-        script.js's assignments silently do nothing; our versions stay in place.
-
-        script.js also calls getElementById("add-product-form").style.display
-        and getElementById("edit-title").style.display.
-        We keep those IDs in the DOM as dummy hidden elements so no null crash
-        occurs if the original ever fires somehow.
-    -->
-
-    <!-- Dummy elements script.js:editProduct / cancelEdit touch -->
-    <div  id="edit-title" style="display:none;"></div>
+    <div id="edit-title" style="display:none;"></div>
 
     <script>
-        /* ══════════════════════════════════════════════════════
-           IMAGE TAB SWITCHER
-        ══════════════════════════════════════════════════════ */
         function switchImageTab(tab, form) {
             const p      = form === 'edit' ? 'edit-' : '';
             const urlGrp = document.getElementById(p + 'url-group');
@@ -1359,7 +1278,6 @@
             }
         }
 
-        /* ── Our editProduct implementation ── */
         function _ourEditProduct(id, title, price, image, stock, category, subcategory, era, description) {
             const set = (elId, val) => {
                 const el = document.getElementById(elId);
@@ -1382,29 +1300,33 @@
                 window.updateSubcategories('edit-category', 'edit-subcategory');
             setTimeout(() => set('edit-subcategory', subcategory), 60);
 
+            // Show edit panel, hide add panel
             document.getElementById('add-product-panel').style.display  = 'none';
             document.getElementById('edit-product-panel').style.display = 'block';
+
+            // Always ensure the form inside the panel is visible
+            // (cancelEdit hides it; subsequent edit clicks must restore it)
+            const editFormEl = document.getElementById('edit-product-form');
+            if (editFormEl) editFormEl.style.display = 'block';
+
             document.getElementById('edit-product-panel')
                 .scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        /* ── Our cancelEdit implementation ── */
         function _ourCancelEdit() {
             document.getElementById('add-product-panel').style.display  = 'block';
             document.getElementById('edit-product-panel').style.display = 'none';
+
+            // Also hide the inner form so it doesn't bleed through if the panel
+            // is made visible again before the form display is reset
+            const editFormEl = document.getElementById('edit-product-form');
+            if (editFormEl) editFormEl.style.display = 'none';
         }
 
-        /* Also expose as adminCancelEdit for the Cancel button onclick */
         window.adminCancelEdit = _ourCancelEdit;
 
-        /* ══════════════════════════════════════════════════════
-           FORM VALIDATION HELPERS
-        ══════════════════════════════════════════════════════ */
-
-        /** Mark a field as invalid, show an error message below it */
         function _fieldError(el, msg) {
             el.classList.add('field-error');
-            /* Remove any existing error message for this field */
             const existing = el.parentElement.querySelector('.field-error-msg');
             if (existing) existing.remove();
             const span = document.createElement('span');
@@ -1421,7 +1343,6 @@
             if (msg) msg.remove();
         }
 
-        /** Show / clear a banner above the submit button */
         function _showBanner(formId, msg) {
             const form = document.getElementById(formId);
             if (!form) return;
@@ -1429,7 +1350,6 @@
             if (!banner) {
                 banner = document.createElement('div');
                 banner.className = 'form-error-banner';
-                /* Insert before the first submit button */
                 const btn = form.querySelector('button.btn-primary');
                 if (btn) form.insertBefore(banner, btn);
                 else form.appendChild(banner);
@@ -1444,17 +1364,11 @@
             if (banner) banner.remove();
         }
 
-        /* ══════════════════════════════════════════════════════
-           Validated addProduct — wraps script.js's version.
-           Runs field-by-field checks, marks errors inline,
-           then delegates to the original only if all pass.
-        ══════════════════════════════════════════════════════ */
         function _ourAddProduct() {
             _clearBanner('add-product-form');
 
             const isUpload = document.getElementById('image-upload-radio')?.checked;
 
-            /* Define required fields and their human-readable labels */
             const fields = [
                 { id: 'pname',        label: 'Product name is required' },
                 { id: 'pprice',       label: 'Price is required',        extra: el => Number(el.value) > 0 || 'Price must be greater than 0' },
@@ -1485,7 +1399,6 @@
                 }
             });
 
-            /* Image validation */
             if (isUpload) {
                 const fileEl = document.getElementById('pimagefile');
                 if (fileEl && fileEl.files.length === 0) {
@@ -1505,26 +1418,19 @@
             if (hasError) {
                 _showBanner('add-product-form', 'Please fill in all required fields before saving.');
                 if (firstError) firstError.focus();
-                return;   /* ← block the API call */
+                return;
             }
 
-            /* All good — call script.js's real addProduct */
             if (typeof window._origAddProduct === 'function') {
                 window._origAddProduct();
             }
         }
 
-        /* ══════════════════════════════════════════════════════
-           Lock editProduct, cancelEdit AND addProduct with
-           getter/no-op-setter so script.js cannot overwrite them.
-        ══════════════════════════════════════════════════════ */
         (function lockFunctions() {
             function makeLocked(fn) {
                 return {
                     get: function()  { return fn; },
                     set: function(v) {
-                        /* When script.js assigns window.addProduct = addProduct,
-                           capture it as _origAddProduct so our wrapper can call it */
                         if (fn === _ourAddProduct) window._origAddProduct = v;
                     },
                     configurable: false,
@@ -1552,12 +1458,7 @@
             }
         })();
 
-        /* ══════════════════════════════════════════════════════
-           DOMContentLoaded — sellers panel + product count badge
-        ══════════════════════════════════════════════════════ */
         document.addEventListener('DOMContentLoaded', () => {
-
-            /* Sellers section (admin only) */
             const token = localStorage.getItem('authToken');
             if (token) {
                 fetch('http://localhost:5000/api/users/sellers', {
@@ -1584,20 +1485,11 @@
             }
         });
 
-        /* ══════════════════════════════════════════════════════
-           ADMIN PAGINATION ENGINE
-           ─────────────────────────────────────────────────────
-           script.js writes all product cards directly into
-           .products-list (module-local — cannot be intercepted).
-           We use a MutationObserver to detect when cards land,
-           then slice and show 18 per page with a nav bar.
-        ══════════════════════════════════════════════════════ */
         (function() {
             const PER_PAGE = 18;
             let _allCards  = [];
             let _curPage   = 1;
 
-            /* ── show one page of cards ── */
             function showPage(page) {
                 const total = _allCards.length;
                 const pages = Math.max(1, Math.ceil(total / PER_PAGE));
@@ -1613,13 +1505,11 @@
                 renderPgBar(pages, total);
 
                 if (page > 1) {
-                    const panel = document.querySelector('.products-list')
-                                          ?.closest('.panel-card');
+                    const panel = document.querySelector('.products-list')?.closest('.panel-card');
                     if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             }
 
-            /* ── build the pagination bar ── */
             function renderPgBar(totalPages, total) {
                 const wrap = document.getElementById('admin-pg-wrap');
                 const bar  = document.getElementById('admin-pg-bar');
@@ -1678,7 +1568,6 @@
                 if (subEl) subEl.textContent  = `${n} listing${n !== 1 ? 's' : ''}`;
             }
 
-            /* ── MutationObserver watches .products-list ── */
             function attachObserver() {
                 const container = document.querySelector('.products-list');
                 if (!container) return;
@@ -1686,13 +1575,9 @@
                 let debounceTimer = null;
 
                 const observer = new MutationObserver(() => {
-                    /* script.js appends cards one-by-one via innerHTML +=
-                       so mutations fire in rapid bursts — debounce 80 ms */
                     clearTimeout(debounceTimer);
                     debounceTimer = setTimeout(() => {
-                        const cards = Array.from(
-                            container.querySelectorAll('.product-card')
-                        );
+                        const cards = Array.from(container.querySelectorAll('.product-card'));
 
                         if (cards.length === 0) {
                             _allCards = [];
@@ -1702,9 +1587,7 @@
                             return;
                         }
 
-                        /* Make all cards visible first (reset any previous hide) */
                         cards.forEach(c => c.style.display = '');
-
                         _allCards = cards;
                         _curPage  = 1;
                         updateBadge(cards.length);

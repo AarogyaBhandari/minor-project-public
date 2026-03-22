@@ -41,174 +41,243 @@
   cursor: pointer;
 }
 
-#cancel-logout {
-  background: #ddd;
-}
+#cancel-logout { background: #ddd; }
+#confirm-logout { background: #8b4513; color: white; }
 
-#confirm-logout {
-  background: #8b4513;
-  color: white;
-}
-
-/* Filter Sidebar Styles */
+/* ═══════════════════════════════════════════
+   SHOP LAYOUT
+═══════════════════════════════════════════ */
 .shop-section {
   display: grid;
-  grid-template-columns: 250px 1fr;
-  gap: 20px;
-  padding: 20px;
+  grid-template-columns: 260px 1fr;
+  gap: 24px;
+  padding: 24px 80px 40px;
   max-width: 1400px;
   margin: 0 auto;
 }
 
+/* ═══════════════════════════════════════════
+   FILTER SIDEBAR — redesigned
+═══════════════════════════════════════════ */
 .filter-sidebar {
-  background: #f9f9f9;
-  padding: 20px;
-  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #e8e0d8;
+  border-radius: 14px;
   height: fit-content;
-  top: 20px;
+  position: sticky;
+  top: 80px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(139,69,19,0.07);
 }
 
-.filter-sidebar h3 {
-  color: #8b4513;
-  margin-bottom: 15px;
-  font-size: 18px;
+/* ── Sidebar header bar ── */
+.filter-sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 18px;
+  background: linear-gradient(135deg, #8b4513, #c0622a);
 }
 
-.filter-group {
-  margin-bottom: 25px;
-}
-
-.filter-group h4 {
-  color: #333;
-  font-size: 14px;
-  font-weight: bold;
-  margin-bottom: 10px;
-  text-transform: uppercase;
-}
-
-.filter-option {
-  margin-bottom: 8px;
-}
-
-.filter-option input[type="checkbox"],
-.filter-option input[type="radio"] {
-  margin-right: 8px;
-  cursor: pointer;
-}
-
-.filter-option label {
-  cursor: pointer;
+.filter-sidebar-header i {
+  color: rgba(255,255,255,0.85);
   font-size: 13px;
 }
 
-.price-range {
-  margin-bottom: 15px;
+.filter-sidebar-header h3 {
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  margin: 0;
+  flex: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
-.price-range input {
+.filter-sidebar-clear-btn {
+  background: rgba(255,255,255,0.18);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-family: inherit;
+  letter-spacing: 0.02em;
+}
+.filter-sidebar-clear-btn:hover { background: rgba(255,255,255,0.3); }
+
+/* ── Filter group ── */
+.filter-group {
+  padding: 14px 18px;
+  border-bottom: 1px solid #f0ebe4;
+}
+.filter-group:last-child { border-bottom: none; }
+
+.filter-group-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #8b4513;
+  margin-bottom: 12px;
+}
+.filter-group-title i { font-size: 10px; }
+
+/* ── Price range (original slider kept) ── */
+.price-range { margin-bottom: 4px; }
+
+.price-range input[type="range"] {
   width: 100%;
-  margin-bottom: 5px;
+  margin-bottom: 6px;
+  accent-color: #8b4513;
+  cursor: pointer;
+  height: 4px;
 }
 
 .price-display {
   font-size: 12px;
   color: #666;
   text-align: center;
+  background: #fdf3ec;
+  border: 1px solid rgba(139,69,19,0.18);
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-weight: 600;
+  color: #8b4513;
 }
 
-.clear-filters-btn {
-  width: 100%;
-  padding: 10px;
-  background: #8b4513;
-  color: white;
-  border: none;
-  border-radius: 4px;
+/* ── Custom checkboxes ── */
+.filter-main-label,
+.filter-sub-label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 5px 0;
   cursor: pointer;
-  font-weight: bold;
+  font-size: 13px;
+  color: #444;
+  font-weight: 500;
+  transition: color 0.15s;
+  user-select: none;
 }
+.filter-main-label:hover,
+.filter-sub-label:hover { color: #8b4513; }
 
-.clear-filters-btn:hover {
-  background: #704010;
-}
+.filter-main-label input[type="checkbox"],
+.filter-sub-label input[type="checkbox"] { display: none; }
 
-/* Active Filters Display */
-.active-filters-container {
-  background: #f0f0f0;
-  padding: 15px 20px;
+.filter-check-box {
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid #d0c8c0;
   border-radius: 4px;
-  margin-bottom: 20px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, border-color 0.15s;
+  background: #fff;
+}
+
+.filter-main-label input:checked + .filter-check-box,
+.filter-sub-label input:checked + .filter-check-box {
+  background: #8b4513;
+  border-color: #8b4513;
+}
+
+.filter-main-label input:checked + .filter-check-box::after,
+.filter-sub-label input:checked + .filter-check-box::after {
+  content: "";
+  width: 8px;
+  height: 5px;
+  border-left: 1.5px solid #fff;
+  border-bottom: 1.5px solid #fff;
+  transform: rotate(-45deg) translateY(-1px);
+  display: block;
+}
+
+/* ── Category blocks & sub-groups ── */
+.filter-category-block { margin-bottom: 2px; }
+
+.filter-sub-group {
+  margin-left: 24px;
+  border-left: 2px solid #f0ebe4;
+  padding-left: 10px;
+  margin-top: 2px;
+}
+
+/* ── Active filters display ── */
+.active-filters-container {
+  background: #fdf3ec;
+  border: 1px solid rgba(139,69,19,0.15);
+  padding: 10px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
 }
 
 .active-filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
   align-items: center;
 }
 
 #active-filters-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
 }
 
 .filter-tag {
   background: #8b4513;
   color: white;
-  padding: 6px 12px;
+  padding: 4px 12px;
   border-radius: 20px;
-  font-size: 12px;
-  display: flex;
+  font-size: 11.5px;
+  font-weight: 600;
+  display: inline-flex;
   align-items: center;
-  gap: 15px;
-}
-
-.filter-tag .remove-filter {
-  cursor: pointer;
-  font-weight: bold;
+  gap: 6px;
 }
 
 .clear-all-btn {
-  background: #d9534f;
-  color: white;
-  padding: 6px 12px;
-  border-radius: 4px;
-  border: none;
+  background: transparent;
+  color: #8b4513;
+  border: 1px solid rgba(139,69,19,0.35);
+  padding: 4px 12px;
+  border-radius: 20px;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 11.5px;
+  font-weight: 600;
+  font-family: inherit;
+  transition: background 0.15s;
 }
+.clear-all-btn:hover { background: rgba(139,69,19,0.08); }
 
-.clear-all-btn:hover {
-  background: #c9302c;
-}
-
-.products-wrapper {
-  display: flex;
-  flex-direction: column;
-}
+.products-wrapper { display: flex; flex-direction: column; }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .shop-section {
-    grid-template-columns: 1fr;
-  }
-  
-  .filter-sidebar {
-    display: none;
-  }
+  .shop-section { grid-template-columns: 1fr; padding: 16px; }
+  .filter-sidebar { display: none; }
 }
 </style>
     </head>
 
     <body>
        <section id="header">
-            <a href="main.html"><img src="./images/LocalArtHub logo.png" class="logo" alt="" style="width: 30px;height: 30px;"></a>
+            <a href="index.html"><img src="./images/LocalArtHub logo.png" class="logo" alt="" style="width: 30px;height: 30px;"></a>
             
             <div>
                 <ul id="navbar">
                   <li><a class="navigation-button " href="main.html">Home</a></li>
                     <li><a href="shop.html" >Shop</a></li>
-                    <!-- <li><a href="#" >Blog</a></li> -->
                     <li><a href="admin.html" class="navigation-button">Admin</a></li>
                     <li><a href="aboutus.html" class="navigation-button" >About</a></li>
                     <li><a href="user-orders.html" class="navigation-button">My Orders</a></li>
@@ -225,129 +294,105 @@
                 <i id="bar" class="fas fa-bars"></i>
             </div>
         </section>
-         
-        <section id="page-header">
-            <h2>#UniqueArts</h2>
-            <p>Explore our curated collection of handcrafted art pieces from talented local artisans.</p>
+
+        <!-- ── Compact page header ── -->
+        <section id="page-header" style="height:auto; padding:16px 80px; flex-direction:row; justify-content:flex-start; align-items:center; gap:12px; text-align:left;">
+            <div>
+                <h2 style="font-size:22px; line-height:1.2; margin:0 0 3px;">#UniqueArts</h2>
+                <p style="font-size:13px; margin:0; opacity:0.88;">Handcrafted art from talented local artisans.</p>
+            </div>
         </section>
 
         <div class="shop-section">
-            <!-- Filter Sidebar -->
+            <!-- ── Redesigned Filter Sidebar ── -->
             <aside class="filter-sidebar">
-                <h3>Filters</h3>
+
+                <!-- Header -->
+                <div class="filter-sidebar-header">
+                    <i class="fas fa-sliders-h"></i>
+                    <h3>Filters</h3>
+                    <button class="filter-sidebar-clear-btn" onclick="clearAllFilters()">Clear all</button>
+                </div>
 
                 <!-- Price Filter -->
                 <div class="filter-group">
-                    <h4>Price Range</h4>
+                    <div class="filter-group-title">
+                        <i class="fas fa-tag"></i> Price Range
+                    </div>
                     <div class="price-range">
                         <input type="range" id="price-min" min="0" max="100000" value="0" step="100">
                         <input type="range" id="price-max" min="0" max="100000" value="100000" step="100">
                         <div class="price-display">
-                            Rs. <span id="price-min-display">0</span> - Rs. <span id="price-max-display">100000</span>
+                            Rs. <span id="price-min-display">0</span> &ndash; Rs. <span id="price-max-display">100000</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Type Filter -->
+                <!-- Category Filter -->
                 <div class="filter-group">
-                    <h4>Type</h4>
-                    
-                    <div class="filter-option">
-                        <input type="radio" id="type-all" name="type" value="all" checked>
-                        <label for="type-all">All Types</label>
+                    <div class="filter-group-title">
+                        <i class="fas fa-layer-group"></i> Category
                     </div>
 
                     <!-- Antiques Artifacts -->
-                    <div class="filter-option">
-                        <input type="checkbox" id="type-antiques" class="main-category" value="Antiques Artifacts">
-                        <label for="type-antiques">Antiques Artifacts</label>
-                    </div>
-                    <div id="subcategory-antiques" style="margin-left: 20px; display: none;">
-                        <div class="filter-option">
-                            <input type="checkbox" class="subcategory-filter" data-category="Antiques Artifacts" value="Furniture">
-                            <label>Furniture</label>
-                        </div>
-                        <div class="filter-option">
-                            <input type="checkbox" class="subcategory-filter" data-category="Antiques Artifacts" value="Jewelry">
-                            <label>Jewelry</label>
-                        </div>
-                        <div class="filter-option">
-                            <input type="checkbox" class="subcategory-filter" data-category="Antiques Artifacts" value="Metal">
-                            <label>Metal</label>
-                        </div>
-                        <div class="filter-option">
-                            <input type="checkbox" class="subcategory-filter" data-category="Antiques Artifacts" value="Glass">
-                            <label>Glass</label>
-                        </div>
-                        <div class="filter-option">
-                            <input type="checkbox" class="subcategory-filter" data-category="Antiques Artifacts" value="Wood">
-                            <label>Wood</label>
+                    <div class="filter-category-block">
+                        <label class="filter-main-label">
+                            <input type="checkbox" id="type-antiques" class="main-category" value="Antiques Artifacts">
+                            <span class="filter-check-box"></span>
+                            Antiques &amp; Artifacts
+                        </label>
+                        <div id="subcategory-antiques" class="filter-sub-group" style="display:none;">
+                            <label class="filter-sub-label"><input type="checkbox" class="subcategory-filter" data-category="Antiques Artifacts" value="Furniture"><span class="filter-check-box"></span>Furniture</label>
+                            <label class="filter-sub-label"><input type="checkbox" class="subcategory-filter" data-category="Antiques Artifacts" value="Jewelry"><span class="filter-check-box"></span>Jewelry</label>
+                            <label class="filter-sub-label"><input type="checkbox" class="subcategory-filter" data-category="Antiques Artifacts" value="Metal"><span class="filter-check-box"></span>Metal</label>
+                            <label class="filter-sub-label"><input type="checkbox" class="subcategory-filter" data-category="Antiques Artifacts" value="Glass"><span class="filter-check-box"></span>Glass</label>
+                            <label class="filter-sub-label"><input type="checkbox" class="subcategory-filter" data-category="Antiques Artifacts" value="Wood"><span class="filter-check-box"></span>Wood</label>
                         </div>
                     </div>
 
                     <!-- Decorative Arts -->
-                    <div class="filter-option">
-                        <input type="checkbox" id="type-decorative" class="main-category" value="Decorative Arts">
-                        <label for="type-decorative">Decorative Arts</label>
-                    </div>
-                    <div id="subcategory-decorative" style="margin-left: 20px; display: none;">
-                        <div class="filter-option">
-                            <input type="checkbox" class="subcategory-filter" data-category="Decorative Arts" value="Ceramics">
-                            <label>Ceramics</label>
-                        </div>
-                        <div class="filter-option">
-                            <input type="checkbox" class="subcategory-filter" data-category="Decorative Arts" value="Pottery">
-                            <label>Pottery</label>
-                        </div>
-                        <div class="filter-option">
-                            <input type="checkbox" class="subcategory-filter" data-category="Decorative Arts" value="Glassware">
-                            <label>Glassware</label>
-                        </div>
-                        <div class="filter-option">
-                            <input type="checkbox" class="subcategory-filter" data-category="Decorative Arts" value="Textile">
-                            <label>Textile</label>
+                    <div class="filter-category-block">
+                        <label class="filter-main-label">
+                            <input type="checkbox" id="type-decorative" class="main-category" value="Decorative Arts">
+                            <span class="filter-check-box"></span>
+                            Decorative Arts
+                        </label>
+                        <div id="subcategory-decorative" class="filter-sub-group" style="display:none;">
+                            <label class="filter-sub-label"><input type="checkbox" class="subcategory-filter" data-category="Decorative Arts" value="Ceramics"><span class="filter-check-box"></span>Ceramics</label>
+                            <label class="filter-sub-label"><input type="checkbox" class="subcategory-filter" data-category="Decorative Arts" value="Pottery"><span class="filter-check-box"></span>Pottery</label>
+                            <label class="filter-sub-label"><input type="checkbox" class="subcategory-filter" data-category="Decorative Arts" value="Glassware"><span class="filter-check-box"></span>Glassware</label>
+                            <label class="filter-sub-label"><input type="checkbox" class="subcategory-filter" data-category="Decorative Arts" value="Textile"><span class="filter-check-box"></span>Textile</label>
                         </div>
                     </div>
 
                     <!-- Fine Art -->
-                    <div class="filter-option">
-                        <input type="checkbox" id="type-fineart" class="main-category" value="Fine Art">
-                        <label for="type-fineart">Fine Art</label>
-                    </div>
-                    <div id="subcategory-fineart" style="margin-left: 20px; display: none;">
-                        <div class="filter-option">
-                            <input type="checkbox" class="subcategory-filter" data-category="Fine Art" value="Painting">
-                            <label>Painting</label>
-                        </div>
-                        <div class="filter-option">
-                            <input type="checkbox" class="subcategory-filter" data-category="Fine Art" value="Drawing">
-                            <label>Drawing</label>
-                        </div>
-                        <div class="filter-option">
-                            <input type="checkbox" class="subcategory-filter" data-category="Fine Art" value="Sculpture">
-                            <label>Sculpture</label>
+                    <div class="filter-category-block">
+                        <label class="filter-main-label">
+                            <input type="checkbox" id="type-fineart" class="main-category" value="Fine Art">
+                            <span class="filter-check-box"></span>
+                            Fine Art
+                        </label>
+                        <div id="subcategory-fineart" class="filter-sub-group" style="display:none;">
+                            <label class="filter-sub-label"><input type="checkbox" class="subcategory-filter" data-category="Fine Art" value="Painting"><span class="filter-check-box"></span>Painting</label>
+                            <label class="filter-sub-label"><input type="checkbox" class="subcategory-filter" data-category="Fine Art" value="Drawing"><span class="filter-check-box"></span>Drawing</label>
+                            <label class="filter-sub-label"><input type="checkbox" class="subcategory-filter" data-category="Fine Art" value="Sculpture"><span class="filter-check-box"></span>Sculpture</label>
                         </div>
                     </div>
                 </div>
 
                 <!-- Era/Period Filter -->
                 <div class="filter-group">
-                    <h4>Era/Period</h4>
-                    <div class="filter-option">
-                        <input type="checkbox" class="era-filter" value="Malla Period">
-                        <label>Malla Period</label>
+                    <div class="filter-group-title">
+                        <i class="fas fa-hourglass-half"></i> Era / Period
                     </div>
-                    <div class="filter-option">
-                        <input type="checkbox" class="era-filter" value="Shah Period">
-                        <label>Shah Period</label>
-                    </div>
-                    <div class="filter-option">
-                        <input type="checkbox" class="era-filter" value="Rana Period">
-                        <label>Rana Period</label>
-                    </div>
+                    <label class="filter-main-label"><input type="checkbox" class="era-filter" value="Kirant Dynasty"><span class="filter-check-box"></span>Kirant Dynasty</label>
+                    <label class="filter-main-label"><input type="checkbox" class="era-filter" value="Lichhavi Period"><span class="filter-check-box"></span>Lichhavi Period</label>
+                    <label class="filter-main-label"><input type="checkbox" class="era-filter" value="Malla Period"><span class="filter-check-box"></span>Malla Period</label>
+                    <label class="filter-main-label"><input type="checkbox" class="era-filter" value="Shah Period"><span class="filter-check-box"></span>Shah Period</label>
+                    <label class="filter-main-label"><input type="checkbox" class="era-filter" value="Rana Period"><span class="filter-check-box"></span>Rana Period</label>
+                    <label class="filter-main-label"><input type="checkbox" class="era-filter" value="Modern Period"><span class="filter-check-box"></span>Modern Period</label>
                 </div>
 
-                <button class="clear-filters-btn" onclick="clearAllFilters()">Clear All Filters</button>
             </aside>
 
             <!-- Products Section -->
@@ -369,10 +414,10 @@
         </div>
 
         <section id="pagination" class="section-p1">
-    <div id="pagination-controls"></div>
-</section>
+            <div id="pagination-controls"></div>
+        </section>
 
-        <section id="newsletter"  class="section-p1 section-m1">
+        <section id="newsletter" class="section-p1 section-m1">
             <div class="newstext">
                 <h4>Sign Up for Newsletter</h4>
                 <p>Get E-mail updates about our latest shop and <span>special offers.</span></p>
@@ -406,7 +451,7 @@
                 <a href="#">About us</a>
                 <a href="#">Delivery Information</a>
                 <a href="#">Privacy Policy</a>
-                <a href="#">Terms & Conditions</a>
+                <a href="#">Terms &amp; Conditions</a>
                 <a href="#">Contact Us</a>
             </div>
             <div class="col">
@@ -417,101 +462,73 @@
                 <a href="#">Track My Order</a>
                 <a href="#">Help</a>
             </div>
-              <div class="col install">
+            <div class="col install">
                 <h4>Install App</h4>
                 <p>From App Store or Google Play</p>
                 <div class="row">
-                     <img src="images/GooglePlayStore.png" alt="googleplaystore" style="width:80px; height:auto;">
+                    <img src="images/GooglePlayStore.png" alt="googleplaystore" style="width:80px; height:auto;">
                     <img src="images/AppleStore.png" alt="applestore" style="width:100px; height:auto;">
                 </div>
-               
-                
-
-  <p>Secured Payment Gateways</p> 
-   <div style="display:flex; align-items:center; gap:8px;">
-    <img src="images/paymentlogo.jpg" alt="Payment Methods"  style="width: 50px; height:auto;"> <p>Payment Options</p><br></div>
-    <div style="display:flex; align-items:center; gap:8px;">
-  <img src="images/ESEWA-ALTERNATE.png" alt="Esewa" style="width:40px; height:auto;"><p>Esewa</p><br></div>
- <div style="display:flex; align-items:center; gap:8px;">
-    <img src="images/imekhalti.png" alt="Imepay"  style="width: 40px; height:auto;"> <p>ImePay</p><br></div>
-<div style="display:flex; align-items:center; gap:8px;">
-    <img src="images/phonepay.jpeg" alt="PhonePay" style="width: 40px; height:auto;"> <p>Phonepay</p><br></div>
-    </div>
+                <p>Secured Payment Gateways</p>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <img src="images/paymentlogo.jpg" alt="Payment Methods" style="width: 50px; height:auto;"> <p>Payment Options</p>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <img src="images/ESEWA-ALTERNATE.png" alt="Esewa" style="width:40px; height:auto;"><p>Esewa</p>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <img src="images/imekhalti.png" alt="Imepay" style="width: 40px; height:auto;"> <p>ImePay</p>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <img src="images/phonepay.jpeg" alt="PhonePay" style="width: 40px; height:auto;"> <p>Phonepay</p>
+                </div>
+            </div>
             <div class="copyright">
                 <p>&copy; 2024, LocalArtHub - All Rights Reserved</p>
             </div>
         </footer>
 
         <div id="logout-modal" class="modal">
-  <div class="modal-content">
-    <h3>Account</h3>
-    <p>Do you want to logout?</p>
+            <div class="modal-content">
+                <h3>Account</h3>
+                <p>Do you want to logout?</p>
+                <div class="modal-buttons">
+                    <button id="cancel-logout">Cancel</button>
+                    <button id="confirm-logout">Logout</button>
+                </div>
+            </div>
+        </div>
 
-    <div class="modal-buttons">
-      <button id="cancel-logout">Cancel</button>
-      <button id="confirm-logout">Logout</button>
-    </div>
-  </div>
-</div>
+        <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const token = localStorage.getItem("authToken");
+            const loginBtn = document.getElementById("login-btn");
+            const modal = document.getElementById("logout-modal");
+            const cancelBtn = document.getElementById("cancel-logout");
+            const logoutBtn = document.getElementById("confirm-logout");
 
-<script>
-document.addEventListener("DOMContentLoaded", () => {
+            if (token && loginBtn) {
+                loginBtn.innerHTML = `<img src="https://cdn-icons-png.flaticon.com/512/9131/9131478.png" alt="User" style="width:24px; height:24px; border-radius:50%;">`;
+                loginBtn.href = "#";
+                loginBtn.addEventListener("click", () => { modal.style.display = "flex"; });
+                cancelBtn.addEventListener("click", () => { modal.style.display = "none"; });
+                logoutBtn.addEventListener("click", () => {
+                    localStorage.removeItem("authToken");
+                    modal.style.display = "none";
+                    window.location.reload();
+                });
+            }
+            window.addEventListener("click", (e) => { if (e.target === modal) modal.style.display = "none"; });
+        });
+        </script>
 
-  const token = localStorage.getItem("authToken");
-  const loginBtn = document.getElementById("login-btn");
-
-  const modal = document.getElementById("logout-modal");
-  const cancelBtn = document.getElementById("cancel-logout");
-  const logoutBtn = document.getElementById("confirm-logout");
-
-  if (token && loginBtn) {
-
-    loginBtn.innerHTML = `
-      <img 
-        src="https://cdn-icons-png.flaticon.com/512/9131/9131478.png" 
-        alt="User" 
-        style="width:24px; height:24px; border-radius:50%;"
-      >
-    `;
-    loginBtn.href = "#";
-
-    // open modal when clicking icon
-    loginBtn.addEventListener("click", () => {
-      modal.style.display = "flex";
-    });
-
-    // close modal
-    cancelBtn.addEventListener("click", () => {
-      modal.style.display = "none";
-    });
-
-    // logout confirmed
-    logoutBtn.addEventListener("click", () => {
-      localStorage.removeItem("authToken");
-      modal.style.display = "none";
-      window.location.reload();
-    });
-  }
-
-  // close if clicking outside modal box
-  window.addEventListener("click", (e) => {
-    if (e.target === modal) {
-      modal.style.display = "none";
-    }
-  });
-
-});
-</script>
-
-<!-- Product Detail Modal -->
-<div id="product-modal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeProductModal()">&times;</span>
-    <div id="product-detail-content">
-      <!-- Product details will be loaded here -->
-    </div>
-  </div>
-</div>
+        <!-- Product Detail Modal -->
+        <div id="product-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeProductModal()">&times;</span>
+                <div id="product-detail-content"></div>
+            </div>
+        </div>
 
         <script type="module" src="script.js"></script>
     </body>

@@ -79,6 +79,13 @@
   background: #8b4513;
   color: white;
 }
+/*Product rating*/
+#product-rating-summary{ display: flex;
+          align-items: center;
+          gap: 6px;
+          margin-top: 6px;
+          font-size: 16px;
+          color: #666; }
 
 
 </style>
@@ -130,6 +137,17 @@
                 <p><strong>Subcategory:</strong> <span id="product-subcategory">N/A</span></p>
                 <p><strong>Era:</strong> <span id="product-era">N/A</span></p>
                 <p><strong>Seller:</strong> <span id="product-seller">N/A</span></p>
+                <!-- <div class="star" id="product-star-display" style="margin-bottom:4px;">
+                  <i class="far fa-star" style="color:#f4b41a"></i>
+                  <i class="far fa-star" style="color:#f4b41a"></i>
+                  <i class="far fa-star" style="color:#f4b41a"></i>
+                  <i class="far fa-star" style="color:#f4b41a"></i>
+                  <i class="far fa-star" style="color:#f4b41a"></i>
+                </div> -->
+                <div id="product-rating-summary">
+          <span id="product-rating-stars" style="color:#f4b41a;"></span>
+          <span id="product-rating-text">No reviews yet</span>
+      </div>
                 <input type="number" value="1" id="quantity">
                 <button class="normal" id="add-to-cart-btn">Add to Cart</button>
                 <h4>Product Details</h4>
@@ -436,6 +454,60 @@ try {
   
 });
 
+</script>
+
+<script>
+(function () {
+  // Wait for the page to load and the productId to be available
+  document.addEventListener("DOMContentLoaded", async function () {
+    const params    = new URLSearchParams(window.location.search);
+    const productId = params.get("productId");
+    if (!productId) return;
+ 
+    try {
+      const res  = await fetch(`http://localhost:5000/api/reviews/product/${productId}`);
+      if (!res.ok) return;
+      const { average, count } = await res.json();
+ 
+      // ── Update the <div class="star"> block ──────────────────────────
+      const starDiv = document.getElementById("product-star-display");
+      if (starDiv) {
+        starDiv.innerHTML = buildStarHTML(average, count);
+      }
+ 
+      // ── Update the rating summary below the seller span ──────────────
+      const starsEl = document.getElementById("product-rating-stars");
+      const textEl  = document.getElementById("product-rating-text");
+ 
+      if (starsEl && textEl) {
+        if (count === 0) {
+          starsEl.innerHTML  = '<i class="far fa-star"></i>'.repeat(5);
+          textEl.textContent = "No reviews yet";
+        } else {
+          starsEl.innerHTML  = buildStarHTML(average, 0); // stars only, no count
+          textEl.textContent = `${average} / 5  (${count} review${count !== 1 ? "s" : ""})`;
+        }
+      }
+    } catch (e) {
+      // Silently fail — ratings are non-critical
+    }
+  });
+ 
+  // buildStarHTML is exported from script.js to window scope.
+  // Use a small wait to ensure script.js module has loaded first.
+  function buildStarHTML(average, count) {
+    if (window.buildStarHTML) return window.buildStarHTML(average, count);
+    // Fallback in case script.js hasn't exported yet
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      if (average >= i)             stars.push('<i class="fas fa-star" style="color:#f4b41a"></i>');
+      else if (average >= i - 0.5) stars.push('<i class="fas fa-star-half-alt" style="color:#f4b41a"></i>');
+      else                          stars.push('<i class="far fa-star" style="color:#f4b41a"></i>');
+    }
+    if (count > 0) stars.push(`<small style="color:#888;font-size:11px;margin-left:4px;">(${count})</small>`);
+    return stars.join('');
+  }
+})();
 </script>
 
     </body>

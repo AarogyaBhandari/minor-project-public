@@ -1,7 +1,5 @@
-//for chatbot
 import dotenv from "dotenv";
 dotenv.config();
-// console.log("DEEPSEEK KEY:", process.env.DEEPSEEK_API_KEY);
 
 import { fileURLToPath } from 'url';
 import path from 'path';
@@ -20,7 +18,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-//for chatbot
+
 app.use("/api/chatbot", chatbotRoutes);
 
 // Serve static files from the root directory
@@ -34,9 +32,9 @@ if (!mongoUri) {
 
 mongoose.connect(mongoUri)
   .then(() => console.log("MongoDB connected"))
-  .catch(err => console.log("Mongo error:", err))
+  .catch(err => console.log("Mongo error:", err));
 
-  app.get("/", (req, res) => res.send("API running"));
+app.get("/", (req, res) => res.send("API running"));
 
 app.listen(process.env.PORT || 5000, () =>
   console.log("Server running at port " + (process.env.PORT || 5000))
@@ -57,4 +55,5 @@ app.use("/api/users", userRoutes);
 import auctionRoutes from "./routes/auctions.js";
 app.use("/api/auctions", auctionRoutes);
 
-
+import reviewRoutes from "./routes/reviews.js";
+app.use("/api/reviews", reviewRoutes);

@@ -614,18 +614,41 @@
             const token = localStorage.getItem("authToken");
             if (!token) { window.location.href = "signin.html"; return; }
 
+            // ?items=id1,id2,... — set by "Buy Now", "Checkout Selected", or absent for full cart
+            const selectedIds = new URLSearchParams(window.location.search).get("items");
+            const filterIds   = selectedIds ? new Set(selectedIds.split(",")) : null;
+
             try {
                 const [cartRes, productsRes] = await Promise.all([
                     fetch("http://localhost:5000/api/cart", { headers: { Authorization: `Bearer ${token}` } }),
                     fetch("http://localhost:5000/api/products")
                 ]);
-                const cart = await cartRes.json();
+                const cart     = await cartRes.json();
                 const products = await productsRes.json();
 
                 const productMap = {};
                 products.forEach(p => productMap[p._id] = p);
 
-                cartData = cart.map(item => ({ ...item, product: productMap[item.productId] })).filter(i => i.product);
+                // Apply ?items= filter if present
+                const filtered = filterIds ? cart.filter(i => filterIds.has(i._id)) : cart;
+
+                cartData = filtered.map(item => {
+                    if (item.isAuctionWin) {
+                        return {
+                            ...item,
+                            product: null,
+                            _isAuction: true,
+                            _title: item.auctionTitle || "Auction Item",
+                            _price: item.auctionPrice || 0,
+                            _qty:   1
+                        };
+                    }
+                    const product = productMap[item.productId];
+                    if (!product) return null;
+                    return { ...item, product, _isAuction: false,
+                             _title: product.title, _price: product.price, _qty: item.qty || 1 };
+                }).filter(Boolean);
+
                 renderCheckoutSummary();
             } catch (e) {
                 console.error("Error loading checkout:", e);
@@ -640,11 +663,15 @@
             let total = 0;
 
             cartData.forEach(item => {
-                const itemTotal = item.product.price * item.qty;
+                const itemTotal = item._price * item._qty;
                 total += itemTotal;
+                const badge = item._isAuction
+                    ? `<small style="color:#8b4513;font-weight:700;">&#x1F528; Won at Auction</small><br>`
+                    : "";
                 summaryContainer.innerHTML += `
                     <div class="order-item">
-                        <div><strong>${item.product.title}</strong><br><small>Qty: ${item.qty}</small></div>
+                        <div>${badge}<strong>${item._title}</strong><br>
+                            <small>Qty: ${item._qty}</small></div>
                         <div>Rs. ${itemTotal.toLocaleString()}</div>
                     </div>`;
             });
@@ -664,7 +691,10 @@
         // ── Collect order payload ──────────────────────────────────────────────
         function buildOrderPayload(total) {
             return {
-                items: cartData.map(item => ({ productId: item.productId, qty: item.qty })),
+                items: cartData.map(item => item._isAuction
+                    ? { productId: item.productId, qty: 1,
+                        isAuctionWin: true, auctionTitle: item._title, auctionPrice: item._price }
+                    : { productId: item.productId, qty: item._qty }),
                 total,
                 shippingAddress: {
                     firstName: document.getElementById("first-name").value,
@@ -713,7 +743,7 @@
         async function placeCODOrder() {
             const token = localStorage.getItem("authToken");
             let total = 0;
-            cartData.forEach(item => { total += item.product.price * item.qty; });
+            cartData.forEach(item => { total += item._price * item._qty; });
 
             showProcessing("Placing your order...");
             document.getElementById("place-order-btn").disabled = true;
@@ -745,7 +775,7 @@
             if (!token) { alert("Please login first"); return; }
 
             let total = 0;
-            cartData.forEach(item => { total += item.product.price * item.qty; });
+            cartData.forEach(item => { total += item._price * item._qty; });
 
             if (total <= 0) { alert("Cart is empty"); return; }
 

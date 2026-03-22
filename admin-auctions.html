@@ -676,7 +676,7 @@
         if (!token) { showEmpty('Please log in with an admin account to view auctions'); return; }
 
         try {
-            const res = await fetch(API_URL, {
+            const res = await fetch(API_URL + '/admin/all', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (!res.ok) { showEmpty(res.status === 401 ? 'Admin access required' : 'Failed to load auctions'); return; }
@@ -692,8 +692,8 @@
     /* ── Filter ── */
     function applyFilter() {
         let list = allAuctions;
-        if (activeFilter === 'active') list = allAuctions.filter(a => a.status === 'active');
-        if (activeFilter === 'ended')  list = allAuctions.filter(a => a.status !== 'active');
+        if (activeFilter === 'active') list = allAuctions.filter(a =>  isLive(a));
+        if (activeFilter === 'ended')  list = allAuctions.filter(a => !isLive(a));
         displayAuctions(list);
         document.getElementById('auction-count').textContent = list.length;
     }
@@ -718,13 +718,15 @@
         section.innerHTML = auctions.map((auction, idx) => buildCard(auction, idx)).join('');
 
         auctions.forEach(a => {
-            if (a.status === 'active') startCountdown(a._id, a.endTime);
+            if (isLive(a)) startCountdown(a._id, a.endTime);
         });
     }
 
+    const isLive = a => a.status === 'active' && new Date() < new Date(a.endTime);
+
     function buildCard(auction, idx) {
-        const isActive = auction.status === 'active';
-        const imgHtml  = auction.imageUrl
+        const active  = isLive(auction);
+        const imgHtml = auction.imageUrl
             ? `<img src="${auction.imageUrl}" alt="${auction.title}" class="auction-image">`
             : `<div class="auction-img-placeholder"><i class="fas fa-image"></i></div>`;
 
@@ -739,8 +741,8 @@
         <div class="auction-card" style="${delay}">
             <div class="auction-card-img-wrap">
                 ${imgHtml}
-                <span class="auction-status-ribbon ${isActive ? 'active' : 'ended'}">
-                    <span class="ribbon-dot"></span>${isActive ? 'Active' : 'Ended'}
+                <span class="auction-status-ribbon ${active ? 'active' : 'ended'}">
+                    <span class="ribbon-dot"></span>${active ? 'Active' : 'Ended'}
                 </span>
                 <span class="auction-bids-pill">
                     <i class="fas fa-gavel"></i> ${auction.bids.length} bid${auction.bids.length !== 1 ? 's' : ''}
@@ -757,7 +759,7 @@
                     <span class="auction-price-label">Current bid</span>
                     <span class="auction-price">Rs ${Number(auction.currentPrice).toLocaleString()}</span>
                 </div>
-                ${isActive
+                ${active
                     ? `<div class="auction-countdown" id="countdown-${auction._id}">
                            <i class="fas fa-clock"></i>
                            <span id="time-${auction._id}">--:--:--</span> remaining
@@ -868,11 +870,24 @@
         window.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; });
     });
 
-    /* ── Init ── */
-    loadAllAuctions();
+    /* ── Init — wait for Firebase token before loading ── */
+    // script.js (a deferred module) writes the token asynchronously via onAuthStateChanged.
+    // Expose loadAllAuctions so script.js can call it once the fresh token is saved,
+    // AND attempt immediately on DOMContentLoaded if a token already exists in localStorage.
+    window.loadAllAuctions = loadAllAuctions;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (localStorage.getItem('authToken')) {
+            loadAllAuctions();
+        }
+        // Safety net: retry after 3 s in case Firebase token refresh was slow
+        setTimeout(() => {
+            if (allAuctions.length === 0 && localStorage.getItem('authToken')) {
+                loadAllAuctions();
+            }
+        }, 3000);
+    });
     </script>
 </body>
 
 </html>
-
-

@@ -9,223 +9,683 @@
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
     <link rel="stylesheet" href="style.css">
     <script type="module" src="script.js" defer></script>
+
     <style>
-        .auction-detail-container {
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 20px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
+        /* ═══════════════════════════════════════════
+           TOKEN SYSTEM — mirrors admin-auction-details
+        ═══════════════════════════════════════════ */
+        :root {
+            --brand:          #8b4513;
+            --brand-dark:     #6b3410;
+            --brand-mid:      #c0622a;
+            --brand-light:    #fdf3ec;
+            --accent:         #f5ede8;
+            --surface:        #fff;
+            --bg:             #f7f4f1;
+            --border:         #ede8e3;
+            --border-mid:     #e0d8d0;
+            --text-primary:   #1a1a1a;
+            --text-secondary: #6b5a4e;
+            --text-muted:     #a89580;
+            --active-bg:      #f0fdf4;
+            --active-text:    #15803d;
+            --active-border:  #bbf7d0;
+            --ended-bg:       #f5f5f5;
+            --ended-text:     #6b7280;
+            --ended-border:   #e5e7eb;
+            --danger-bg:      #fef2f2;
+            --danger-text:    #b91c1c;
+            --danger-border:  #fecaca;
+            --countdown-color:#dc2626;
+            --radius-sm:      8px;
+            --radius-md:      12px;
+            --radius-lg:      18px;
+            --shadow-sm:      0 2px 8px rgba(139,69,19,0.07);
+            --shadow-md:      0 6px 24px rgba(139,69,19,0.12);
+            --transition:     0.2s cubic-bezier(0.4,0,0.2,1);
         }
 
-        .auction-image-section {
-            text-align: center;
-        }
+        body { background: var(--bg); }
 
-        .auction-detail-image {
-            width: 100%;
-            max-width: 500px;
-            height: 500px;
-            object-fit: cover;
-            border-radius: 8px;
-            background: #f0f0f0;
-        }
-
-        .auction-info-section h1 {
-            font-size: 28px;
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        .auction-detail-price {
-            font-size: 32px;
-            color: #8b4513;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-
-        .auction-countdown-large {
-            font-size: 18px;
-            color: #ff6b6b;
-            font-weight: 600;
-            padding: 15px;
-            background: #fff3cd;
-            border-left: 4px solid #ff6b6b;
-            margin-bottom: 20px;
+        /* ═══════════════════════════════════════════
+           COMPACT PAGE HEADER
+        ═══════════════════════════════════════════ */
+        #page-header {
+            background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand-mid) 100%);
+            padding: 22px 80px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 16px;
+            min-height: unset;
+            height: auto;
         }
 
-        .detail-row {
+        .page-header-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.18);
+            border-radius: var(--radius-sm);
             display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid #eee;
-        }
-
-        .detail-label {
-            font-weight: 600;
-            color: #666;
-        }
-
-        .detail-value {
-            color: #333;
-        }
-
-        .bid-section {
-            background: #f9f9f9;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 30px;
-        }
-
-        .bid-section h3 {
-            margin-bottom: 15px;
-            color: #333;
-        }
-
-        .bid-form {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .bid-form input {
-            flex: 1;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
-        .bid-form button {
-            padding: 12px 30px;
-            background: #8b4513;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background 0.3s;
-        }
-
-        .bid-form button:hover {
-            background: #6b3410;
-        }
-
-        .bid-form button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-
-        .bids-history {
-            margin-top: 20px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .bid-item {
-            padding: 10px;
-            background: white;
-            margin-bottom: 8px;
-            border-radius: 4px;
-            display: flex;
-            justify-content: space-between;
             align-items: center;
-            font-size: 14px;
+            justify-content: center;
+            color: #fff;
+            font-size: 16px;
+            flex-shrink: 0;
+            border: 1px solid rgba(255,255,255,0.25);
         }
 
-        .bid-item-amount {
-            font-weight: bold;
-            color: #8b4513;
+        #page-header h2 {
+            font-size: 20px;
+            font-weight: 800;
+            color: #fff;
+            margin: 0 0 2px;
+            line-height: 1.2;
         }
 
-        .bid-item-time {
-            color: #999;
+        #page-header p {
+            font-size: 13px;
+            color: rgba(255,255,255,0.65);
+            margin: 0;
+        }
+
+        /* Back link */
+        .header-back {
+            margin-left: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.9);
+            border: 1px solid rgba(255,255,255,0.25);
+            padding: 6px 14px;
+            border-radius: 20px;
             font-size: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: background var(--transition);
         }
+        .header-back:hover { background: rgba(255,255,255,0.25); color: #fff; }
 
-        .alert {
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            display: none;
-            font-size: 14px;
-        }
-
-        .alert.success {
-            background: #c8e6c9;
-            color: #2e7d32;
-            border-left: 4px solid #4caf50;
-        }
-
-        .alert.error {
-            background: #ffcdd2;
-            color: #c62828;
-            border-left: 4px solid #f44336;
+        /* ═══════════════════════════════════════════
+           PAGE WRAP
+        ═══════════════════════════════════════════ */
+        .detail-page-wrap {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 28px 60px;
         }
 
         #auction-loading {
             text-align: center;
-            padding: 60px 20px;
-            font-size: 18px;
-            color: #666;
+            padding: 80px 20px;
+            color: var(--text-muted);
         }
 
-        @media (max-width: 768px) {
-            .auction-detail-container {
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
-
-            .auction-detail-image {
-                height: 300px;
-            }
+        .loading-spinner {
+            width: 44px;
+            height: 44px;
+            border: 3px solid var(--border);
+            border-top-color: var(--brand);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
         }
-  /* logoutmodal styles */
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ═══════════════════════════════════════════
+           DETAIL GRID
+        ═══════════════════════════════════════════ */
+        #auction-detail-container { display: none; }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            gap: 28px;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .detail-grid      { grid-template-columns: 1fr; }
+            #page-header      { padding: 18px 20px; }
+            .detail-page-wrap { padding: 18px 14px 50px; }
+        }
+
+        /* ═══════════════════════════════════════════
+           IMAGE PANEL
+        ═══════════════════════════════════════════ */
+        .image-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 88px;
+        }
+
+        .image-panel-inner {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #auction-detail-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+            transition: transform 0.4s ease;
+        }
+
+        .image-panel:hover #auction-detail-image { transform: scale(1.03); }
+
+        #no-image-icon {
+            font-size: 64px;
+            color: var(--border-mid);
+            display: none;
+        }
+
+        /* Status ribbon */
+        .img-status-ribbon {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            backdrop-filter: blur(6px);
+        }
+
+        .img-status-ribbon.active {
+            background: rgba(240,253,244,0.92);
+            color: var(--active-text);
+            border: 1px solid rgba(187,247,208,0.7);
+        }
+
+        .img-status-ribbon.ended {
+            background: rgba(245,245,245,0.92);
+            color: var(--ended-text);
+            border: 1px solid rgba(229,231,235,0.8);
+        }
+
+        .ribbon-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .img-status-ribbon.active .ribbon-dot {
+            background: #22c55e;
+            box-shadow: 0 0 0 3px rgba(34,197,94,0.25);
+            animation: pulse 1.6s infinite;
+        }
+
+        .img-status-ribbon.ended .ribbon-dot { background: var(--ended-text); }
+
+        @keyframes pulse {
+            0%,100% { box-shadow: 0 0 0 3px rgba(34,197,94,0.25); }
+            50%      { box-shadow: 0 0 0 7px rgba(34,197,94,0.08); }
+        }
+
+        /* Image footer */
+        .image-footer {
+            padding: 14px 18px;
+            border-top: 1px solid var(--border);
+            background: linear-gradient(to right, var(--accent), var(--surface));
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .img-bids-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: var(--brand-light);
+            color: var(--brand);
+            border: 1px solid rgba(139,69,19,0.18);
+            padding: 4px 11px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .img-category-tag {
+            font-size: 10.5px;
+            font-weight: 700;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        /* ═══════════════════════════════════════════
+           INFO PANEL
+        ═══════════════════════════════════════════ */
+        .info-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .detail-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+
+        .detail-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 20px 12px;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(to right, var(--accent), var(--surface));
+        }
+
+        .detail-card-header-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: var(--radius-sm);
+            background: linear-gradient(135deg, var(--brand), var(--brand-mid));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 11px;
+            flex-shrink: 0;
+        }
+
+        .detail-card-header h3 {
+            font-size: 13.5px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .detail-card-body { padding: 18px 20px; }
+
+        /* Title + price */
+        .auction-main-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-primary);
+            line-height: 1.3;
+            margin: 0 0 6px;
+        }
+
+        .auction-subcategory-line {
+            font-size: 11.5px;
+            font-weight: 700;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            color: var(--brand);
+            margin-bottom: 16px;
+        }
+
+        .price-block {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .price-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .price-value {
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--brand);
+            line-height: 1;
+        }
+
+        /* Countdown */
+        .countdown-strip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 11px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--countdown-color);
+            background: #fff5f5;
+            border: 1px solid #fecaca;
+            margin-bottom: 4px;
+        }
+
+        .countdown-strip.ended {
+            background: var(--ended-bg);
+            border-color: var(--ended-border);
+            color: var(--ended-text);
+            font-size: 14px;
+        }
+
+        .countdown-strip i { font-size: 14px; }
+
+        /* Meta grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            gap: 0;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .ig-row { display: contents; }
+
+        .ig-row > .ig-label,
+        .ig-row > .ig-value {
+            padding: 9px 14px;
+            font-size: 13px;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .ig-row:last-child > .ig-label,
+        .ig-row:last-child > .ig-value { border-bottom: none; }
+
+        .ig-label {
+            background: var(--accent);
+            color: var(--text-secondary);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            border-right: 1px solid var(--border);
+            font-size: 12px;
+        }
+
+        .ig-label i { font-size: 10px; color: var(--brand); width: 12px; }
+
+        .ig-value {
+            color: var(--text-primary);
+            font-weight: 500;
+            background: var(--surface);
+        }
+
+        /* Alert */
+        .detail-alert {
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 600;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .detail-alert.success {
+            background: var(--active-bg);
+            color: var(--active-text);
+            border: 1px solid var(--active-border);
+            display: flex;
+        }
+
+        .detail-alert.error {
+            background: var(--danger-bg);
+            color: var(--danger-text);
+            border: 1px solid var(--danger-border);
+            display: flex;
+        }
+
+        /* ═══════════════════════════════════════════
+           BID FORM
+        ═══════════════════════════════════════════ */
+        .bid-form-wrap {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+
+        .bid-input {
+            flex: 1;
+            padding: 11px 14px;
+            border: 1.5px solid var(--border-mid);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-family: inherit;
+            color: var(--text-primary);
+            background: var(--bg);
+            outline: none;
+            transition: border-color var(--transition);
+        }
+
+        .bid-input:focus { border-color: var(--brand); background: var(--surface); }
+
+        .btn-place-bid {
+            padding: 11px 24px;
+            background: var(--brand);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            transition: all var(--transition);
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(139,69,19,0.22);
+        }
+
+        .btn-place-bid:hover {
+            background: var(--brand-dark);
+            box-shadow: 0 4px 14px rgba(107,52,16,0.32);
+        }
+
+        .btn-place-bid:disabled {
+            background: var(--border-mid);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .bid-hint {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        /* ═══════════════════════════════════════════
+           BID HISTORY
+        ═══════════════════════════════════════════ */
+        .bid-history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 360px;
+            overflow-y: auto;
+            padding-right: 2px;
+        }
+
+        .bid-history-list::-webkit-scrollbar { width: 4px; }
+        .bid-history-list::-webkit-scrollbar-thumb {
+            background: var(--border-mid);
+            border-radius: 4px;
+        }
+
+        .bid-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 11px 14px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            transition: background var(--transition);
+            gap: 12px;
+        }
+
+        .bid-item:hover { background: var(--accent); }
+
+        .bid-item.top-bid {
+            background: var(--brand-light);
+            border-color: rgba(139,69,19,0.22);
+        }
+
+        /* Current user's own bids */
+        .bid-item.my-bid {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+        }
+
+        .bid-item.my-bid.top-bid {
+            background: #dbeafe;
+            border-color: #93c5fd;
+        }
+
+        .my-bid-label {
+            color: #1d4ed8;
+            font-weight: 800;
+            font-size: 11.5px;
+        }
+
+        /* Disabled bid input */
+        .bid-input:disabled {
+            background: var(--ended-bg);
+            border-color: var(--ended-border);
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        .bid-item-left { display: flex; flex-direction: column; gap: 2px; }
+
+        .bid-amount {
+            font-size: 15px;
+            font-weight: 900;
+            color: var(--brand);
+        }
+
+        .bid-item.top-bid .bid-amount { font-size: 16px; }
+
+        .bid-bidder {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .bid-time {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .highest-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: var(--brand-light);
+            color: var(--brand);
+            border: 1px solid rgba(139,69,19,0.18);
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            font-family: inherit;
+        }
+
+        .no-bids {
+            text-align: center;
+            padding: 32px 20px;
+            color: var(--text-muted);
+        }
+
+        .no-bids i { font-size: 28px; color: var(--border-mid); margin-bottom: 8px; display: block; }
+        .no-bids p { font-size: 13px; margin: 0; }
+
+        /* Ended banner */
+        .auction-ended-banner {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 18px;
+            background: var(--ended-bg);
+            border: 1px solid var(--ended-border);
+            border-radius: var(--radius-sm);
+            color: var(--ended-text);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* Logout modal */
         .modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-}
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15,15,15,0.55);
+            backdrop-filter: blur(3px);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
 
-.modal-content {
-  background: #fff;
-  padding: 20px 25px;
-  border-radius: 8px;
-  width: 300px;
-  text-align: center;
-}
+        .modal-content {
+            background: #fff;
+            padding: 28px 28px 22px;
+            border-radius: 14px;
+            width: 300px;
+            text-align: center;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.14);
+            animation: modalIn 0.22s cubic-bezier(0.34,1.56,0.64,1);
+        }
 
-.modal-buttons {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 15px;
-  gap: 15px;
-}
+        @keyframes modalIn {
+            from { opacity: 0; transform: translateY(18px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
 
-.modal-buttons button {
-  padding: 8px 14px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
+        .modal-content h3 { font-size: 17px; margin-bottom: 8px; }
+        .modal-content p  { color: #666; font-size: 14px; margin: 0 0 18px; }
 
-#cancel-logout {
-  background: #ddd;
-}
+        .modal-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
 
-#confirm-logout {
-  background: #8b4513;
-  color: white;
-}
+        .modal-buttons button {
+            flex: 1;
+            padding: 10px 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 13px;
+            font-family: inherit;
+            transition: background 0.18s;
+        }
 
+        #cancel-logout       { background: #f0f0f0; color: #333; }
+        #cancel-logout:hover { background: #e5e5e5; }
+        #become-seller       { background: var(--brand-light); color: var(--brand); }
+        #become-seller:hover { background: var(--accent); }
+        #confirm-logout      { background: var(--brand); color: #fff; }
+        #confirm-logout:hover { background: var(--brand-dark); }
     </style>
 </head>
 
@@ -256,80 +716,154 @@
         </div>
     </section>
 
+    <!-- Compact page header -->
     <section id="page-header">
-        <h2>Auction Details</h2>
-        <p>Place your bid on this unique piece</p>
+        <div class="page-header-icon">
+            <i class="fas fa-gavel"></i>
+        </div>
+        <div>
+            <h2>Auction Details</h2>
+            <p>Place your bid on this unique piece</p>
+        </div>
+        <a href="auctions.html" class="header-back">
+            <i class="fas fa-arrow-left"></i> All Auctions
+        </a>
     </section>
 
-    <div id="auction-loading">
-        <i class="fas fa-spinner fa-spin"></i> Loading auction details...
+    <!-- Loading -->
+    <div id="auction-loading" class="detail-page-wrap">
+        <div class="loading-spinner"></div>
+        <p>Loading auction details…</p>
     </div>
 
-    <div id="auction-detail-container" style="display: none;">
-        <div class="auction-detail-container">
-            <div class="auction-image-section">
-                <div id="auction-detail-image-wrapper" style="background: #f0f0f0; border-radius: 8px; display: flex; align-items: center; justify-content: center; height: 500px;">
-                    <img id="auction-detail-image" class="auction-detail-image" style="display: none;" />
-                    <i class="fas fa-image" style="font-size: 80px; color: #ddd; display: none;" id="no-image-icon"></i>
+    <!-- Detail content -->
+    <div id="auction-detail-container">
+        <div class="detail-page-wrap">
+            <div class="detail-grid">
+
+                <!-- LEFT: Image panel -->
+                <div class="image-panel">
+                    <div class="image-panel-inner">
+                        <img id="auction-detail-image" alt="Auction image">
+                        <i class="fas fa-image" id="no-image-icon"></i>
+                        <span class="img-status-ribbon" id="img-status-ribbon">
+                            <span class="ribbon-dot"></span>
+                            <span id="ribbon-label">Active</span>
+                        </span>
+                    </div>
+                    <div class="image-footer">
+                        <span class="img-bids-pill">
+                            <i class="fas fa-gavel"></i>
+                            <span id="img-bids-count">0</span> bids
+                        </span>
+                        <span class="img-category-tag" id="img-category-tag">—</span>
+                    </div>
+                </div>
+
+                <!-- RIGHT: Info panel -->
+                <div class="info-panel">
+
+                    <!-- Title + price card -->
+                    <div class="detail-card">
+                        <div class="detail-card-header">
+                            <div class="detail-card-header-icon"><i class="fas fa-tag"></i></div>
+                            <h3>Auction Overview</h3>
+                        </div>
+                        <div class="detail-card-body">
+                            <div class="auction-subcategory-line" id="detail-subcategory">—</div>
+                            <div class="auction-main-title" id="auction-title">Loading…</div>
+
+                            <div class="price-block">
+                                <span class="price-label">Current bid</span>
+                                <span class="price-value" id="auction-price">Rs 0</span>
+                            </div>
+
+                            <div class="countdown-strip" id="countdown-strip">
+                                <i class="fas fa-clock"></i>
+                                <span id="countdown-timer">--:--:--</span>
+                                <span style="font-size:13px;font-weight:600;color:var(--countdown-color);"> remaining</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Meta details card -->
+                    <div class="detail-card">
+                        <div class="detail-card-header">
+                            <div class="detail-card-header-icon"><i class="fas fa-info-circle"></i></div>
+                            <h3>Details</h3>
+                        </div>
+                        <div class="detail-card-body" style="padding:0;">
+                            <div class="info-grid">
+                                <div class="ig-row">
+                                    <div class="ig-label"><i class="fas fa-user"></i> Seller</div>
+                                    <div class="ig-value" id="detail-seller">—</div>
+                                </div>
+                                <div class="ig-row">
+                                    <div class="ig-label"><i class="fas fa-sitemap"></i> Category</div>
+                                    <div class="ig-value" id="detail-category">—</div>
+                                </div>
+                                <div class="ig-row">
+                                    <div class="ig-label"><i class="fas fa-stream"></i> Subcategory</div>
+                                    <div class="ig-value" id="detail-subcategory2">—</div>
+                                </div>
+                                <div class="ig-row">
+                                    <div class="ig-label"><i class="fas fa-hourglass-half"></i> Era</div>
+                                    <div class="ig-value" id="detail-era">—</div>
+                                </div>
+                                <div class="ig-row">
+                                    <div class="ig-label"><i class="fas fa-trophy"></i> Highest bid</div>
+                                    <div class="ig-value" id="detail-highest-bidder">No bids yet</div>
+                                </div>
+                                <div class="ig-row">
+                                    <div class="ig-label"><i class="fas fa-align-left"></i> Description</div>
+                                    <div class="ig-value" id="detail-description" style="line-height:1.6;white-space:pre-wrap;">—</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alert -->
+                    <div class="detail-alert" id="auction-alert"></div>
+
+                    <!-- Bid form card -->
+                    <div class="detail-card" id="bid-form-card">
+                        <div class="detail-card-header">
+                            <div class="detail-card-header-icon"><i class="fas fa-gavel"></i></div>
+                            <h3>Place Your Bid</h3>
+                        </div>
+                        <div class="detail-card-body">
+                            <div class="bid-form-wrap">
+                                <input type="number" id="bid-amount" class="bid-input" placeholder="Enter amount (Rs)" min="0" step="1" />
+                                <button class="btn-place-bid" id="bid-button" onclick="placeBid()">
+                                    <i class="fas fa-gavel"></i> Bid
+                                </button>
+                            </div>
+                            <div class="bid-hint" id="bid-hint">Must be higher than the current bid</div>
+                        </div>
+                    </div>
+
+                </div><!-- /info-panel -->
+            </div><!-- /detail-grid -->
+
+            <!-- Bid history (full width below) -->
+            <div class="detail-card" style="margin-top:24px;">
+                <div class="detail-card-header">
+                    <div class="detail-card-header-icon"><i class="fas fa-history"></i></div>
+                    <h3>Bid History</h3>
+                    <span style="margin-left:auto;font-size:12px;color:var(--text-muted);font-weight:600;" id="bid-count-label">0 bids</span>
+                </div>
+                <div class="detail-card-body">
+                    <div class="bid-history-list" id="bids-history">
+                        <div class="no-bids">
+                            <i class="fas fa-gavel"></i>
+                            <p>No bids yet — be the first!</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="auction-info-section">
-                <h1 id="auction-title">Loading...</h1>
-                <div class="auction-detail-price" id="auction-price">Rs0.00</div>
-
-                <div class="auction-countdown-large">
-                    <i class="fas fa-clock"></i>
-                    <span>Time Remaining: <span id="countdown-timer">--:--:--</span></span>
-                </div>
-
-                <div class="detail-row">
-                    <span class="detail-label">Seller:</span>
-                    <span class="detail-value" id="auction-seller">--</span>
-                </div>
-
-                <div class="detail-row">
-                    <span class="detail-label">Category:</span>
-                    <span class="detail-value" id="auction-category">--</span>
-                </div>
-
-                <div class="detail-row">
-                    <span class="detail-label">Subcategory:</span>
-                    <span class="detail-value" id="auction-subcategory">--</span>
-                </div>
-
-                <div class="detail-row">
-                    <span class="detail-label">Era/Period:</span>
-                    <span class="detail-value" id="auction-era">--</span>
-                </div>
-
-                <div class="detail-row">
-                    <span class="detail-label">Total Bids:</span>
-                    <span class="detail-value" id="auction-bids-count">0</span>
-                </div>
-
-                <div class="detail-row" style="border: none;">
-                    <span class="detail-label">Description:</span>
-                </div>
-                <p id="auction-description" style="color: #666; margin-top: 10px; line-height: 1.6;">--</p>
-
-                <div id="auction-alert" class="alert"></div>
-
-                <div class="bid-section" id="bid-section">
-                    <h3>Place Your Bid</h3>
-                    <div class="bid-form">
-                        <input type="number" id="bid-amount" placeholder="Enter bid amount" min="0" step="0.01" />
-                        <button onclick="placeBid()" id="bid-button">Place Bid</button>
-                    </div>
-
-                    <h3 style="margin-top: 30px;">Recent Bids</h3>
-                    <div class="bids-history" id="bids-history">
-                        <p style="text-align: center; color: #999;">No bids yet</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+        </div><!-- /detail-page-wrap -->
+    </div><!-- /auction-detail-container -->
 
     <footer class="section-p1">
         <div class="col">
@@ -365,45 +899,382 @@
             <a href="user-orders.html" target="_blank">Track My Order</a>
             <a href="contactus.html">Help</a>
         </div>
-           <div class="col install">
-                <h4>Install App</h4>
-                <p>From App Store or Google Play</p>
-                <div class="row">
-                     <img src="images/GooglePlayStore.png" alt="googleplaystore" style="width:80px; height:auto;">
-                    <img src="images/AppleStore.png" alt="applestore" style="width:100px; height:auto;">
-                </div>
-               
-                
-
-  <p>Secured Payment Gateways</p> 
-   <div style="display:flex; align-items:center; gap:8px;">
-    <img src="images/paymentlogo.jpg" alt="Payment Methods"  style="width: 50px; height:auto;"> <p>Payment Options</p><br></div>
-    <div style="display:flex; align-items:center; gap:8px;">
-  <img src="images/ESEWA-ALTERNATE.png" alt="Esewa" style="width:40px; height:auto;"><p>Esewa</p><br></div>
- <div style="display:flex; align-items:center; gap:8px;">
-    <img src="images/imekhalti.png" alt="Imepay"  style="width: 40px; height:auto;"> <p>ImePay</p><br></div>
-<div style="display:flex; align-items:center; gap:8px;">
-    <img src="images/phonepay.jpeg" alt="PhonePay" style="width: 40px; height:auto;"> <p>Phonepay</p><br></div>
-    </div>
+        <div class="col install">
+            <h4>Install App</h4>
+            <p>From App Store or Google Play</p>
+            <div class="row">
+                 <img src="images/GooglePlayStore.png" alt="googleplaystore" style="width:80px; height:auto;">
+                <img src="images/AppleStore.png" alt="applestore" style="width:100px; height:auto;">
+            </div>
+            <p>Secured Payment Gateways</p> 
+            <div style="display:flex; align-items:center; gap:8px;">
+                <img src="images/paymentlogo.jpg" alt="Payment Methods" style="width: 50px; height:auto;"> <p>Payment Options</p>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <img src="images/ESEWA-ALTERNATE.png" alt="Esewa" style="width:40px; height:auto;"><p>Esewa</p>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <img src="images/imekhalti.png" alt="Imepay" style="width: 40px; height:auto;"> <p>ImePay</p>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <img src="images/phonepay.jpeg" alt="PhonePay" style="width: 40px; height:auto;"> <p>Phonepay</p>
+            </div>
+        </div>
         <div class="copyright">
             <p>&copy; 2024, LocalArtHub - All Rights Reserved</p>
         </div>
     </footer>
 
-  <div id="logout-modal" class="modal">
-  <div class="modal-content">
-    <h3>Account</h3>
-    <p>Do you want to logout?</p>
-
-    <div class="modal-buttons">
-            <button id="cancel-logout">Cancel</button>
-            <button id="become-seller">Become Seller</button>
-            <button id="confirm-logout">Logout</button>
+    <div id="logout-modal" class="modal">
+        <div class="modal-content">
+            <h3>Account</h3>
+            <p>Do you want to logout?</p>
+            <div class="modal-buttons">
+                <button id="cancel-logout">Cancel</button>
+                <button id="become-seller">Become Seller</button>
+                <button id="confirm-logout">Logout</button>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 
-    <script src="js/auction-detail.js"></script>
+    <script>
+    const API_URL        = 'http://localhost:5000/api/auctions';
+    let currentAuction   = null;
+    let countdownInterval = null;
+    let currentUserUid   = null;   // Firebase UID of the logged-in user
+
+    /* ── Extract UID from Firebase JWT ── */
+    function getUidFromToken(token) {
+        try {
+            return JSON.parse(atob(token.split('.')[1])).user_id || null;
+        } catch { return null; }
+    }
+
+    /* ── Is the current user the highest bidder right now? ── */
+    function iAmHighestBidder() {
+        if (!currentUserUid || !currentAuction) return false;
+        return currentAuction.highestBidder === currentUserUid;
+    }
+
+    /* ── Update bid form state based on who's winning ── */
+    function updateBidFormState() {
+        const input  = document.getElementById('bid-amount');
+        const btn    = document.getElementById('bid-button');
+        const hint   = document.getElementById('bid-hint');
+        if (!input || !btn || !hint) return;
+
+        if (iAmHighestBidder()) {
+            input.disabled = true;
+            btn.disabled   = true;
+            hint.innerHTML = `<i class="fas fa-check-circle" style="color:var(--active-text);"></i>
+                              <span style="color:var(--active-text);font-weight:700;">
+                                You are the highest bidder! Wait for someone to outbid you.
+                              </span>`;
+        } else {
+            input.disabled = false;
+            btn.disabled   = false;
+            hint.textContent = `Must be higher than Rs ${Number(currentAuction.currentPrice).toLocaleString()}`;
+        }
+    }
+
+    /* ── Logout modal ── */
+    document.addEventListener('DOMContentLoaded', () => {
+        const token    = localStorage.getItem('authToken');
+        const loginBtn = document.getElementById('login-btn');
+        const modal    = document.getElementById('logout-modal');
+        const cancel   = document.getElementById('cancel-logout');
+        const logout   = document.getElementById('confirm-logout');
+        const seller   = document.getElementById('become-seller');
+
+        if (token) {
+            currentUserUid = getUidFromToken(token);
+        }
+
+        if (token && loginBtn) {
+            loginBtn.innerHTML = `<img src="https://cdn-icons-png.flaticon.com/512/9131/9131478.png" alt="User" style="width:24px;height:24px;border-radius:50%;">`;
+            loginBtn.href = '#';
+            loginBtn.addEventListener('click', () => modal.style.display = 'flex');
+            cancel.addEventListener('click',   () => modal.style.display = 'none');
+            logout.addEventListener('click',   () => {
+                localStorage.removeItem('authToken');
+                modal.style.display = 'none';
+                window.location.href = 'main.html';
+            });
+            if (seller) seller.addEventListener('click', () => { window.location.href = 'seller-dashboard.html'; });
+        }
+        window.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; });
+
+        loadAuctionDetails();
+    });
+
+    /* ── Load ── */
+    async function loadAuctionDetails() {
+        const auctionId = new URLSearchParams(window.location.search).get('id');
+        if (!auctionId) { showError('Invalid auction ID'); return; }
+
+        try {
+            const res = await fetch(`${API_URL}/${auctionId}`);
+            if (!res.ok) throw new Error('Not found');
+            currentAuction = await res.json();
+            populate(currentAuction);
+
+            // Fetch seller email in background (non-blocking)
+            fetchSellerEmail(auctionId);
+
+            // Poll for updates every 10 seconds
+            setInterval(() => refreshAuction(auctionId), 10000);
+        } catch (err) {
+            showError('Failed to load auction details');
+        }
+    }
+
+    /* ── Fetch and display seller email ── */
+    async function fetchSellerEmail(auctionId) {
+        try {
+            const res = await fetch(`${API_URL}/${auctionId}/seller-email`);
+            if (!res.ok) return;
+            const data = await res.json();
+            const sellerEl = document.getElementById('detail-seller');
+            if (data.email && sellerEl) {
+                // Keep the UID, append email in a subtle style
+                const uid = sellerEl.textContent.trim();
+                sellerEl.innerHTML = `${uid}<span style="
+                    display:block;
+                    font-size:11px;
+                    color:var(--text-muted);
+                    font-weight:500;
+                    margin-top:2px;
+                "><i class="fas fa-envelope" style="font-size:9px;margin-right:3px;"></i>${data.email}</span>`;
+            }
+        } catch { /* silent fail — email is optional */ }
+    }
+
+    /* ── Populate ── */
+    function populate(a) {
+        document.getElementById('auction-loading').style.display          = 'none';
+        document.getElementById('auction-detail-container').style.display = 'block';
+
+        const isActive = a.status === 'active' && new Date() < new Date(a.endTime);
+
+        /* Image */
+        if (a.imageUrl) {
+            const img = document.getElementById('auction-detail-image');
+            img.src = a.imageUrl;
+            img.style.display = 'block';
+        } else {
+            document.getElementById('no-image-icon').style.display = 'block';
+        }
+
+        /* Status ribbon */
+        const ribbon = document.getElementById('img-status-ribbon');
+        ribbon.className = `img-status-ribbon ${isActive ? 'active' : 'ended'}`;
+        document.getElementById('ribbon-label').textContent = isActive ? 'Live' : 'Ended';
+
+        /* Image footer */
+        document.getElementById('img-bids-count').textContent = a.bids.length;
+        document.getElementById('img-category-tag').textContent = a.category || '—';
+
+        /* Title + price */
+        document.getElementById('auction-title').textContent       = a.title;
+        document.getElementById('detail-subcategory').textContent  = a.subcategory || a.category || '—';
+        document.getElementById('auction-price').textContent       = `Rs ${Number(a.currentPrice).toLocaleString()}`;
+
+        /* Countdown */
+        if (isActive) {
+            startCountdown(a.endTime);
+        } else {
+            const strip = document.getElementById('countdown-strip');
+            strip.classList.add('ended');
+            strip.innerHTML = `<i class="fas fa-check-circle"></i> Auction ended`;
+        }
+
+        /* Meta */
+        document.getElementById('detail-seller').textContent      = a.seller    || '—';
+        document.getElementById('detail-category').textContent    = a.category  || '—';
+        document.getElementById('detail-subcategory2').textContent= a.subcategory || '—';
+        document.getElementById('detail-era').textContent         = a.eraPeriod  || '—';
+        document.getElementById('detail-description').textContent = a.description || '—';
+
+        if (a.bids.length > 0) {
+            const top = a.bids[a.bids.length - 1];
+            document.getElementById('detail-highest-bidder').textContent = top.bidder || 'Anonymous';
+        }
+
+        /* Bid form / ended state */
+        const bidCard = document.getElementById('bid-form-card');
+        if (!isActive) {
+            bidCard.innerHTML = `
+                <div class="detail-card-header">
+                    <div class="detail-card-header-icon"><i class="fas fa-check-circle"></i></div>
+                    <h3>Auction Ended</h3>
+                </div>
+                <div class="detail-card-body">
+                    <div class="auction-ended-banner">
+                        <i class="fas fa-check-circle" style="font-size:18px;color:var(--ended-text);"></i>
+                        This auction has ended. ${a.bids.length > 0 ? 'The highest bidder has won.' : 'No bids were placed.'}
+                    </div>
+                </div>`;
+        } else {
+            updateBidFormState();
+        }
+
+        renderBids(a.bids);
+    }
+
+    /* ── Countdown ── */
+    function startCountdown(endTime) {
+        if (countdownInterval) clearInterval(countdownInterval);
+        function tick() {
+            const dist  = new Date(endTime).getTime() - Date.now();
+            const strip = document.getElementById('countdown-strip');
+            const timer = document.getElementById('countdown-timer');
+            if (!timer) return;
+            if (dist <= 0) {
+                strip.classList.add('ended');
+                strip.innerHTML = `<i class="fas fa-check-circle"></i> Auction ended`;
+                clearInterval(countdownInterval);
+                return;
+            }
+            const h = Math.floor((dist / 3600000) % 24);
+            const m = Math.floor((dist / 60000)   % 60);
+            const s = Math.floor((dist / 1000)    % 60);
+            timer.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        }
+        tick();
+        countdownInterval = setInterval(tick, 1000);
+    }
+
+    /* ── Refresh (poll) ── */
+    async function refreshAuction(id) {
+        try {
+            const res = await fetch(`${API_URL}/${id}/refresh`);
+            if (!res.ok) return;
+            const data = await res.json();
+
+            const wasHighestBidder = iAmHighestBidder();
+
+            currentAuction.currentPrice    = data.currentPrice;
+            currentAuction.highestBidder   = data.highestBidder;
+            currentAuction.status          = data.status;
+
+            document.getElementById('auction-price').textContent   = `Rs ${Number(data.currentPrice).toLocaleString()}`;
+            document.getElementById('img-bids-count').textContent  = data.bidsCount;
+            document.getElementById('bid-count-label').textContent = `${data.bidsCount} bid${data.bidsCount !== 1 ? 's' : ''}`;
+
+            // Re-evaluate bid form state:
+            // if user WAS highest bidder but someone just outbid them — re-enable form
+            updateBidFormState();
+        } catch { /* silent fail */ }
+    }
+
+    /* ── Bid history ── */
+    function renderBids(bids) {
+        const container = document.getElementById('bids-history');
+        const label     = document.getElementById('bid-count-label');
+        label.textContent = `${bids.length} bid${bids.length !== 1 ? 's' : ''}`;
+
+        if (bids.length === 0) {
+            container.innerHTML = `
+                <div class="no-bids">
+                    <i class="fas fa-gavel"></i>
+                    <p>No bids yet — be the first!</p>
+                </div>`;
+            return;
+        }
+
+        container.innerHTML = [...bids].reverse().map((bid, idx) => {
+            const isTop    = idx === 0;
+            const isMyBid  = currentUserUid && bid.bidder === currentUserUid;
+            return `
+            <div class="bid-item ${isTop ? 'top-bid' : ''} ${isMyBid ? 'my-bid' : ''}">
+                <div class="bid-item-left">
+                    <span class="bid-amount">Rs ${Number(bid.amount).toLocaleString()}</span>
+                    <span class="bid-bidder">
+                        <i class="fas fa-user"></i>
+                        ${isMyBid ? '<span class="my-bid-label">Your bid</span>' : 'Bidder'}
+                        ${isTop ? '<span class="highest-badge"><i class="fas fa-star"></i> Highest</span>' : ''}
+                    </span>
+                </div>
+                <span class="bid-time">${new Date(bid.time).toLocaleString()}</span>
+            </div>`;
+        }).join('');
+    }
+
+    /* ── Place bid ── */
+    async function placeBid() {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            showAlert('Please log in to place a bid', 'error');
+            return;
+        }
+
+        const bidAmount = parseFloat(document.getElementById('bid-amount').value);
+
+        if (isNaN(bidAmount) || bidAmount <= 0) {
+            showAlert('Please enter a valid bid amount', 'error');
+            return;
+        }
+
+        if (bidAmount <= currentAuction.currentPrice) {
+            showAlert(`Bid must be higher than Rs ${Number(currentAuction.currentPrice).toLocaleString()}`, 'error');
+            return;
+        }
+
+        const btn = document.getElementById('bid-button');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Placing…';
+
+        try {
+            const res = await fetch(`${API_URL}/${currentAuction._id}/bid`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ bidAmount })
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                showAlert(data.message || 'Failed to place bid', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-gavel"></i> Bid';
+                return;
+            }
+
+            currentAuction = data.auction;
+            document.getElementById('auction-price').textContent  = `Rs ${Number(currentAuction.currentPrice).toLocaleString()}`;
+            document.getElementById('img-bids-count').textContent = currentAuction.bids.length;
+            document.getElementById('bid-amount').value = '';
+            renderBids(currentAuction.bids);
+            showAlert('Bid placed successfully! You are the highest bidder.', 'success');
+
+            // Lock the form — user must wait to be outbid
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-gavel"></i> Bid';
+            updateBidFormState();
+        } catch (err) {
+            showAlert('Failed to place bid. Please try again.', 'error');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-gavel"></i> Bid';
+        }
+    }
+
+    /* ── Alerts ── */
+    function showAlert(msg, type) {
+        const el = document.getElementById('auction-alert');
+        el.className = `detail-alert ${type}`;
+        el.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${msg}`;
+        el.style.display = 'flex';
+        setTimeout(() => { el.style.display = 'none'; }, 5000);
+    }
+
+    function showError(msg) {
+        document.getElementById('auction-loading').innerHTML =
+            `<p style="color:var(--danger-text);font-size:16px;"><i class="fas fa-exclamation-circle"></i> ${msg}</p>`;
+    }
+    </script>
 </body>
 
 </html>
