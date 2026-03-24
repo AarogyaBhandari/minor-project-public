@@ -1358,6 +1358,7 @@ function chatRemoveTyping(id) {
   const SF_TOTAL_PAGES = 4; // excluding success page
   let sfSelectedIdType = 'Citizenship Certificate';
   let sfIdFile = null;
+  let sfIdFileDataUrl = '';
 
   /* ── Open / Close ── */
   document.getElementById('close-seller-modal').addEventListener('click', () => {
@@ -1552,28 +1553,31 @@ function chatRemoveTyping(id) {
     nextBtn.disabled = true;
 
     try {
-      // Build FormData to support file upload
-      const formData = new FormData();
-      formData.append('firstName',  document.getElementById('sf-fname').value.trim());
-      formData.append('lastName',   document.getElementById('sf-lname').value.trim());
-      formData.append('age',        document.getElementById('sf-age').value);
-      formData.append('phone',      document.getElementById('sf-phone').value.trim());
-      formData.append('address',    document.getElementById('sf-address').value.trim());
-      formData.append('city',       document.getElementById('sf-city').value.trim());
-      formData.append('province',   document.getElementById('sf-province').value);
-      formData.append('domain',     document.getElementById('sf-domain').value);
-      formData.append('experience', document.getElementById('sf-experience').value);
-      formData.append('bio',        document.getElementById('sf-bio').value.trim());
-      formData.append('portfolio',  document.getElementById('sf-portfolio').value.trim());
-      formData.append('idType',     sfSelectedIdType);
-      formData.append('idNumber',   document.getElementById('sf-idnum').value.trim());
-      if (sfIdFile) formData.append('idPhoto', sfIdFile);
+      const payload = {
+        firstName:  document.getElementById('sf-fname').value.trim(),
+        lastName:   document.getElementById('sf-lname').value.trim(),
+        age:        document.getElementById('sf-age').value,
+        phone:      document.getElementById('sf-phone').value.trim(),
+        address:    document.getElementById('sf-address').value.trim(),
+        city:       document.getElementById('sf-city').value.trim(),
+        province:   document.getElementById('sf-province').value,
+        domain:     document.getElementById('sf-domain').value,
+        experience: document.getElementById('sf-experience').value,
+        bio:        document.getElementById('sf-bio').value.trim(),
+        portfolio:  document.getElementById('sf-portfolio').value.trim(),
+        idType:     sfSelectedIdType,
+        idNumber:   document.getElementById('sf-idnum').value.trim(),
+        idFileName: sfIdFile ? sfIdFile.name : '',
+        idFileData: sfIdFileDataUrl || ''
+      };
 
       const res = await fetch('http://localhost:5000/api/users/become-seller', {
         method: 'POST',
-        headers: { Authorization: 'Bearer ' + token },
-        // NOTE: Do NOT set Content-Type when sending FormData — browser sets it with boundary
-        body: formData
+        headers: {
+          Authorization: 'Bearer ' + token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
       });
 
       const data = await res.json();
@@ -1629,12 +1633,16 @@ function chatRemoveTyping(id) {
     if (file.type.startsWith('image/')) {
       const reader = new FileReader();
       reader.onload = e => {
+        sfIdFileDataUrl = e.target.result;
         const img = document.getElementById('sf-img-preview');
         img.src = e.target.result;
         img.style.display = 'block';
       };
       reader.readAsDataURL(file);
     } else {
+      const reader = new FileReader();
+      reader.onload = e => { sfIdFileDataUrl = e.target.result; };
+      reader.readAsDataURL(file);
       document.getElementById('sf-img-preview').style.display = 'none';
     }
   };

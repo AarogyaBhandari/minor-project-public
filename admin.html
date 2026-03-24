@@ -689,6 +689,124 @@
             margin: 0;
         }
 
+        .seller-requests-section {
+            margin-top: 24px;
+        }
+
+        .seller-requests-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 14px;
+        }
+
+        @media (max-width: 850px) {
+            .seller-requests-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .seller-request-list {
+            max-height: 560px;
+            overflow: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .seller-request-item {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 12px;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .seller-request-item.active {
+            border-color: var(--brand);
+            background: var(--brand-light);
+        }
+
+        .request-name {
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .request-meta {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .request-status-badge {
+            display: inline-block;
+            font-size: 11px;
+            border-radius: 999px;
+            padding: 3px 10px;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+        }
+
+        .request-status-pending { background: #fff7ed; color: #c2410c; }
+        .request-status-approved { background: #ecfdf5; color: #15803d; }
+        .request-status-rejected { background: #fef2f2; color: #b91c1c; }
+
+        .request-detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px 14px;
+        }
+
+        @media (max-width: 620px) {
+            .request-detail-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .request-field {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 10px;
+            background: var(--bg);
+        }
+
+        .request-field label {
+            display: block;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .request-field p {
+            font-size: 13px;
+            margin: 0;
+            word-break: break-word;
+        }
+
+        .request-action-row {
+            margin-top: 14px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-approve, .btn-reject {
+            border: none;
+            padding: 9px 14px;
+            border-radius: 8px;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .btn-approve { background: #15803d; }
+        .btn-reject { background: #b91c1c; }
+
         .modal {
             display: none;
             position: fixed;
@@ -927,6 +1045,8 @@
             <ul id="navbar">
                 <li><a id="home-btn" href="main.html">Dashboard</a></li>
                 <li><a class="active" href="admin.html">Admin</a></li>
+                <li><a href="seller-orders.html">Orders</a></li>
+                <li><a href="#" id="seller-requests-btn">Seller Requests</a></li>
                 <a href="#" id="close"><i class="fas fa-times"></i></a>
             </ul>
         </div>
@@ -1168,6 +1288,26 @@
                         </div>
                         <div class="panel-body" style="display:flex;flex-direction:column;gap:10px;">
                             <div class="sellers-list"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="seller-requests-section" id="seller-requests-section" style="display:none;">
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <div class="panel-header-icon" style="background:linear-gradient(135deg,#6d28d9,#8b5cf6);">
+                                <i class="fas fa-user-check"></i>
+                            </div>
+                            <h4>Seller Requests</h4>
+                            <span class="panel-subtitle" id="seller-requests-subtitle">Pending review</span>
+                        </div>
+                        <div class="panel-body seller-requests-layout">
+                            <div class="seller-request-list" id="seller-request-list"></div>
+                            <div id="seller-request-detail">
+                                <p style="font-size:13px;color:var(--text-muted);margin:0;">
+                                    Select a seller request to view full details.
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1462,6 +1602,169 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             const token = localStorage.getItem('authToken');
+            const requestsSection = document.getElementById('seller-requests-section');
+            const requestsBtn = document.getElementById('seller-requests-btn');
+            const requestListEl = document.getElementById('seller-request-list');
+            const requestDetailEl = document.getElementById('seller-request-detail');
+            const requestSubtitleEl = document.getElementById('seller-requests-subtitle');
+            let sellerRequests = [];
+            let selectedRequestId = null;
+
+            const escapeHtml = (value) => String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+
+            const formatDate = (iso) => {
+                if (!iso) return 'N/A';
+                const d = new Date(iso);
+                if (Number.isNaN(d.getTime())) return 'N/A';
+                return d.toLocaleString();
+            };
+
+            function statusClass(status) {
+                if (status === 'approved') return 'request-status-approved';
+                if (status === 'rejected') return 'request-status-rejected';
+                return 'request-status-pending';
+            }
+
+            function renderRequestList() {
+                if (!requestListEl) return;
+                if (!sellerRequests.length) {
+                    requestListEl.innerHTML = '<p style="font-size:13px;color:var(--text-muted);">No seller requests yet.</p>';
+                    return;
+                }
+                requestListEl.innerHTML = sellerRequests.map(req => `
+                    <div class="seller-request-item ${selectedRequestId === req.id ? 'active' : ''}" data-id="${req.id}">
+                        <div class="request-name">${escapeHtml(req.firstName)} ${escapeHtml(req.lastName)}</div>
+                        <div class="request-meta">
+                            <span>${escapeHtml(req.email || 'No email')}</span>
+                        </div>
+                        <div class="request-meta">
+                            <span>${formatDate(req.createdAt)}</span>
+                            <span class="request-status-badge ${statusClass(req.status)}">${escapeHtml(req.status || 'pending')}</span>
+                        </div>
+                    </div>
+                `).join('');
+
+                requestListEl.querySelectorAll('.seller-request-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        selectedRequestId = item.dataset.id;
+                        renderRequestList();
+                        renderRequestDetail();
+                    });
+                });
+            }
+
+            function renderRequestDetail() {
+                if (!requestDetailEl) return;
+                const req = sellerRequests.find(r => r.id === selectedRequestId);
+                if (!req) {
+                    requestDetailEl.innerHTML = '<p style="font-size:13px;color:var(--text-muted);margin:0;">Select a seller request to view full details.</p>';
+                    return;
+                }
+
+                const canReview = req.status === 'pending';
+                const idDocLink = req.idFileData
+                    ? `<a href="${escapeHtml(req.idFileData)}" target="_blank" rel="noopener">Open ID document</a>`
+                    : 'No document uploaded';
+
+                requestDetailEl.innerHTML = `
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;">
+                        <h3 style="margin:0;font-size:16px;">${escapeHtml(req.firstName)} ${escapeHtml(req.lastName)}</h3>
+                        <span class="request-status-badge ${statusClass(req.status)}">${escapeHtml(req.status)}</span>
+                    </div>
+                    <div class="request-detail-grid">
+                        <div class="request-field"><label>Email</label><p>${escapeHtml(req.email || 'N/A')}</p></div>
+                        <div class="request-field"><label>UID</label><p>${escapeHtml(req.uid || 'N/A')}</p></div>
+                        <div class="request-field"><label>Phone</label><p>${escapeHtml(req.phone || 'N/A')}</p></div>
+                        <div class="request-field"><label>Age</label><p>${escapeHtml(req.age || 'N/A')}</p></div>
+                        <div class="request-field"><label>Address</label><p>${escapeHtml(req.address || '')}, ${escapeHtml(req.city || '')}, ${escapeHtml(req.province || '')}</p></div>
+                        <div class="request-field"><label>Domain</label><p>${escapeHtml(req.domain || 'N/A')}</p></div>
+                        <div class="request-field"><label>Experience</label><p>${escapeHtml(req.experience || 'N/A')}</p></div>
+                        <div class="request-field"><label>Portfolio</label><p>${escapeHtml(req.portfolio || 'N/A')}</p></div>
+                        <div class="request-field"><label>ID Type</label><p>${escapeHtml(req.idType || 'N/A')}</p></div>
+                        <div class="request-field"><label>ID Number</label><p>${escapeHtml(req.idNumber || 'N/A')}</p></div>
+                        <div class="request-field" style="grid-column:1 / -1;"><label>Bio</label><p>${escapeHtml(req.bio || 'N/A')}</p></div>
+                        <div class="request-field" style="grid-column:1 / -1;"><label>ID Document</label><p>${idDocLink}</p></div>
+                        <div class="request-field"><label>Submitted</label><p>${formatDate(req.createdAt)}</p></div>
+                        <div class="request-field"><label>Reviewed</label><p>${formatDate(req.reviewedAt)}</p></div>
+                    </div>
+                    ${canReview ? `
+                      <div class="request-action-row">
+                        <button class="btn-approve" data-action="approve">Grant Seller Role</button>
+                        <button class="btn-reject" data-action="reject">Reject Request</button>
+                      </div>
+                    ` : `
+                      <p style="font-size:12px;color:var(--text-muted);margin-top:12px;">Reviewed by ${escapeHtml(req.reviewedByEmail || 'admin')}.</p>
+                    `}
+                `;
+
+                if (canReview) {
+                    requestDetailEl.querySelectorAll('button[data-action]').forEach(btn => {
+                        btn.addEventListener('click', () => handleReviewAction(req.id, btn.dataset.action));
+                    });
+                }
+            }
+
+            async function loadSellerRequests() {
+                if (!token) return;
+                try {
+                    const res = await fetch('http://localhost:5000/api/users/seller-requests', {
+                        headers: { Authorization: `Bearer ${token}` }
+                    });
+                    if (!res.ok) return;
+                    sellerRequests = await res.json();
+                    const pendingCount = sellerRequests.filter(r => r.status === 'pending').length;
+                    if (requestSubtitleEl) {
+                        requestSubtitleEl.textContent = `${pendingCount} pending · ${sellerRequests.length} total`;
+                    }
+                    if (!selectedRequestId && sellerRequests.length) selectedRequestId = sellerRequests[0].id;
+                    renderRequestList();
+                    renderRequestDetail();
+                } catch (e) {}
+            }
+
+            async function handleReviewAction(requestId, action) {
+                const confirmText = action === 'approve'
+                    ? 'Grant seller role for this request?'
+                    : 'Reject this seller request?';
+                if (!window.confirm(confirmText)) return;
+
+                const reviewNote = window.prompt('Optional note for this review:', '') || '';
+                try {
+                    const res = await fetch(`http://localhost:5000/api/users/seller-requests/${requestId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ action, reviewNote })
+                    });
+                    const data = await res.json();
+                    if (!res.ok) {
+                        alert(data.message || 'Failed to review request.');
+                        return;
+                    }
+                    alert(data.message || 'Request updated.');
+                    await loadSellerRequests();
+                } catch (e) {
+                    alert('Network error while reviewing request.');
+                }
+            }
+
+            if (requestsBtn) {
+                requestsBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (requestsSection) {
+                        requestsSection.style.display = 'block';
+                        requestsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            }
+
             if (token) {
                 fetch('http://localhost:5000/api/users/sellers', {
                     headers: { Authorization: `Bearer ${token}` }
@@ -1484,6 +1787,10 @@
                         </div>`).join('');
                 })
                 .catch(() => {});
+
+                loadSellerRequests().then(() => {
+                    if (requestsSection && sellerRequests.length) requestsSection.style.display = 'block';
+                });
             }
         });
 
