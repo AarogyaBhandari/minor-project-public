@@ -403,7 +403,7 @@
                         <input type="tel" id="phone" required>
                     </div>
                     <div class="form-group">
-                        <label for="address">Street Address *</label>
+                        <label for="address">Street Address(Area,Street Name) *</label>
                         <input type="text" id="address" required>
                     </div>
                     <div class="form-row">
@@ -412,7 +412,7 @@
                             <input type="text" id="city" required>
                         </div>
                         <div class="form-group">
-                            <label for="zip">Postal Code *</label>
+                            <label for="zip">Ward Number *</label>
                             <input type="text" id="zip" required>
                         </div>
                     </div>
@@ -429,6 +429,10 @@
             <div class="order-summary">
                 <h3>Order Summary</h3>
                 <div id="summary-items"></div>
+                <div class="order-total" id="discount-row" style="display:none; color:#088178; font-size:14px; font-weight:600; border-top:none; padding-top:0; margin-top:8px;">
+                    <span>Discount:</span>
+                    <span id="order-discount">-Rs. 0</span>
+                </div>
                 <div class="order-total">
                     <span>Total:</span>
                     <span id="order-total">Rs. 0</span>
@@ -539,6 +543,8 @@
         // ── State ──────────────────────────────────────────────────────────────
         let cartData = [];
         let selectedPayment = 'cod';
+        // Promo: read from localStorage (set by viewcart.html)
+        const _promoDiscount = parseFloat(localStorage.getItem("promoDiscount") || "0");
 
         // ── Payment selection ──────────────────────────────────────────────────
         function selectPayment(method) {
@@ -658,13 +664,15 @@
 
         function renderCheckoutSummary() {
             const summaryContainer = document.getElementById("summary-items");
-            const totalEl = document.getElementById("order-total");
+            const totalEl      = document.getElementById("order-total");
+            const discountEl   = document.getElementById("order-discount");
+            const discountRow  = document.getElementById("discount-row");
             summaryContainer.innerHTML = "";
-            let total = 0;
+            let subtotal = 0;
 
             cartData.forEach(item => {
                 const itemTotal = item._price * item._qty;
-                total += itemTotal;
+                subtotal += itemTotal;
                 const badge = item._isAuction
                     ? `<small style="color:#8b4513;font-weight:700;">&#x1F528; Won at Auction</small><br>`
                     : "";
@@ -675,7 +683,16 @@
                         <div>Rs. ${itemTotal.toLocaleString()}</div>
                     </div>`;
             });
-            totalEl.textContent = `Rs. ${total.toLocaleString()}`;
+
+            const discountAmt = Math.round(subtotal * _promoDiscount);
+            const finalTotal  = subtotal - discountAmt;
+
+            if (_promoDiscount > 0 && discountRow) {
+                discountRow.style.display = "flex";
+                const promoCode = localStorage.getItem("promoCode") || "";
+                if (discountEl) discountEl.textContent = `-Rs. ${discountAmt.toLocaleString()} (${promoCode})`;
+            }
+            totalEl.textContent = `Rs. ${finalTotal.toLocaleString()}`;
         }
 
         // ── Validate form ──────────────────────────────────────────────────────
@@ -742,8 +759,9 @@
         // ── COD order ─────────────────────────────────────────────────────────
         async function placeCODOrder() {
             const token = localStorage.getItem("authToken");
-            let total = 0;
-            cartData.forEach(item => { total += item._price * item._qty; });
+            let subtotal = 0;
+            cartData.forEach(item => { subtotal += item._price * item._qty; });
+            const total = Math.round(subtotal - subtotal * _promoDiscount);
 
             showProcessing("Placing your order...");
             document.getElementById("place-order-btn").disabled = true;
@@ -759,6 +777,8 @@
 
                 const order = await res.json();
                 await clearCart();
+                localStorage.removeItem("promoCode");
+                localStorage.removeItem("promoDiscount");
                 hideProcessing();
                 alert(`Order placed successfully!\nOrder ID: ${order._id}`);
                 window.location.href = "user-orders.html";
@@ -774,8 +794,9 @@
             const token = localStorage.getItem("authToken");
             if (!token) { alert("Please login first"); return; }
 
-            let total = 0;
-            cartData.forEach(item => { total += item._price * item._qty; });
+            let subtotal = 0;
+            cartData.forEach(item => { subtotal += item._price * item._qty; });
+            const total = Math.round(subtotal - subtotal * _promoDiscount);
 
             if (total <= 0) { alert("Cart is empty"); return; }
 
@@ -787,6 +808,8 @@
             const txnUUID = generateUUID();
             pendingOrder._txnUUID = txnUUID;
             localStorage.setItem("pendingOrder", JSON.stringify(pendingOrder));
+            localStorage.removeItem("promoCode");
+            localStorage.removeItem("promoDiscount");
 
             // 2. Build signature: "total_amount=X,transaction_uuid=Y,product_code=Z"
             const signatureMessage = `total_amount=${total},transaction_uuid=${txnUUID},product_code=${ESEWA_PRODUCT_CODE}`;

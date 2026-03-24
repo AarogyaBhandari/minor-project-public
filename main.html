@@ -338,6 +338,302 @@
 .chat-order-label { color: #7a6a58; }
 .chat-order-value { font-weight: 500; color: #1e1810; text-align: right; }
 
+/* ══════════════════════════════════════════════════════
+   SELLER REGISTRATION MODAL
+══════════════════════════════════════════════════════ */
+#seller-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 6, 2, 0.72);
+  backdrop-filter: blur(4px);
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+  padding: 16px;
+}
+#seller-modal.open { display: flex; }
+
+.seller-modal-box {
+  background: #fff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 540px;
+  max-height: 92vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.24);
+  animation: sellerSlideUp 0.32s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes sellerSlideUp {
+  from { opacity: 0; transform: translateY(30px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.seller-modal-header {
+  background: linear-gradient(135deg, #7a3a0e 0%, #c0622a 100%);
+  padding: 20px 24px 16px;
+  flex-shrink: 0;
+  position: relative;
+}
+.seller-modal-header h2 {
+  color: #fff; font-size: 19px; font-weight: 800;
+  margin: 0 0 3px; letter-spacing: 0.01em;
+}
+.seller-modal-header p {
+  color: rgba(255,255,255,0.70); font-size: 12px; margin: 0;
+}
+.seller-modal-close {
+  position: absolute; top: 14px; right: 16px;
+  background: rgba(255,255,255,0.18); border: none; color: #fff;
+  width: 28px; height: 28px; border-radius: 7px;
+  font-size: 17px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s; line-height: 1;
+}
+.seller-modal-close:hover { background: rgba(255,255,255,0.32); }
+
+/* Steps */
+.seller-steps {
+  display: flex; align-items: center;
+  padding: 13px 24px 11px;
+  background: #fdf3ec;
+  border-bottom: 1px solid #ede0d4;
+  flex-shrink: 0;
+}
+.seller-step { display: flex; align-items: center; gap: 6px; }
+.seller-step-dot {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: #e0d0c4; color: #a08070;
+  font-size: 11px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: background 0.25s, color 0.25s;
+}
+.seller-step.active .seller-step-dot { background: #8b4513; color: #fff; }
+.seller-step.done   .seller-step-dot { background: #22c55e; color: #fff; font-size: 13px; }
+.seller-step-label {
+  font-size: 10.5px; font-weight: 700; color: #b09080;
+  text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap;
+}
+.seller-step.active .seller-step-label { color: #8b4513; }
+.seller-step.done   .seller-step-label { color: #22c55e; }
+.seller-step-line { flex: 1; height: 2px; background: #e0d0c4; margin: 0 8px; }
+.seller-step.done + .seller-step-line  { background: #22c55e; }
+
+/* Body */
+.seller-modal-body { padding: 20px 24px; overflow-y: auto; flex: 1; }
+.seller-modal-body::-webkit-scrollbar { width: 4px; }
+.seller-modal-body::-webkit-scrollbar-thumb { background: #e0d0c4; border-radius: 4px; }
+
+.seller-page { display: none; }
+.seller-page.active { display: block; }
+
+.sf-section-title {
+  font-size: 10.5px; font-weight: 800; letter-spacing: 0.10em;
+  text-transform: uppercase; color: #8b4513;
+  margin: 0 0 13px; padding-bottom: 6px;
+  border-bottom: 2px solid #fdf3ec;
+  display: flex; align-items: center; gap: 6px;
+}
+.sf-group { margin-bottom: 13px; }
+.sf-group label {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 700; color: #6b5040;
+  margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.04em;
+}
+.sf-group label i { font-size: 10px; color: #8b4513; width: 12px; }
+.sf-required { color: #c0392b; font-size: 12px; margin-left: 1px; }
+
+.sf-group input,
+.sf-group select,
+.sf-group textarea {
+  width: 100%; padding: 9px 12px;
+  background: #faf8f6; border: 1.5px solid #e0d0c4;
+  border-radius: 9px; font-size: 13px; color: #1a1a1a;
+  font-family: inherit;
+  transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+  box-sizing: border-box; outline: none;
+}
+.sf-group input:focus, .sf-group select:focus, .sf-group textarea:focus {
+  border-color: #8b4513; background: #fff;
+  box-shadow: 0 0 0 3px rgba(139,69,19,0.09);
+}
+.sf-group input.sf-error, .sf-group select.sf-error {
+  border-color: #e74c3c; background: #fff8f8;
+}
+.sf-error-msg {
+  font-size: 11px; color: #e74c3c; margin-top: 4px;
+  font-weight: 600; display: flex; align-items: center; gap: 4px;
+}
+.sf-group select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238b4513' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center;
+  padding-right: 32px; cursor: pointer;
+}
+.sf-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+
+/* ID type pills */
+.sf-id-types { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 11px; }
+.sf-id-type-btn {
+  padding: 5px 13px; border: 1.5px solid #e0d0c4; border-radius: 20px;
+  background: #fff; color: #8a7060; font-size: 12px; font-weight: 700;
+  cursor: pointer; font-family: inherit; transition: all 0.15s;
+}
+.sf-id-type-btn.selected { background: #8b4513; border-color: #8b4513; color: #fff; }
+
+/* Upload */
+.sf-upload-area {
+  border: 2px dashed #d0b8a8; border-radius: 12px;
+  padding: 22px 16px; text-align: center; cursor: pointer;
+  background: #fdf9f6; transition: border-color 0.18s, background 0.18s;
+}
+.sf-upload-area:hover, .sf-upload-area.drag-over {
+  border-color: #8b4513; background: #fdf3ec;
+}
+.sf-upload-area.has-file { border-color: #22c55e; background: #f0fdf4; }
+.sf-upload-icon {
+  font-size: 28px; color: #d0b8a8; margin-bottom: 7px;
+  display: block; transition: color 0.18s;
+}
+.sf-upload-area:hover .sf-upload-icon { color: #8b4513; }
+.sf-upload-area.has-file .sf-upload-icon { color: #22c55e; }
+.sf-upload-text { font-size: 13px; color: #8a7060; font-weight: 600; margin: 0 0 3px; }
+.sf-upload-hint { font-size: 11px; color: #b09080; margin: 0; }
+#sf-id-input { display: none; }
+.sf-file-preview {
+  margin-top: 9px; display: none; align-items: center; gap: 8px;
+  background: #f0fdf4; border: 1px solid #bbf7d0;
+  border-radius: 8px; padding: 7px 12px;
+  font-size: 12px; color: #15803d; font-weight: 600;
+}
+.sf-file-preview.visible { display: flex; }
+.sf-format-tags { display: flex; gap: 5px; justify-content: center; flex-wrap: wrap; margin-top: 7px; }
+.sf-format-tag {
+  background: #f5ede8; color: #8b4513;
+  border: 1px solid rgba(139,69,19,0.18);
+  padding: 2px 7px; border-radius: 20px;
+  font-size: 10px; font-weight: 700;
+}
+
+/* Preview image */
+#sf-img-preview {
+  width: 100%; max-height: 140px; object-fit: contain;
+  border-radius: 8px; margin-top: 8px; display: none;
+  border: 1px solid #e0d0c4;
+}
+
+/* Review */
+.sf-review-card {
+  background: #faf8f6; border: 1px solid #e8ddd5;
+  border-radius: 11px; padding: 14px 16px; margin-bottom: 12px;
+}
+.sf-review-card-title {
+  font-size: 10px; font-weight: 800; letter-spacing: 0.08em;
+  text-transform: uppercase; color: #8b4513; margin: 0 0 9px;
+}
+.sf-review-row {
+  display: flex; justify-content: space-between; gap: 10px;
+  padding: 4px 0; border-bottom: 1px solid #f0e8e0; font-size: 12.5px;
+}
+.sf-review-row:last-child { border-bottom: none; }
+.sf-review-label { color: #a08070; font-weight: 600; flex-shrink: 0; }
+.sf-review-value { color: #1a1a1a; font-weight: 500; text-align: right; }
+
+.sf-terms-check {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 13px; background: #fff8f3;
+  border: 1px solid #f0d8c4; border-radius: 10px;
+  margin-top: 12px; cursor: pointer;
+}
+.sf-terms-check input[type="checkbox"] { display: none; }
+.sf-check-box {
+  width: 18px; height: 18px; border: 2px solid #d0b8a8;
+  border-radius: 5px; flex-shrink: 0; margin-top: 1px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s; background: #fff;
+}
+.sf-terms-check input:checked + .sf-check-box { background: #8b4513; border-color: #8b4513; }
+.sf-terms-check input:checked + .sf-check-box::after {
+  content: ""; display: block;
+  width: 5px; height: 9px;
+  border: 2px solid #fff; border-top: none; border-left: none;
+  transform: rotate(45deg) translate(-1px,-1px);
+}
+.sf-terms-text { font-size: 12px; color: #6b5040; line-height: 1.6; }
+.sf-terms-text a { color: #8b4513; font-weight: 600; }
+
+/* Footer */
+.seller-modal-footer {
+  padding: 12px 24px 16px; border-top: 1px solid #f0e8e0;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-shrink: 0; background: #fdf9f6;
+}
+.sf-btn-back {
+  padding: 9px 18px; background: #f5f0ec; color: #8a7060;
+  border: none; border-radius: 9px; font-size: 12.5px; font-weight: 700;
+  cursor: pointer; font-family: inherit;
+  display: flex; align-items: center; gap: 6px; transition: background 0.15s;
+}
+.sf-btn-back:hover { background: #ebe3dc; }
+.sf-btn-back:disabled { opacity: 0.3; cursor: not-allowed; }
+.sf-btn-next {
+  padding: 9px 22px;
+  background: linear-gradient(135deg, #8b4513, #c0622a);
+  color: #fff; border: none; border-radius: 9px;
+  font-size: 12.5px; font-weight: 700; cursor: pointer;
+  font-family: inherit; display: flex; align-items: center; gap: 6px;
+  box-shadow: 0 3px 12px rgba(139,69,19,0.28);
+  transition: opacity 0.15s, transform 0.1s;
+}
+.sf-btn-next:hover { opacity: 0.88; }
+.sf-btn-next:active { transform: scale(0.97); }
+.sf-btn-next:disabled { opacity: 0.38; cursor: not-allowed; }
+
+/* Success */
+.sf-success { text-align: center; padding: 28px 16px; }
+.sf-success-icon {
+  width: 68px; height: 68px;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px; font-size: 28px; color: #fff;
+  box-shadow: 0 6px 24px rgba(34,197,94,0.35);
+  animation: sfSuccessPop 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes sfSuccessPop {
+  from { transform: scale(0.2); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+.sf-success h3 { font-size: 19px; font-weight: 800; color: #1a1a1a; margin: 0 0 6px; }
+.sf-success p  { font-size: 13px; color: #7a6a58; margin: 0 0 5px; line-height: 1.6; }
+.sf-pending-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #fff8e1; color: #b45309; border: 1px solid #fde68a;
+  padding: 6px 14px; border-radius: 20px; font-size: 12px;
+  font-weight: 700; margin: 10px 0 16px;
+}
+
+/* Spinner */
+.sf-spinner {
+  width: 13px; height: 13px;
+  border: 2px solid rgba(255,255,255,0.35);
+  border-top-color: #fff; border-radius: 50%;
+  animation: sfSpin 0.7s linear infinite; display: none;
+}
+.sf-btn-next.loading .sf-spinner { display: block; }
+.sf-btn-next.loading .sf-btn-label { display: none; }
+@keyframes sfSpin { to { transform: rotate(360deg); } }
+
+/* info note */
+.sf-info-note {
+  display: flex; align-items: flex-start; gap: 9px;
+  background: #eff6ff; border: 1px solid #bfdbfe;
+  border-radius: 9px; padding: 11px 13px;
+  font-size: 12px; color: #1d4ed8; margin-bottom: 14px; line-height: 1.55;
+}
+.sf-info-note i { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+
 </style>
 
     </head>
@@ -552,6 +848,276 @@
           </div>
         </div>
 
+
+        <!-- SELLER REGISTRATION MODAL -->
+        <div id="seller-modal">
+          <div class="seller-modal-box">
+
+            <!-- Header -->
+            <div class="seller-modal-header">
+              <h2>&#x1F6CD;&#xFE0F; Become a Seller</h2>
+              <p>Fill in your details to apply for a seller account</p>
+              <button class="seller-modal-close" id="close-seller-modal" title="Close">&times;</button>
+            </div>
+
+            <!-- Progress Steps -->
+            <div class="seller-steps" id="sf-steps">
+              <div class="seller-step active" id="sf-step-1">
+                <div class="seller-step-dot"><span class="seller-step-num">1</span></div>
+                <span class="seller-step-label">Personal</span>
+              </div>
+              <div class="seller-step-line" id="sf-line-1"></div>
+              <div class="seller-step" id="sf-step-2">
+                <div class="seller-step-dot"><span class="seller-step-num">2</span></div>
+                <span class="seller-step-label">Seller Info</span>
+              </div>
+              <div class="seller-step-line" id="sf-line-2"></div>
+              <div class="seller-step" id="sf-step-3">
+                <div class="seller-step-dot"><span class="seller-step-num">3</span></div>
+                <span class="seller-step-label">Verify ID</span>
+              </div>
+              <div class="seller-step-line" id="sf-line-3"></div>
+              <div class="seller-step" id="sf-step-4">
+                <div class="seller-step-dot"><span class="seller-step-num">4</span></div>
+                <span class="seller-step-label">Review</span>
+              </div>
+            </div>
+
+            <!-- Body -->
+            <div class="seller-modal-body">
+
+              <!-- PAGE 1: Personal Details -->
+              <div class="seller-page active" id="sf-page-1">
+                <p class="sf-section-title"><i class="fas fa-user"></i> Personal Information</p>
+
+                <div class="sf-row-2">
+                  <div class="sf-group">
+                    <label><i class="fas fa-user"></i> First Name <span class="sf-required">*</span></label>
+                    <input type="text" id="sf-fname" placeholder="Aarogya" autocomplete="given-name">
+                    <div class="sf-error-msg" id="sf-fname-err" style="display:none"><i class="fas fa-exclamation-circle"></i> Required</div>
+                  </div>
+                  <div class="sf-group">
+                    <label><i class="fas fa-user"></i> Last Name <span class="sf-required">*</span></label>
+                    <input type="text" id="sf-lname" placeholder="Bhandari" autocomplete="family-name">
+                    <div class="sf-error-msg" id="sf-lname-err" style="display:none"><i class="fas fa-exclamation-circle"></i> Required</div>
+                  </div>
+                </div>
+
+                <div class="sf-row-2">
+                  <div class="sf-group">
+                    <label><i class="fas fa-birthday-cake"></i> Age <span class="sf-required">*</span></label>
+                    <input type="number" id="sf-age" placeholder="25" min="18" max="100" autocomplete="off">
+                    <div class="sf-error-msg" id="sf-age-err" style="display:none"><i class="fas fa-exclamation-circle"></i> Must be 18+</div>
+                  </div>
+                  <div class="sf-group">
+                    <label><i class="fas fa-phone"></i> Phone <span class="sf-required">*</span></label>
+                    <input type="tel" id="sf-phone" placeholder="98XXXXXXXX" autocomplete="tel">
+                    <div class="sf-error-msg" id="sf-phone-err" style="display:none"><i class="fas fa-exclamation-circle"></i> Enter valid phone</div>
+                  </div>
+                </div>
+
+                <div class="sf-group">
+                  <label><i class="fas fa-map-marker-alt"></i> Full Address <span class="sf-required">*</span></label>
+                  <input type="text" id="sf-address" placeholder="Ward No. 5, Kalimati, Kathmandu" autocomplete="street-address">
+                  <div class="sf-error-msg" id="sf-address-err" style="display:none"><i class="fas fa-exclamation-circle"></i> Required</div>
+                </div>
+
+                <div class="sf-row-2">
+                  <div class="sf-group">
+                    <label><i class="fas fa-city"></i> City <span class="sf-required">*</span></label>
+                    <input type="text" id="sf-city" placeholder="Kathmandu" autocomplete="address-level2">
+                    <div class="sf-error-msg" id="sf-city-err" style="display:none"><i class="fas fa-exclamation-circle"></i> Required</div>
+                  </div>
+                  <div class="sf-group">
+                    <label><i class="fas fa-map"></i> Province</label>
+                    <select id="sf-province">
+                      <option value="">Select Province</option>
+                      <option value="Koshi">Koshi Province</option>
+                      <option value="Madhesh">Madhesh Province</option>
+                      <option value="Bagmati">Bagmati Province</option>
+                      <option value="Gandaki">Gandaki Province</option>
+                      <option value="Lumbini">Lumbini Province</option>
+                      <option value="Karnali">Karnali Province</option>
+                      <option value="Sudurpashchim">Sudurpashchim Province</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- PAGE 2: Seller / Business Info -->
+              <div class="seller-page" id="sf-page-2">
+                <p class="sf-section-title"><i class="fas fa-store"></i> Seller &amp; Domain</p>
+
+                <div class="sf-info-note">
+                  <i class="fas fa-info-circle"></i>
+                  <span>Tell us about what you sell. This helps us verify your expertise and connect you with the right buyers on LocalArtHub.</span>
+                </div>
+
+                <div class="sf-group">
+                  <label><i class="fas fa-tags"></i> Primary Domain / Art Category <span class="sf-required">*</span></label>
+                  <select id="sf-domain">
+                    <option value="">Select your specialty</option>
+                    <option value="Paintings &amp; Fine Art">Paintings &amp; Fine Art</option>
+                    <option value="Ceramics &amp; Pottery">Ceramics &amp; Pottery</option>
+                    <option value="Sculptures">Sculptures</option>
+                    <option value="Textiles &amp; Weaving">Textiles &amp; Weaving</option>
+                    <option value="Woodwork &amp; Carving">Woodwork &amp; Carving</option>
+                    <option value="Metalwork &amp; Jewelry">Metalwork &amp; Jewelry</option>
+                    <option value="Thangka Art">Thangka Art</option>
+                    <option value="Pashmina &amp; Knitwear">Pashmina &amp; Knitwear</option>
+                    <option value="Antiques &amp; Artifacts">Antiques &amp; Artifacts</option>
+                    <option value="Photography">Photography</option>
+                    <option value="Digital Art">Digital Art</option>
+                    <option value="Other Handmade">Other Handmade</option>
+                  </select>
+                  <div class="sf-error-msg" id="sf-domain-err" style="display:none"><i class="fas fa-exclamation-circle"></i> Required</div>
+                </div>
+
+                <div class="sf-group">
+                  <label><i class="fas fa-clock"></i> Years of Experience <span class="sf-required">*</span></label>
+                  <select id="sf-experience">
+                    <option value="">Select experience</option>
+                    <option value="Less than 1 year">Less than 1 year</option>
+                    <option value="1-2 years">1&#8211;2 years</option>
+                    <option value="3-5 years">3&#8211;5 years</option>
+                    <option value="5-10 years">5&#8211;10 years</option>
+                    <option value="10+ years">10+ years</option>
+                  </select>
+                  <div class="sf-error-msg" id="sf-exp-err" style="display:none"><i class="fas fa-exclamation-circle"></i> Required</div>
+                </div>
+
+                <div class="sf-group">
+                  <label><i class="fas fa-align-left"></i> About Your Work <span class="sf-required">*</span></label>
+                  <textarea id="sf-bio" rows="4" placeholder="Describe your art, craft process, and what makes your work unique..." style="resize:vertical; min-height:80px;"></textarea>
+                  <div class="sf-error-msg" id="sf-bio-err" style="display:none"><i class="fas fa-exclamation-circle"></i> Please write at least 30 characters</div>
+                </div>
+
+                <div class="sf-group">
+                  <label><i class="fas fa-link"></i> Social / Portfolio Link (Optional)</label>
+                  <input type="url" id="sf-portfolio" placeholder="https://instagram.com/yourprofile">
+                </div>
+              </div>
+
+              <!-- PAGE 3: ID Verification -->
+              <div class="seller-page" id="sf-page-3">
+                <p class="sf-section-title"><i class="fas fa-id-card"></i> Identity Verification</p>
+
+                <div class="sf-info-note">
+                  <i class="fas fa-shield-alt"></i>
+                  <span>We verify your identity to protect buyers and maintain trust on the platform. Your ID is stored securely and not shared publicly.</span>
+                </div>
+
+                <div class="sf-group">
+                  <label><i class="fas fa-id-badge"></i> ID Type <span class="sf-required">*</span></label>
+                  <div class="sf-id-types">
+                    <button type="button" class="sf-id-type-btn selected" data-idtype="Citizenship Certificate" onclick="sfSelectIdType(this)">&#x1F4CB; Citizenship</button>
+                    <button type="button" class="sf-id-type-btn" data-idtype="National ID (NID)" onclick="sfSelectIdType(this)">&#x1F4C7; NID Card</button>
+                    <button type="button" class="sf-id-type-btn" data-idtype="Driving License" onclick="sfSelectIdType(this)">&#x1F697; License</button>
+                    <button type="button" class="sf-id-type-btn" data-idtype="Passport" onclick="sfSelectIdType(this)">&#x1F4D4; Passport</button>
+                  </div>
+                </div>
+
+                <div class="sf-group">
+                  <label><i class="fas fa-hashtag"></i> ID Number <span class="sf-required">*</span></label>
+                  <input type="text" id="sf-idnum" placeholder="e.g. 12-34-56-78901" autocomplete="off">
+                  <div class="sf-error-msg" id="sf-idnum-err" style="display:none"><i class="fas fa-exclamation-circle"></i> Required</div>
+                </div>
+
+                <div class="sf-group">
+                  <label><i class="fas fa-camera"></i> Upload ID Photo <span class="sf-required">*</span></label>
+                  <div class="sf-upload-area" id="sf-upload-area" onclick="document.getElementById('sf-id-input').click()"
+                    ondragover="event.preventDefault(); this.classList.add('drag-over')"
+                    ondragleave="this.classList.remove('drag-over')"
+                    ondrop="sfHandleDrop(event)">
+                    <span class="sf-upload-icon"><i class="fas fa-cloud-upload-alt"></i></span>
+                    <p class="sf-upload-text" id="sf-upload-text">Click to upload or drag &amp; drop</p>
+                    <p class="sf-upload-hint">Clear photo of front side of your ID</p>
+                    <div class="sf-format-tags">
+                      <span class="sf-format-tag">JPG</span>
+                      <span class="sf-format-tag">PNG</span>
+                      <span class="sf-format-tag">PDF</span>
+                      <span class="sf-format-tag">Max 5MB</span>
+                    </div>
+                  </div>
+                  <input type="file" id="sf-id-input" accept="image/jpeg,image/png,image/jpg,application/pdf" onchange="sfHandleFile(this.files[0])">
+                  <img id="sf-img-preview" alt="ID Preview">
+                  <div class="sf-file-preview" id="sf-file-preview">
+                    <i class="fas fa-check-circle"></i>
+                    <span id="sf-file-name">file.jpg</span>
+                    <span style="margin-left:auto; color:#888; font-weight:500; font-size:11px;" id="sf-file-size"></span>
+                  </div>
+                  <div class="sf-error-msg" id="sf-id-err" style="display:none"><i class="fas fa-exclamation-circle"></i> Please upload your ID photo</div>
+                </div>
+              </div>
+
+              <!-- PAGE 4: Review & Submit -->
+              <div class="seller-page" id="sf-page-4">
+                <p class="sf-section-title"><i class="fas fa-check-double"></i> Review Your Application</p>
+
+                <div class="sf-review-card">
+                  <p class="sf-review-card-title"><i class="fas fa-user" style="margin-right:5px"></i>Personal</p>
+                  <div class="sf-review-row"><span class="sf-review-label">Full Name</span><span class="sf-review-value" id="rv-name">—</span></div>
+                  <div class="sf-review-row"><span class="sf-review-label">Age</span><span class="sf-review-value" id="rv-age">—</span></div>
+                  <div class="sf-review-row"><span class="sf-review-label">Phone</span><span class="sf-review-value" id="rv-phone">—</span></div>
+                  <div class="sf-review-row"><span class="sf-review-label">Address</span><span class="sf-review-value" id="rv-address">—</span></div>
+                </div>
+
+                <div class="sf-review-card">
+                  <p class="sf-review-card-title"><i class="fas fa-store" style="margin-right:5px"></i>Seller Info</p>
+                  <div class="sf-review-row"><span class="sf-review-label">Domain</span><span class="sf-review-value" id="rv-domain">—</span></div>
+                  <div class="sf-review-row"><span class="sf-review-label">Experience</span><span class="sf-review-value" id="rv-exp">—</span></div>
+                  <div class="sf-review-row"><span class="sf-review-label">Bio</span><span class="sf-review-value" id="rv-bio" style="max-width:60%;word-break:break-word">—</span></div>
+                </div>
+
+                <div class="sf-review-card">
+                  <p class="sf-review-card-title"><i class="fas fa-id-card" style="margin-right:5px"></i>ID Verification</p>
+                  <div class="sf-review-row"><span class="sf-review-label">ID Type</span><span class="sf-review-value" id="rv-idtype">—</span></div>
+                  <div class="sf-review-row"><span class="sf-review-label">ID Number</span><span class="sf-review-value" id="rv-idnum">—</span></div>
+                  <div class="sf-review-row"><span class="sf-review-label">Document</span><span class="sf-review-value" id="rv-idfile" style="color:#22c55e">—</span></div>
+                </div>
+
+                <label class="sf-terms-check" for="sf-terms-cb">
+                  <input type="checkbox" id="sf-terms-cb">
+                  <span class="sf-check-box"></span>
+                  <span class="sf-terms-text">
+                    I confirm all information is accurate and agree to LocalArtHub's
+                    <a href="termsandcondition.html" target="_blank">Terms &amp; Conditions</a>
+                    and <a href="privacy.html" target="_blank">Privacy Policy</a>.
+                    I understand my application will be reviewed within 1&#8211;3 business days.
+                  </span>
+                </label>
+              </div>
+
+              <!-- PAGE 5: Success -->
+              <div class="seller-page" id="sf-page-5">
+                <div class="sf-success">
+                  <div class="sf-success-icon">&#x2713;</div>
+                  <h3>Application Submitted!</h3>
+                  <p>Your seller application has been received.</p>
+                  <div class="sf-pending-badge">&#x23F3; Under Review — 1&#8211;3 Business Days</div>
+                  <p style="font-size:12px; color:#a08070;">
+                    An admin will review your details and ID document.<br>
+                    You will be notified once approved. Please sign out and sign back in after approval to activate seller features.
+                  </p>
+                </div>
+              </div>
+
+            </div><!-- /body -->
+
+            <!-- Footer -->
+            <div class="seller-modal-footer" id="sf-footer">
+              <button class="sf-btn-back" id="sf-btn-back" disabled onclick="sfBack()">
+                <i class="fas fa-arrow-left"></i> Back
+              </button>
+              <button class="sf-btn-next" id="sf-btn-next" onclick="sfNext()">
+                <span class="sf-btn-label">Next <i class="fas fa-arrow-right"></i></span>
+                <span class="sf-spinner"></span>
+              </button>
+            </div>
+
+          </div><!-- /box -->
+        </div><!-- /seller-modal -->
+
         <!-- PRODUCT DETAIL MODAL -->
         <div id="product-modal" class="modal">
           <div class="modal-content" style="max-width: 600px;">
@@ -581,16 +1147,11 @@ document.addEventListener("DOMContentLoaded", () => {
         window.location.reload();
       });
       if (becomeSellerBtn) {
-        becomeSellerBtn.addEventListener('click', async () => {
-          if (!token) { alert('Please login first'); return; }
-          try {
-            const res = await fetch('http://localhost:5000/api/users/become-seller', {
-              method: 'POST', headers: { Authorization: `Bearer ${token}` }
-            });
-            const data = await res.json();
-            if (res.ok) { alert(data.message || 'Seller role granted. Please sign out and sign in again.'); modal.style.display = 'none'; }
-            else { alert(data.message || 'Failed to become seller'); }
-          } catch (e) { alert('Request failed'); }
+        becomeSellerBtn.addEventListener('click', () => {
+          // Close logout modal, open seller registration modal
+          modal.style.display = 'none';
+          document.getElementById('seller-modal').classList.add('open');
+          sfGoToPage(1); // reset to page 1
         });
       }
     }
@@ -784,6 +1345,321 @@ function chatAppendTyping() {
 function chatRemoveTyping(id) {
   document.getElementById(id)?.remove();
 }
+</script>
+
+
+<script>
+/* ════════════════════════════════════════════════════════
+   SELLER REGISTRATION FORM LOGIC
+════════════════════════════════════════════════════════ */
+(function () {
+
+  let sfCurrentPage = 1;
+  const SF_TOTAL_PAGES = 4; // excluding success page
+  let sfSelectedIdType = 'Citizenship Certificate';
+  let sfIdFile = null;
+
+  /* ── Open / Close ── */
+  document.getElementById('close-seller-modal').addEventListener('click', () => {
+    document.getElementById('seller-modal').classList.remove('open');
+  });
+
+  document.getElementById('seller-modal').addEventListener('click', function (e) {
+    if (e.target === this) this.classList.remove('open');
+  });
+
+  /* ── Navigation ── */
+  window.sfNext = function () {
+    if (sfCurrentPage <= SF_TOTAL_PAGES) {
+      if (!sfValidatePage(sfCurrentPage)) return;
+    }
+    if (sfCurrentPage === SF_TOTAL_PAGES) {
+      sfSubmit();
+      return;
+    }
+    sfGoToPage(sfCurrentPage + 1);
+  };
+
+  window.sfBack = function () {
+    if (sfCurrentPage > 1) sfGoToPage(sfCurrentPage - 1);
+  };
+
+  window.sfGoToPage = function (page) {
+    // Deactivate all pages
+    document.querySelectorAll('.seller-page').forEach(p => p.classList.remove('active'));
+    document.getElementById('sf-page-' + page).classList.add('active');
+
+    // Update steps
+    for (let i = 1; i <= 4; i++) {
+      const step = document.getElementById('sf-step-' + i);
+      const line = document.getElementById('sf-line-' + i);
+      step.classList.remove('active', 'done');
+      if (i < page)       step.classList.add('done');
+      else if (i === page) step.classList.add('active');
+      // Update dot content
+      const dot = step.querySelector('.seller-step-dot');
+      if (i < page) {
+        dot.innerHTML = '&#10003;';
+      } else {
+        dot.innerHTML = '<span class="seller-step-num">' + i + '</span>';
+      }
+    }
+
+    sfCurrentPage = page;
+
+    // Back button
+    document.getElementById('sf-btn-back').disabled = (page === 1);
+
+    // Next button label
+    const nextBtn = document.getElementById('sf-btn-next');
+    const label   = nextBtn.querySelector('.sf-btn-label');
+    if (page === SF_TOTAL_PAGES) {
+      label.innerHTML = 'Submit Application <i class="fas fa-paper-plane"></i>';
+    } else if (page === 5) {
+      document.getElementById('sf-footer').style.display = 'none';
+    } else {
+      label.innerHTML = 'Next <i class="fas fa-arrow-right"></i>';
+      document.getElementById('sf-footer').style.display = 'flex';
+    }
+
+    // Populate review on page 4
+    if (page === 4) sfPopulateReview();
+  };
+
+  /* ── Validation ── */
+  function sfValidatePage(page) {
+    let ok = true;
+
+    function req(id, errId, msg) {
+      const el = document.getElementById(id);
+      const err = document.getElementById(errId);
+      const val = el.value.trim();
+      if (!val) {
+        el.classList.add('sf-error');
+        err.textContent = '⚠ ' + (msg || 'Required');
+        err.style.display = 'flex';
+        ok = false;
+      } else {
+        el.classList.remove('sf-error');
+        err.style.display = 'none';
+      }
+    }
+
+    if (page === 1) {
+      req('sf-fname',   'sf-fname-err',   'First name is required');
+      req('sf-lname',   'sf-lname-err',   'Last name is required');
+      req('sf-address', 'sf-address-err', 'Address is required');
+      req('sf-city',    'sf-city-err',    'City is required');
+
+      // Age validation
+      const ageEl = document.getElementById('sf-age');
+      const ageErr = document.getElementById('sf-age-err');
+      const age = parseInt(ageEl.value);
+      if (!ageEl.value || isNaN(age) || age < 18) {
+        ageEl.classList.add('sf-error');
+        ageErr.style.display = 'flex';
+        ok = false;
+      } else {
+        ageEl.classList.remove('sf-error');
+        ageErr.style.display = 'none';
+      }
+
+      // Phone validation
+      const phoneEl = document.getElementById('sf-phone');
+      const phoneErr = document.getElementById('sf-phone-err');
+      const phoneVal = phoneEl.value.replace(/\s/g, '');
+      if (!phoneVal || phoneVal.length < 7) {
+        phoneEl.classList.add('sf-error');
+        phoneErr.style.display = 'flex';
+        ok = false;
+      } else {
+        phoneEl.classList.remove('sf-error');
+        phoneErr.style.display = 'none';
+      }
+    }
+
+    if (page === 2) {
+      req('sf-domain',  'sf-domain-err',  'Please select your domain');
+      req('sf-experience', 'sf-exp-err',  'Please select your experience');
+      // Bio min length
+      const bioEl = document.getElementById('sf-bio');
+      const bioErr = document.getElementById('sf-bio-err');
+      if (!bioEl.value.trim() || bioEl.value.trim().length < 30) {
+        bioEl.classList.add('sf-error');
+        bioErr.style.display = 'flex';
+        ok = false;
+      } else {
+        bioEl.classList.remove('sf-error');
+        bioErr.style.display = 'none';
+      }
+    }
+
+    if (page === 3) {
+      req('sf-idnum', 'sf-idnum-err', 'ID number is required');
+      const idErr = document.getElementById('sf-id-err');
+      if (!sfIdFile) {
+        idErr.style.display = 'flex';
+        ok = false;
+      } else {
+        idErr.style.display = 'none';
+      }
+    }
+
+    if (page === 4) {
+      const cb = document.getElementById('sf-terms-cb');
+      if (!cb.checked) {
+        alert('Please agree to the Terms & Conditions to submit your application.');
+        ok = false;
+      }
+    }
+
+    return ok;
+  }
+
+  /* ── Populate Review ── */
+  function sfPopulateReview() {
+    const fname = document.getElementById('sf-fname').value.trim();
+    const lname = document.getElementById('sf-lname').value.trim();
+    const age   = document.getElementById('sf-age').value;
+    const phone = document.getElementById('sf-phone').value.trim();
+    const addr  = document.getElementById('sf-address').value.trim();
+    const city  = document.getElementById('sf-city').value.trim();
+    const prov  = document.getElementById('sf-province').value;
+    const domain = document.getElementById('sf-domain').value;
+    const exp    = document.getElementById('sf-experience').value;
+    const bio    = document.getElementById('sf-bio').value.trim();
+    const idnum  = document.getElementById('sf-idnum').value.trim();
+
+    document.getElementById('rv-name').textContent    = fname + ' ' + lname;
+    document.getElementById('rv-age').textContent     = age + ' years';
+    document.getElementById('rv-phone').textContent   = phone;
+    document.getElementById('rv-address').textContent = addr + (city ? ', ' + city : '') + (prov ? ', ' + prov : '');
+    document.getElementById('rv-domain').textContent  = domain;
+    document.getElementById('rv-exp').textContent     = exp;
+    document.getElementById('rv-bio').textContent     = bio.length > 60 ? bio.slice(0, 60) + '…' : bio;
+    document.getElementById('rv-idtype').textContent  = sfSelectedIdType;
+    document.getElementById('rv-idnum').textContent   = idnum;
+    document.getElementById('rv-idfile').textContent  = sfIdFile ? '✓ ' + sfIdFile.name : 'Not uploaded';
+  }
+
+  /* ── Submit ── */
+  async function sfSubmit() {
+    const token = localStorage.getItem('authToken');
+    if (!token) { alert('Please login first'); return; }
+
+    const nextBtn = document.getElementById('sf-btn-next');
+    nextBtn.classList.add('loading');
+    nextBtn.disabled = true;
+
+    try {
+      // Build FormData to support file upload
+      const formData = new FormData();
+      formData.append('firstName',  document.getElementById('sf-fname').value.trim());
+      formData.append('lastName',   document.getElementById('sf-lname').value.trim());
+      formData.append('age',        document.getElementById('sf-age').value);
+      formData.append('phone',      document.getElementById('sf-phone').value.trim());
+      formData.append('address',    document.getElementById('sf-address').value.trim());
+      formData.append('city',       document.getElementById('sf-city').value.trim());
+      formData.append('province',   document.getElementById('sf-province').value);
+      formData.append('domain',     document.getElementById('sf-domain').value);
+      formData.append('experience', document.getElementById('sf-experience').value);
+      formData.append('bio',        document.getElementById('sf-bio').value.trim());
+      formData.append('portfolio',  document.getElementById('sf-portfolio').value.trim());
+      formData.append('idType',     sfSelectedIdType);
+      formData.append('idNumber',   document.getElementById('sf-idnum').value.trim());
+      if (sfIdFile) formData.append('idPhoto', sfIdFile);
+
+      const res = await fetch('http://localhost:5000/api/users/become-seller', {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + token },
+        // NOTE: Do NOT set Content-Type when sending FormData — browser sets it with boundary
+        body: formData
+      });
+
+      const data = await res.json();
+
+      nextBtn.classList.remove('loading');
+      nextBtn.disabled = false;
+
+      if (res.ok) {
+        sfGoToPage(5);
+      } else {
+        alert(data.message || 'Application failed. Please try again.');
+      }
+    } catch (e) {
+      nextBtn.classList.remove('loading');
+      nextBtn.disabled = false;
+      alert('Network error. Please check your connection and try again.');
+    }
+  }
+
+  /* ── ID Type selection ── */
+  window.sfSelectIdType = function (btn) {
+    document.querySelectorAll('.sf-id-type-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    sfSelectedIdType = btn.dataset.idtype;
+    // Update placeholder hint
+    const hints = {
+      'Citizenship Certificate': 'e.g. 12-34-56-78901',
+      'National ID (NID)':       'e.g. NID-XXXXXXXXXXXX',
+      'Driving License':         'e.g. 07-10-0123456',
+      'Passport':                'e.g. A1234567'
+    };
+    document.getElementById('sf-idnum').placeholder = hints[sfSelectedIdType] || 'Enter ID number';
+  };
+
+  /* ── File Upload ── */
+  window.sfHandleFile = function (file) {
+    if (!file) return;
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) { alert('File is too large. Maximum size is 5MB.'); return; }
+    const allowed = ['image/jpeg','image/png','image/jpg','application/pdf'];
+    if (!allowed.includes(file.type)) { alert('Invalid file type. Please upload JPG, PNG, or PDF.'); return; }
+
+    sfIdFile = file;
+    const area = document.getElementById('sf-upload-area');
+    area.classList.add('has-file');
+    document.getElementById('sf-upload-text').textContent = 'File selected ✓';
+    document.getElementById('sf-file-name').textContent   = file.name;
+    document.getElementById('sf-file-size').textContent   = (file.size / 1024).toFixed(0) + ' KB';
+    document.getElementById('sf-file-preview').classList.add('visible');
+    document.getElementById('sf-id-err').style.display = 'none';
+
+    // Image preview
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = document.getElementById('sf-img-preview');
+        img.src = e.target.result;
+        img.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    } else {
+      document.getElementById('sf-img-preview').style.display = 'none';
+    }
+  };
+
+  window.sfHandleDrop = function (e) {
+    e.preventDefault();
+    document.getElementById('sf-upload-area').classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file) sfHandleFile(file);
+  };
+
+  // Clear error on input
+  document.querySelectorAll('#seller-modal input, #seller-modal select, #seller-modal textarea').forEach(el => {
+    el.addEventListener('input', function () {
+      this.classList.remove('sf-error');
+      const errId = this.id + '-err';
+      const err = document.getElementById(errId);
+      if (err) err.style.display = 'none';
+    });
+    el.addEventListener('change', function () {
+      this.classList.remove('sf-error');
+    });
+  });
+
+})();
 </script>
 
 </body>

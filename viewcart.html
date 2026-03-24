@@ -232,13 +232,14 @@
         <h4 class="summary-heading">Order Summary</h4>
         <div class="summary-line"><span>Subtotal</span><span id="summary-subtotal">Rs. 0</span></div>
         <div class="summary-line"><span>Shipping</span><span style="color:#088178; font-weight:600">Free</span></div>
+        <div class="summary-line" id="discount-line" style="display:none;color:#088178"><span>Discount (10%)</span><span id="summary-discount">-Rs. 0</span></div>
         <div class="summary-line summary-total"><span>Total</span><span id="summary-total">Rs. 0</span></div>
         <button class="checkout-all-btn" onclick="checkoutAll()">Proceed to Checkout</button>
         <div class="promo-row">
           <input id="promo-input" class="promo-input" placeholder="Promo code" />
           <button class="promo-apply-btn" onclick="applyPromo()">Apply</button>
         </div>
-        <p id="promo-msg" style="font-size:12px; color:#088178; margin:6px 0 0; display:none"></p>
+        <p id="promo-msg" style="font-size:12px; margin:6px 0 0; display:none"></p>
       </div>
     </div>
   </div>
@@ -370,6 +371,25 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+});
+</script>
+
+<script>
+// Restore promo input/message on page load if a promo was previously saved.
+// The actual discount calculation is handled by _applyActivePromo() in script.js,
+// which renderCart() calls automatically once the cart finishes loading.
+document.addEventListener("DOMContentLoaded", () => {
+  const savedDiscount = localStorage.getItem("promoDiscount");
+  if (!savedDiscount) return;
+  const savedCode = localStorage.getItem("promoCode") || "";
+  const input = document.getElementById("promo-input");
+  const msg   = document.getElementById("promo-msg");
+  if (input) input.value = savedCode;
+  if (msg) {
+    msg.textContent = `✓ Promo "${savedCode}" applied — ${parseFloat(savedDiscount) * 100}% off!`;
+    msg.style.color   = "#088178";
+    msg.style.display = "block";
+  }
 });
 </script>
 </body>

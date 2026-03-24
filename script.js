@@ -885,8 +885,10 @@ function renderCart(cart, productMap) {
   // Update summary panel (full total — selection recalc happens on checkbox change)
   if (summaryPanel) {
     summaryPanel.style.display = "block";
+    window._cartRawSubtotal = total; // store raw number for promo discount calc
     document.getElementById("summary-subtotal").textContent = `Rs. ${Number(total).toLocaleString()}`;
-    document.getElementById("summary-total").textContent    = `Rs. ${Number(total).toLocaleString()}`;
+    // Re-apply promo discount if one is active (replaces summary-total)
+    _applyActivePromo();
   }
   if (countLabel) {
     countLabel.textContent = `${itemCount} item${itemCount !== 1 ? "s" : ""} in your bag`;
@@ -928,8 +930,9 @@ function updateSelectionSummary() {
       const meta = _cartItemMeta[cb.dataset.id];
       if (meta) total += meta.price * meta.qty;
     });
+    window._cartRawSubtotal = total;
     document.getElementById("summary-subtotal").textContent = `Rs. ${Number(total).toLocaleString()}`;
-    document.getElementById("summary-total").textContent    = `Rs. ${Number(total).toLocaleString()}`;
+    _applyActivePromo();
     if (selBtn)   selBtn.style.display   = "none";
     return;
   }
@@ -941,8 +944,9 @@ function updateSelectionSummary() {
     if (meta) selTotal += meta.price * meta.qty;
   });
 
+  window._cartRawSubtotal = selTotal;
   document.getElementById("summary-subtotal").textContent = `Rs. ${Number(selTotal).toLocaleString()}`;
-  document.getElementById("summary-total").textContent    = `Rs. ${Number(selTotal).toLocaleString()}`;
+  _applyActivePromo();
 
   if (selBtn) {
     selBtn.style.display = "flex";
@@ -1181,19 +1185,52 @@ async function updateQty(cartId, newQty, productId) {
   loadCart();
 }
 
+const PROMO_CODES = { "ARTLOVE10": 0.10, "SAVE50": 0.50, "FESTIVE20": 0.20 };
+
+// Reapplies the currently stored promo (if any) to window._cartRawSubtotal.
+// Called after every subtotal change (checkbox, qty update, full-cart revert).
+function _applyActivePromo() {
+  const totalEl      = document.getElementById("summary-total");
+  const discountEl   = document.getElementById("summary-discount");
+  const discountLine = document.getElementById("discount-line");
+  if (!totalEl) return;
+
+  const raw            = window._cartRawSubtotal || 0;
+  const activeDiscount = parseFloat(localStorage.getItem("promoDiscount") || "0");
+  const discountAmt    = Math.round(raw * activeDiscount);
+  const finalTotal     = raw - discountAmt;
+
+  if (activeDiscount > 0 && discountLine) {
+    discountLine.style.display = "flex";
+    if (discountEl) discountEl.textContent = `-Rs. ${discountAmt.toLocaleString()}`;
+  } else if (discountLine) {
+    discountLine.style.display = "none";
+  }
+  totalEl.textContent = `Rs. ${finalTotal.toLocaleString()}`;
+}
+
 function applyPromo() {
   const code = document.getElementById("promo-input")?.value.trim().toUpperCase();
   const msg  = document.getElementById("promo-msg");
   if (!msg) return;
-  // Hook into your real promo system here — this is a UI placeholder
-  if (code === "ARTLOVE10") {
-    msg.textContent = "✓ 10% discount applied!";
+
+  const discount = PROMO_CODES[code];
+  if (discount) {
+    msg.textContent = `✓ Promo "${code}" applied — ${discount * 100}% off!`;
     msg.style.color = "#088178";
+    localStorage.setItem("promoCode",     code);
+    localStorage.setItem("promoDiscount", String(discount));
   } else {
     msg.textContent = "Invalid promo code.";
     msg.style.color = "#c0392b";
+    localStorage.removeItem("promoCode");
+    localStorage.removeItem("promoDiscount");
   }
   msg.style.display = "block";
+
+  // Re-apply (or clear) the discount on whatever subtotal is currently active
+  // (selected items or full cart — _cartRawSubtotal is always kept up to date).
+  _applyActivePromo();
 }
 
 window.updateQty   = updateQty;
