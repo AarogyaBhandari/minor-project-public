@@ -63,7 +63,14 @@ function formatOrderStatus(order) {
     `Items: ${order.items?.length || 0}`,
   ];
 
-  if (order.shippingAddress) {
+  if (order.shippingAddress && typeof order.shippingAddress === "object") {
+    const s = order.shippingAddress;
+    const namePart  = [s.firstName, s.lastName].filter(Boolean).join(" ");
+    const addrPart  = [s.address, s.city, s.zip].filter(Boolean).join(", ");
+    const phonePart = s.phone ? `Ph: ${s.phone}` : "";
+    const full = [namePart, addrPart, phonePart].filter(Boolean).join(" | ");
+    if (full) lines.push(`Shipping to: ${full}`);
+  } else if (typeof order.shippingAddress === "string" && order.shippingAddress) {
     lines.push(`Shipping to: ${order.shippingAddress}`);
   }
   if (order.notes) {
