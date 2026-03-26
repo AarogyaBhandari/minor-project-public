@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seller Requests — LocalArtHub Admin</title>
+  <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"/>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── Page shell ── */
+    body { font-family: 'Segoe UI', sans-serif; background: #f5f0eb; color: #1a1a1a; margin: 0; }
+
+    .page-wrapper {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+    .page-header h1 {
+      font-size: 22px;
+      font-weight: 800;
+      color: #1a1a1a;
+      margin: 0;
+    }
+    .page-header a {
+      color: #8b4513;
+      font-size: 13px;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-left: auto;
+    }
+    .page-header a:hover { text-decoration: underline; }
+
+    /* ── Filter tabs ── */
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .filter-tab {
+      padding: 7px 18px;
+      border-radius: 20px;
+      border: 1.5px solid #e0d0c4;
+      background: #fff;
+      color: #8a7060;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .filter-tab.active { background: #8b4513; border-color: #8b4513; color: #fff; }
+    .filter-tab .tab-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.12);
+      border-radius: 10px;
+      min-width: 20px;
+      height: 18px;
+      padding: 0 5px;
+      font-size: 11px;
+      margin-left: 5px;
+    }
+
+    /* ── Request cards ── */
+    #requests-list { display: flex; flex-direction: column; gap: 14px; }
+
+    .req-card {
+      background: #fff;
+      border: 1.5px solid #e8ddd5;
+      border-radius: 14px;
+      overflow: hidden;
+      transition: box-shadow 0.18s;
+    }
+    .req-card:hover { box-shadow: 0 4px 20px rgba(139,69,19,0.1); }
+
+    .req-card-head {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 15px 18px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .req-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #c0622a, #8b4513);
+      color: #fff;
+      font-size: 17px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .req-info { flex: 1; min-width: 0; }
+    .req-info h3 {
+      font-size: 14.5px;
+      font-weight: 700;
+      margin: 0 0 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .req-info p {
+      font-size: 12px;
+      color: #8a7060;
+      margin: 0;
+    }
+
+    .req-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 11px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .status-badge.pending  { background: #fff8e1; color: #b45309; border: 1px solid #fde68a; }
+    .status-badge.approved { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+    .status-badge.rejected { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+
+    .req-date { font-size: 11px; color: #a08070; }
+
+    .req-chevron {
+      font-size: 12px;
+      color: #c0a898;
+      margin-left: 8px;
+      transition: transform 0.2s;
+    }
+    .req-card.open .req-chevron { transform: rotate(180deg); }
+
+    /* ── Expanded details ── */
+    .req-details {
+      display: none;
+      border-top: 1px solid #f0e8e0;
+      padding: 18px 20px 20px;
+      background: #fdf9f6;
+      animation: slideDown 0.22s ease;
+    }
+    .req-card.open .req-details { display: block; }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px 24px;
+      margin-bottom: 16px;
+    }
+    @media (max-width: 600px) { .detail-grid { grid-template-columns: 1fr; } }
+
+    .detail-section-title {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #8b4513;
+      margin: 0 0 10px;
+      padding-bottom: 5px;
+      border-bottom: 1.5px solid #f0e8e0;
+      grid-column: 1 / -1;
+    }
+
+    .detail-row {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .detail-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: #a08070;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .detail-value {
+      font-size: 13px;
+      color: #1a1a1a;
+      font-weight: 500;
+      word-break: break-word;
+    }
+
+    .bio-box {
+      background: #fff;
+      border: 1px solid #e8ddd5;
+      border-radius: 9px;
+      padding: 10px 13px;
+      font-size: 13px;
+      color: #3a2a1a;
+      line-height: 1.6;
+      grid-column: 1 / -1;
+    }
+
+    /* ID photo */
+    .id-photo-section { grid-column: 1 / -1; }
+    .id-photo-thumb {
+      max-width: 260px;
+      max-height: 160px;
+      border-radius: 9px;
+      border: 1.5px solid #e0d0c4;
+      object-fit: contain;
+      margin-top: 7px;
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+    .id-photo-thumb:hover { transform: scale(1.03); }
+    .id-photo-pdf {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 7px;
+      background: #fdf3ec;
+      border: 1px solid #f0d8c4;
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #8b4513;
+      text-decoration: none;
+    }
+    .id-photo-pdf:hover { background: #fde8d4; }
+
+    /* Action buttons */
+    .req-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid #f0e8e0;
+    }
+
+    .btn-approve {
+      padding: 9px 22px;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #fff;
+      border: none;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      box-shadow: 0 3px 10px rgba(34,197,94,0.25);
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .btn-approve:hover { opacity: 0.88; }
+    .btn-approve:active { transform: scale(0.97); }
+    .btn-approve:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .btn-reject {
+      padding: 9px 22px;
+      background: linear-gradient(135deg, #ef4444, #b91c1c);
+      color: #fff;
+      border: none;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      box-shadow: 0 3px 10px rgba(239,68,68,0.22);
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .btn-reject:hover { opacity: 0.88; }
+    .btn-reject:active { transform: scale(0.97); }
+    .btn-reject:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .action-note-input {
+      flex: 1;
+      min-width: 160px;
+      padding: 8px 12px;
+      border: 1.5px solid #e0d0c4;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-family: inherit;
+      color: #1a1a1a;
+      background: #fff;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .action-note-input:focus { border-color: #8b4513; }
+
+    .already-acted {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 9px;
+    }
+    .already-acted.approved { background: #f0fdf4; color: #166534; }
+    .already-acted.rejected { background: #fef2f2; color: #991b1b; }
+
+    .admin-note-display {
+      font-size: 12px;
+      color: #8a7060;
+      font-style: italic;
+      margin-left: 8px;
+    }
+
+    /* ── Empty / loading states ── */
+    .state-box {
+      text-align: center;
+      padding: 60px 20px;
+      color: #a08070;
+    }
+    .state-box i { font-size: 40px; margin-bottom: 14px; display: block; opacity: 0.4; }
+    .state-box p { font-size: 14px; margin: 0; }
+
+    /* ── Lightbox ── */
+    #lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.82);
+      z-index: 99999;
+      justify-content: center;
+      align-items: center;
+      cursor: zoom-out;
+    }
+    #lightbox.open { display: flex; }
+    #lightbox img {
+      max-width: 90vw;
+      max-height: 88vh;
+      border-radius: 10px;
+      box-shadow: 0 16px 60px rgba(0,0,0,0.5);
+    }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(16px);
+      background: #1a1a1a;
+      color: #fff;
+      padding: 10px 22px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s, transform 0.25s;
+      white-space: nowrap;
+      z-index: 100000;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    #toast.success { background: #166534; }
+    #toast.error   { background: #991b1b; }
+  </style>
+</head>
+<body>
+
+<!-- ── Navbar (reuse from admin.html structure) ── -->
+<section id="header">
+  <a href="admin.html"><img src="./images/LocalArtHub logo.png" class="logo" alt="" style="width:30px;height:30px;"></a>
+  <div>
+    <ul id="navbar">
+      
+      <li><a href="seller-dashboard.html">Dashboard</a></li>
+      <li><a href="admin.html">Admin</a></li>
+      
+      <li><a href="seller-requests.html" class="active">Seller Requests</a></li>
+      <a href="#" id="close"><i class="fas fa-times"></i></a>
+    </ul>
+  </div>
+  <div id="right-nav">
+    
+    
+  </div>
+  <div id="mobile">
+    <a href="viewcart.html"><i class="far fa-shopping-cart"></i></a>
+    <i id="bar" class="fas fa-bars"></i>
+  </div>
+</section>
+
+<div class="page-wrapper">
+  <div class="page-header">
+    <i class="fas fa-store-alt" style="font-size:22px;color:#8b4513;"></i>
+    <h1>Seller Requests</h1>
+    <a href="admin.html"><i class="fas fa-arrow-left"></i> Back to Admin</a>
+  </div>
+
+  
+
+  <!-- Filter Tabs -->
+  <div class="filter-tabs">
+    <button class="filter-tab active" data-filter="all" onclick="setFilter('all', this)">
+      All <span class="tab-count" id="count-all">0</span>
+    </button>
+    <button class="filter-tab" data-filter="pending" onclick="setFilter('pending', this)">
+      ⏳ Pending <span class="tab-count" id="count-pending">0</span>
+    </button>
+    <button class="filter-tab" data-filter="approved" onclick="setFilter('approved', this)">
+      ✅ Approved <span class="tab-count" id="count-approved">0</span>
+    </button>
+    <button class="filter-tab" data-filter="rejected" onclick="setFilter('rejected', this)">
+      ❌ Rejected <span class="tab-count" id="count-rejected">0</span>
+    </button>
+  </div>
+
+  <!-- Requests list -->
+  <div id="requests-list">
+    <div class="state-box">
+      <i class="fas fa-spinner fa-spin"></i>
+      <p>Loading requests…</p>
+    </div>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox" onclick="closeLightbox()">
+  <img id="lightbox-img" src="" alt="ID Document">
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, getIdToken } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBsQNrAnhfzhWSepgMJEr3DbnLIUwHhOP0",
+  authDomain: "localarthub-38ae5.firebaseapp.com",
+  projectId: "localarthub-38ae5",
+  storageBucket: "localarthub-38ae5.firebasestorage.app",
+  messagingSenderId: "741966380978",
+  appId: "1:741966380978:web:d94d5516d308b799c1eeab",
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+const BASE = (window.location.port === '5000') ? '' : 'http://localhost:5000';
+
+// ── Auth gate ──────────────────────────────────────────────────────────────
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    alert('Please log in first.');
+    window.location.href = 'signin.html';
+    return;
+  }
+  // Force-refresh so we always get the latest custom claims
+  const tokenResult = await user.getIdTokenResult(true);
+  if (!tokenResult.claims.admin) {
+    alert('Access denied. Admin only.');
+    window.location.href = 'main.html';
+    return;
+  }
+  const token = await getIdToken(user, true);
+  localStorage.setItem('authToken', token);
+  window.adminToken = token;
+  loadRequests();
+});
+
+// ── Load all requests ──────────────────────────────────────────────────────
+window.allRequests = [];
+window.currentFilter = 'all';
+
+async function loadRequests() {
+  const token = window.adminToken || localStorage.getItem('authToken');
+  try {
+    const res  = await fetch(`${BASE}/api/users/seller-requests`, {
+      headers: { Authorization: 'Bearer ' + token }
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Failed');
+    window.allRequests = data;
+    updateCounts();
+    renderRequests(window.currentFilter);
+  } catch (e) {
+    document.getElementById('requests-list').innerHTML = `
+      <div class="state-box">
+        <i class="fas fa-exclamation-triangle"></i>
+        <p>Error loading requests: ${e.message}</p>
+      </div>`;
+  }
+}
+
+// ── Count badges ──────────────────────────────────────────────────────────
+function updateCounts() {
+  const all      = window.allRequests;
+  document.getElementById('count-all').textContent      = all.length;
+  document.getElementById('count-pending').textContent  = all.filter(r => r.status === 'pending').length;
+  document.getElementById('count-approved').textContent = all.filter(r => r.status === 'approved').length;
+  document.getElementById('count-rejected').textContent = all.filter(r => r.status === 'rejected').length;
+}
+
+// ── Filter ─────────────────────────────────────────────────────────────────
+window.setFilter = function(filter, btn) {
+  window.currentFilter = filter;
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderRequests(filter);
+};
+
+// ── Render ─────────────────────────────────────────────────────────────────
+function renderRequests(filter) {
+  const list = document.getElementById('requests-list');
+  const items = filter === 'all'
+    ? window.allRequests
+    : window.allRequests.filter(r => r.status === filter);
+
+  if (!items.length) {
+    list.innerHTML = `
+      <div class="state-box">
+        <i class="fas fa-inbox"></i>
+        <p>No ${filter === 'all' ? '' : filter + ' '}requests found.</p>
+      </div>`;
+    return;
+  }
+
+  list.innerHTML = items.map(r => buildCard(r)).join('');
+}
+
+function buildCard(r) {
+  const initials = ((r.firstName?.[0] || '') + (r.lastName?.[0] || '')).toUpperCase();
+  const date = new Date(r.createdAt).toLocaleDateString('en-NP', {
+    year: 'numeric', month: 'short', day: 'numeric'
+  });
+  const statusLabel = r.status.charAt(0).toUpperCase() + r.status.slice(1);
+  const statusIcon  = r.status === 'approved' ? '✅' : r.status === 'rejected' ? '❌' : '⏳';
+
+  // ID photo / PDF
+  let idPhotoHtml = '<span style="color:#a08070;font-size:12px;">No document uploaded</span>';
+  if (r.idPhotoUrl) {
+    const isPdf = r.idPhotoUrl.toLowerCase().includes('.pdf') ||
+                  r.idPhotoUrl.toLowerCase().includes('application/pdf');
+    if (isPdf) {
+      idPhotoHtml = `<a class="id-photo-pdf" href="${r.idPhotoUrl}" target="_blank" rel="noopener">
+        <i class="fas fa-file-pdf"></i> View PDF Document
+      </a>`;
+    } else {
+      idPhotoHtml = `<img class="id-photo-thumb" src="${r.idPhotoUrl}"
+        alt="ID Document" onclick="openLightbox('${r.idPhotoUrl}')"
+        title="Click to enlarge">`;
+    }
+  }
+
+  // Action area
+  let actionsHtml = '';
+  if (r.status === 'pending') {
+    actionsHtml = `
+      <div class="req-actions">
+        <input class="action-note-input" type="text" id="note-${r._id}"
+               placeholder="Optional admin note (e.g. reason for rejection)…">
+        <button class="btn-approve" id="btn-approve-${r._id}" onclick="approveRequest('${r._id}')">
+          <i class="fas fa-check"></i> Approve
+        </button>
+        <button class="btn-reject" id="btn-reject-${r._id}" onclick="rejectRequest('${r._id}')">
+          <i class="fas fa-times"></i> Reject
+        </button>
+      </div>`;
+  } else {
+    const noteText = r.adminNote ? `<span class="admin-note-display">"${esc(r.adminNote)}"</span>` : '';
+    actionsHtml = `
+      <div class="req-actions">
+        <div class="already-acted ${r.status}">
+          ${statusIcon} Application ${statusLabel}
+          ${noteText}
+        </div>
+      </div>`;
+  }
+
+  return `
+  <div class="req-card" id="card-${r._id}">
+    <div class="req-card-head" onclick="toggleCard('${r._id}')">
+      <div class="req-avatar">${initials}</div>
+      <div class="req-info">
+        <h3>${esc(r.firstName)} ${esc(r.lastName)}</h3>
+        <p>${esc(r.email || 'No email')} &nbsp;·&nbsp; ${esc(r.domain)}</p>
+      </div>
+      <div class="req-meta">
+        <span class="status-badge ${r.status}">${statusIcon} ${statusLabel}</span>
+        <span class="req-date">${date}</span>
+      </div>
+      <i class="fas fa-chevron-down req-chevron"></i>
+    </div>
+
+    <div class="req-details">
+      <div class="detail-grid">
+
+        <span class="detail-section-title">👤 Personal Information</span>
+
+        <div class="detail-row">
+          <span class="detail-label">Full Name</span>
+          <span class="detail-value">${esc(r.firstName)} ${esc(r.lastName)}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Age</span>
+          <span class="detail-value">${r.age} years</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Phone</span>
+          <span class="detail-value">${esc(r.phone)}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Email</span>
+          <span class="detail-value">${esc(r.email || '—')}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Address</span>
+          <span class="detail-value">${esc(r.address)}, ${esc(r.city)}${r.province ? ', ' + esc(r.province) : ''}</span>
+        </div>
+
+        <span class="detail-section-title" style="margin-top:8px;">🛍️ Seller Information</span>
+
+        <div class="detail-row">
+          <span class="detail-label">Art Domain</span>
+          <span class="detail-value">${esc(r.domain)}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Experience</span>
+          <span class="detail-value">${esc(r.experience)}</span>
+        </div>
+        ${r.portfolio ? `
+        <div class="detail-row">
+          <span class="detail-label">Portfolio / Social</span>
+          <span class="detail-value"><a href="${esc(r.portfolio)}" target="_blank" rel="noopener" style="color:#8b4513;">${esc(r.portfolio)}</a></span>
+        </div>` : ''}
+
+        <div class="detail-row" style="grid-column:1/-1;">
+          <span class="detail-label">About Their Work</span>
+          <div class="bio-box">${esc(r.bio)}</div>
+        </div>
+
+        <span class="detail-section-title" style="margin-top:8px;">🪪 Identity Verification</span>
+
+        <div class="detail-row">
+          <span class="detail-label">ID Type</span>
+          <span class="detail-value">${esc(r.idType)}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">ID Number</span>
+          <span class="detail-value" style="font-family:monospace;">${esc(r.idNumber)}</span>
+        </div>
+        <div class="detail-row id-photo-section">
+          <span class="detail-label">ID Document</span>
+          ${idPhotoHtml}
+        </div>
+
+      </div>
+
+      ${actionsHtml}
+    </div>
+  </div>`;
+}
+
+// ── Toggle card expand/collapse ───────────────────────────────────────────
+window.toggleCard = function(id) {
+  document.getElementById('card-' + id).classList.toggle('open');
+};
+
+// ── Approve ───────────────────────────────────────────────────────────────
+window.approveRequest = async function(id) {
+  if (!confirm('Approve this seller application? They will be granted the seller role.')) return;
+  const note        = (document.getElementById('note-' + id)?.value || '').trim();
+  const token       = window.adminToken || localStorage.getItem('authToken');
+  const approveBtn  = document.getElementById('btn-approve-' + id);
+  const rejectBtn   = document.getElementById('btn-reject-'  + id);
+
+  if (approveBtn) approveBtn.disabled = true;
+  if (rejectBtn)  rejectBtn.disabled  = true;
+
+  try {
+    const res  = await fetch(`${BASE}/api/users/seller-requests/${id}/approve`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      body: JSON.stringify({ note })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Failed');
+    showToast('✅ Seller approved successfully!', 'success');
+    const req = window.allRequests.find(r => r._id === id);
+    if (req) { req.status = 'approved'; req.adminNote = note; }
+    updateCounts();
+    renderRequests(window.currentFilter);
+  } catch (e) {
+    showToast('Error: ' + e.message, 'error');
+    if (approveBtn) approveBtn.disabled = false;
+    if (rejectBtn)  rejectBtn.disabled  = false;
+  }
+};
+
+// ── Reject ────────────────────────────────────────────────────────────────
+window.rejectRequest = async function(id) {
+  const note       = (document.getElementById('note-' + id)?.value || '').trim();
+  if (!confirm('Reject this seller application?' + (note ? `\nNote: "${note}"` : ''))) return;
+  const token      = window.adminToken || localStorage.getItem('authToken');
+  const approveBtn = document.getElementById('btn-approve-' + id);
+  const rejectBtn  = document.getElementById('btn-reject-'  + id);
+
+  if (approveBtn) approveBtn.disabled = true;
+  if (rejectBtn)  rejectBtn.disabled  = true;
+
+  try {
+    const res  = await fetch(`${BASE}/api/users/seller-requests/${id}/reject`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      body: JSON.stringify({ note })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Failed');
+    showToast('❌ Application rejected.', 'error');
+    const req = window.allRequests.find(r => r._id === id);
+    if (req) { req.status = 'rejected'; req.adminNote = note; }
+    updateCounts();
+    renderRequests(window.currentFilter);
+  } catch (e) {
+    showToast('Error: ' + e.message, 'error');
+    if (approveBtn) approveBtn.disabled = false;
+    if (rejectBtn)  rejectBtn.disabled  = false;
+  }
+};
+
+// ── Lightbox ──────────────────────────────────────────────────────────────
+window.openLightbox = function(url) {
+  document.getElementById('lightbox-img').src = url;
+  document.getElementById('lightbox').classList.add('open');
+};
+window.closeLightbox = function() {
+  document.getElementById('lightbox').classList.remove('open');
+};
+
+// ── Toast ─────────────────────────────────────────────────────────────────
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className   = 'show ' + type;
+  setTimeout(() => { t.className = ''; }, 3200);
+}
+
+// ── Escape HTML ───────────────────────────────────────────────────────────
+function esc(str) {
+  return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+window.esc = esc;
+
+// ── Mobile nav ────────────────────────────────────────────────────────────
+const bar   = document.getElementById('bar');
+const close = document.getElementById('close');
+const nav   = document.getElementById('navbar');
+if (bar)   bar.addEventListener('click',   () => nav.classList.add('active'));
+if (close) close.addEventListener('click', () => nav.classList.remove('active'));
+</script>
+</body>
+</html>

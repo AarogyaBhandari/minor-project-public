@@ -97,7 +97,7 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   try {
-    updateLoginUI(user);
+    updateLoginUI(user, user ? await getIdToken(user) : null);
   } catch (e) {
     // ignore UI update errors for pages without those elements
   }
@@ -120,7 +120,46 @@ function hideSellerBuyerNavigation() {
   if (ordersLink) ordersLink.parentElement.style.display = 'block';
 }
 
-function updateLoginUI(user) {
+// ── Seller request status check ───────────────────────────────────────────
+// Called after login. Disables "Become Seller" button if user already has
+// a pending or approved application, and updates its label to reflect status.
+async function checkSellerRequestStatus(token, btn) {
+  if (!token || !btn) return;
+  try {
+    const API_BASE = (window.location.port === '5000') ? '' : 'http://localhost:5000';
+    const res  = await fetch(`${API_BASE}/api/users/seller-request/status`, {
+      headers: { Authorization: 'Bearer ' + token }
+    });
+    if (!res.ok) return; // silently ignore — don't block UI on network error
+    const data = await res.json();
+    if (!data.exists) return; // no application yet — button stays enabled
+
+    // Application exists: disable the button and show its current status
+    btn.disabled = true;
+    btn.style.opacity = '0.55';
+    btn.style.cursor  = 'not-allowed';
+
+    if (data.status === 'pending') {
+      btn.textContent = '⏳ Application Pending';
+      btn.title = 'Your seller application is under review. Please wait for admin approval.';
+    } else if (data.status === 'approved') {
+      btn.textContent = '✅ Already a Seller';
+      btn.title = 'Your seller application has been approved.';
+    } else if (data.status === 'rejected') {
+      // Rejected users ARE allowed to re-apply — keep button enabled
+      btn.disabled = false;
+      btn.style.opacity = '';
+      btn.style.cursor  = '';
+      btn.textContent = '🔄 Re-apply as Seller';
+      btn.title = 'Your previous application was rejected. You may submit a new one.';
+    }
+  } catch (e) {
+    // Network error — don't block the button, just log quietly
+    console.warn('Could not check seller request status:', e.message);
+  }
+}
+
+function updateLoginUI(user, token) {
   const loginBtn       = document.getElementById('login-btn');
   const modal          = document.getElementById('logout-modal');
   const cancelBtn      = document.getElementById('cancel-logout');
@@ -157,18 +196,16 @@ function updateLoginUI(user) {
     };
 
     if (becomeSellerBtn) {
-      becomeSellerBtn.onclick = async () => {
-        const token = localStorage.getItem('authToken');
-        if (!token) { alert('Please login first'); return; }
-        try {
-          const res = await fetch('http://localhost:5000/api/users/become-seller', {
-            method: 'POST', headers: { Authorization: `Bearer ${token}` }
-          });
-          const data = await res.json();
-          alert(data.message || 'Seller role granted. Please sign out and sign in again.');
-          if (modal) modal.style.display = 'none';
-        } catch (e) {
-          alert('Request failed');
+      // Check if this user already has a pending/approved request — disable button if so
+      checkSellerRequestStatus(token, becomeSellerBtn);
+
+      becomeSellerBtn.onclick = () => {
+        if (becomeSellerBtn.disabled) return;
+        if (modal) modal.style.display = 'none';
+        const sellerModal = document.getElementById('seller-modal');
+        if (sellerModal) {
+          sellerModal.classList.add('open');
+          if (typeof sfGoToPage === 'function') sfGoToPage(1);
         }
       };
     }
